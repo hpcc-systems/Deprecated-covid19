@@ -1,0 +1,85 @@
+@import '~antd/dist/antd.dark.min.css';
+/*@import '~antd/dist/antd.min.css';*/
+
+/*.logo {*/
+/*  width: 120px;*/
+/*  height: 31px;*/
+/*  background: rgba(255, 255, 255, 0.2);*/
+/*  margin: 16px 28px 16px 100px;*/
+/*  float: left;*/
+/*}*/
+
+/*.logo {*/
+/*  height: 32px;*/
+/*  background: rgba(255, 255, 255, 0.2);*/
+/*  margin: 16px;*/
+/*}*/
+
+.ant-dropdown-button {
+  margin: 0 8px 8px 0;
+  width: 100px;
+}
+
+.logo {
+  width: 250px;
+  height: 31px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px 28px 16px 0;
+  float: left;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.site-drawer-render-in-current-wrapper {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #ebedf0;
+  border-radius: 2px;
+  padding: 48px;
+  text-align: center;
+  background: #fafafa;
+}
+
+a {
+  color: red;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
