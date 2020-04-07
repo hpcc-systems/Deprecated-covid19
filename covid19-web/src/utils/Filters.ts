@@ -13,7 +13,7 @@ export class Filters {
         if (statesFilter && statesFilter.length > 0) {} else {statesFilter='GEORGIA,NEW YORK,CALIFORNIA,LOUISIANA'}
         this.filtersMap.set('statesFilter', statesFilter);
 
-        let countriesFilter = localStorage.getItem('statesFilter');
+        let countriesFilter = localStorage.getItem('countriesFilter');
         if (countriesFilter && countriesFilter.length > 0) {} else {countriesFilter='US,UK,FRANCE,ITALY,INDIA'}
         this.filtersMap.set('countriesFilter', countriesFilter);
      }
