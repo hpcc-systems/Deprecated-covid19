@@ -59,7 +59,7 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
 
                 groupField: this.props.groupField,
 
-                theme: 'dark'
+                // theme: 'dark'
 
             });
             this.plot.render();

@@ -52,7 +52,7 @@ export default class LineChart extends PureComponent <LineChartProps> {
                 },
                 label: {
                     visible: true,
-                    style:{stroke: '#262626', fill: 'white'}
+                    // style:{stroke: '#262626', fill: 'white'}
                 },
                 legend: {
                     visible: true,
@@ -62,7 +62,7 @@ export default class LineChart extends PureComponent <LineChartProps> {
 
                 seriesField: this.props.groupField,
                 smooth: true,
-                theme: 'dark'
+                // theme: 'dark'
 
             });
             this.plot.render();

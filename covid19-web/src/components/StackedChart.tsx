@@ -60,7 +60,7 @@ export default class StackedChart extends PureComponent <StackedChartProps> {
 
                 stackField: this.props.groupField,
 
-                theme: 'dark'
+                // theme: 'dark'
 
             });
             this.plot.render();

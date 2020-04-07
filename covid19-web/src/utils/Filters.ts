@@ -9,8 +9,13 @@ export class Filters {
     private constructor() {
         this.filtersMap = new Map<string, string>();
         //defaults
-        this.filtersMap.set('statesFilter', <string>localStorage.getItem('statesFilter'));
-        this.filtersMap.set('countriesFilter', <string>localStorage.getItem('countriesFilter'));
+        let statesFilter = localStorage.getItem('statesFilter');
+        if (statesFilter && statesFilter.length > 0) {} else {statesFilter='GEORGIA,NEW YORK,CALIFORNIA,LOUISIANA'}
+        this.filtersMap.set('statesFilter', statesFilter);
+
+        let countriesFilter = localStorage.getItem('statesFilter');
+        if (countriesFilter && countriesFilter.length > 0) {} else {countriesFilter='US,UK,FRANCE,ITALY,INDIA'}
+        this.filtersMap.set('countriesFilter', countriesFilter);
      }
 
     /**

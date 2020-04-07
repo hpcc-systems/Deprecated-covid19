@@ -64,10 +64,13 @@ export  default class Nav extends React.Component<NavProps, NavState> {
     render() {
         return (
 
-            <Card style={{height:'100%', margin:0}} title={<div style={{textAlign:'center', fontWeight:'bold'}}>{this.props.module?.title}</div>} >
+            // <Card  style={{height:'100%', margin:0}} title={<div style={{textAlign:'center', fontWeight:'bold', backgroundColor:'#2d292d'}}>{this.props.module?.title}</div>} >
+
+
             <Menu
                 mode="inline"
-                style={{height: '100%', borderRight: 0}}
+                theme={'dark'}
+                style={{height: '100%'}}
                 selectedKeys={[this.props.selectedKey]}
                 onClick={(e) =>
                          this.props.onSelect(e.key)}
@@ -76,7 +79,8 @@ export  default class Nav extends React.Component<NavProps, NavState> {
                 {this.renderMenu(this.state.navItems)}
 
             </Menu>
-            </Card>
+            // </Card>
+
 
         );
     }

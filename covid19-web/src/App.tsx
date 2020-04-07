@@ -68,9 +68,8 @@ export class App extends Component<AppProps, AppState> {
                 <Header>
                     <div className="logo"/>
                     <Menu
-                        theme="dark"
+                        theme={'dark'}
                         mode="horizontal"
-                        defaultSelectedKeys={['2']}
                         style={{ lineHeight: '64px' }}
                         onClick={(e) =>
                             this.initModule(e.key)}
@@ -82,17 +81,13 @@ export class App extends Component<AppProps, AppState> {
                     </Menu>
                 </Header>
 
-                <Layout>
-                    <Sider width={300} theme={"dark"}>
-
-
+                <Layout >
+                    <Sider width={300} >
                         <Nav onSelect={(key: string) => this.setState({menuKey: key})}
                              selectedKey={this.state.menuKey} module={this.state.selectedModule} />
                     </Sider>
 
-
                     <ListBase listId={this.state.menuKey}/>
-
                 </Layout>
             </Layout>
         );
