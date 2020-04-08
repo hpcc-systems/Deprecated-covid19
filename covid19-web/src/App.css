@@ -1,5 +1,5 @@
 /*@import '~antd/dist/antd.dark.min.css';*/
-@import '~antd/dist/antd.min.css';
+@import '~antd/dist/antd.compact.css';
 
 /*.logo {*/
 /*  width: 120px;*/
@@ -14,6 +14,8 @@
 /*  background: rgba(255, 255, 255, 0.2);*/
 /*  margin: 16px;*/
 /*}*/
+
+
 
 .ant-dropdown-button {
   margin: 0 8px 8px 0;

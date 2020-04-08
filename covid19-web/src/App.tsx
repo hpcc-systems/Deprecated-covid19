@@ -81,12 +81,12 @@ export class App extends Component<AppProps, AppState> {
 
         return (
             <Layout style={{height: "100vh"}}>
-                <Header>
+                <Header style={{background:'#3a3939'}}>
                     <div className="logo"/>
                     <Menu
-                        theme={'dark'}
+                        theme={"dark"}
                         mode="horizontal"
-                        style={{ lineHeight: '64px' }}
+                        style={{ lineHeight: '64px',background:'#3a3939' }}
                         selectedKeys={[this.state.menuKey]}
                         onClick={(e) =>
                             this.initModule(e.key)}

@@ -80,7 +80,7 @@ export  default class Nav extends React.Component<NavProps, NavState> {
             <Menu
                 mode="inline"
                 theme={'dark'}
-                style={{height: '100%'}}
+                style={{height: '100%', background:'#2d2c2c'}}
                 defaultSelectedKeys={[this.state.defaultSelection]}
                 selectedKeys={[this.props.selectedKey]}
                 onClick={(e) =>
