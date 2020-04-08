@@ -5,6 +5,8 @@ import SummaryStates from "../lists/us-states/Summary";
 import SummaryCountries from "../lists/world/Summary";
 import StatesStats from "../lists/us-states/StatesStats";
 import StatesProgress from "../lists/us-states/StatesProgress";
+import {Home} from "../lists/Home";
+
 
 
 
@@ -53,8 +55,6 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
         );
     }
 
-
-
     private renderContent() {
 
         if (this.state && this.state.listMetadata) {
@@ -64,6 +64,7 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                 case 'us_states/states_stats': return <StatesStats/>;
                 case 'us_states/states_progress': return <StatesProgress/>;
                 case 'world_countries/summary': return <SummaryCountries/>;
+                case 'home/summary': return <Home/>;
                 default: return '';
             }
         } else {

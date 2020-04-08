@@ -1,19 +1,20 @@
-export interface Filter {
 
-}
 
 export interface ListMetadata {
     moduleId: string;
     id: string;
     title: string;
+    isDefault: boolean;
     children?: ListMetadata[];
 }
 
 export default class ListService {
 
-    private lists = [{moduleId:'us_states', id:'us_states/summary', title: 'Summary'},
-                     {moduleId:'us_states', id:'us_states/states_stats', title: 'States Statistics'},
-                     {moduleId: 'world_countries', id: 'world_countries/summary', title: 'Summary'}];//Inline Data
+    private lists = [{moduleId:'us_states', id:'us_states/summary', title: 'Summary', isDefault:true},
+                     {moduleId:'us_states', id:'us_states/states_stats', title: 'States Statistics', isDefault: false},
+                     {moduleId: 'world_countries', id: 'world_countries/summary', title: 'Summary', isDefault: true},
+                     {moduleId: 'home', id: 'home/summary', title: 'Summary', isDefault: true}
+                     ];//Inline Data
 
     getLists(moduleId: string): Promise<ListMetadata[]> {
         return new Promise<ListMetadata[]>(resolve => {

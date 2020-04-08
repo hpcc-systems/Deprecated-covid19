@@ -4,14 +4,17 @@ import './App.css';
 import Nav from "./components/Nav";
 import ModuleService, {Module} from "./services/ModuleService"
 import ListBase from "./components/ListBase";
+import {ListMetadata} from "./services/ListService";
 
 const {SubMenu} = Menu;
 const {Header,Sider} = Layout;
 
 interface AppState {
+    selectedListId: string;
     menuKey: string;
     menus: Module[];
-    selectedModule: Module | null
+    selectedModule: Module | null;
+    defaultSelection: Module | null;
 }
 
 interface AppProps {
@@ -25,7 +28,7 @@ export class App extends Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
 
-        this.state ={menuKey: '', menus: [], selectedModule: null};
+        this.state ={selectedListId: '', menus: [], selectedModule: null, defaultSelection:null, menuKey:''};
 
         this.moduleService = new ModuleService();
     }
@@ -36,7 +39,20 @@ export class App extends Component<AppProps, AppState> {
 
     initMenu() {
         this.moduleService.getModules().then(data => {
-            this.setState ({menus: data});
+
+            let defaultSelection: Module|null = null ;
+            let defaultSelectionId = '';
+
+            data.forEach((item:Module) => {
+                if (item.isDefault) {
+                    defaultSelection = item;
+                    defaultSelectionId = item.id;
+                }
+            });
+
+            console.log('default selection id ' + defaultSelectionId);
+
+            this.setState ({menus: data, selectedModule:defaultSelection, menuKey: defaultSelectionId});
         });
     }
 
@@ -45,7 +61,7 @@ export class App extends Component<AppProps, AppState> {
         this.moduleService.getModule(moduleId).then(data => {
 
             console.log('module id - ' + moduleId);
-            this.setState ({selectedModule: data, menuKey:''});
+            this.setState ({selectedModule: data, selectedListId:'', menuKey: moduleId});
         });
 
 
@@ -71,6 +87,7 @@ export class App extends Component<AppProps, AppState> {
                         theme={'dark'}
                         mode="horizontal"
                         style={{ lineHeight: '64px' }}
+                        selectedKeys={[this.state.menuKey]}
                         onClick={(e) =>
                             this.initModule(e.key)}
                     >
@@ -83,11 +100,11 @@ export class App extends Component<AppProps, AppState> {
 
                 <Layout >
                     <Sider width={300} >
-                        <Nav onSelect={(key: string) => this.setState({menuKey: key})}
-                             selectedKey={this.state.menuKey} module={this.state.selectedModule} />
+                        <Nav onSelect={(key: string) => this.setState({selectedListId: key})}
+                             selectedKey={this.state.selectedListId} module={this.state.selectedModule} />
                     </Sider>
 
-                    <ListBase listId={this.state.menuKey}/>
+                    <ListBase listId={this.state.selectedListId} />
                 </Layout>
             </Layout>
         );

@@ -14,7 +14,8 @@ EXPORT JohnHopkinsV2 := MODULE
                         'hpccsystems::covid19::file::raw::04-03-2020.csv,'+
                         'hpccsystems::covid19::file::raw::04-04-2020.csv,'+
                         'hpccsystems::covid19::file::raw::04-05-2020.csv,'+ 
-                        'hpccsystems::covid19::file::raw::04-06-2020.csv' + '}'; 
+                        'hpccsystems::covid19::file::raw::04-06-2020.csv,'+
+                        'hpccsystems::covid19::file::raw::04-07-2020.csv' + '}'; 
 
     EXPORT layout := RECORD
         STRING fips;

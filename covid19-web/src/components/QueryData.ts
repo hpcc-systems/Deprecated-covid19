@@ -9,14 +9,18 @@ export  class QueryData {
         this.data = {};
     }
 
-    async initData(filters: Map<string, string>) {
+    async initData(filters: Map<string, string>|undefined) {
 
         let filterStr = '';
-        filters.forEach((value,key) => {
-            let prefix = '&';
-            if (filterStr.length > 0) {prefix = '&'}
-            filterStr += prefix + key + '=' + value;
-        });
+        if (filters) {
+            filters.forEach((value, key) => {
+                let prefix = '&';
+                if (filterStr.length > 0) {
+                    prefix = '&'
+                }
+                filterStr += prefix + key + '=' + value;
+            });
+        }
 
         this.data = await this.getAPIData(filterStr);
 

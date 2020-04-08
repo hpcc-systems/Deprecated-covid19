@@ -165,7 +165,7 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
                     </Tabs>
 
 
-                    {/* <GroupChart title={'Recovered'}
+                    {/* <ColumnChart title={'Recovered'}
                                 groupField={'state'}
                                 yField={'recovered'}
                                 xField={'date'}

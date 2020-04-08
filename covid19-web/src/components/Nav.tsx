@@ -14,10 +14,11 @@ interface NavProps {
 interface NavState {
     navItems: ListMetadata[];
     listModuleId: string;
+    defaultSelection: string;
 }
 
 export  default class Nav extends React.Component<NavProps, NavState> {
-    state = { navItems: [], listModuleId: ''};
+    state = { navItems: [], listModuleId: '', defaultSelection:''};
 
     listService : ListService;
 
@@ -29,8 +30,17 @@ export  default class Nav extends React.Component<NavProps, NavState> {
 
     initMenu(moduleId: string) {
         this.listService.getLists(moduleId).then(data => {
+            let defaultSelection = '';
+            data.forEach((item:ListMetadata) => {
+                if (item.isDefault) {
+                    defaultSelection = item.id;
+                }
+            });
 
-            this.setState ({listModuleId: moduleId, navItems: data});
+            this.setState ({listModuleId: moduleId, navItems: data, defaultSelection: defaultSelection});
+            if(defaultSelection !== '') {
+                this.props.onSelect(defaultSelection)
+            }
         });
     }
 
@@ -71,6 +81,7 @@ export  default class Nav extends React.Component<NavProps, NavState> {
                 mode="inline"
                 theme={'dark'}
                 style={{height: '100%'}}
+                defaultSelectedKeys={[this.state.defaultSelection]}
                 selectedKeys={[this.props.selectedKey]}
                 onClick={(e) =>
                          this.props.onSelect(e.key)}

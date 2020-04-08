@@ -25,7 +25,7 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
     componentDidUpdate(prevProps: Readonly<GroupChartProps>,
                        snapshot?: any): void {
 
-        //console.log('GroupChart - Component Did Update : ' + this.props.data);
+        //console.log('ColumnChart - Component Did Update : ' + this.props.data);
         this.plot.updateConfig({data: this.props.data});
         this.plot.render();
 

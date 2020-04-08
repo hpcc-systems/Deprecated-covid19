@@ -7,7 +7,7 @@ IMPORT Std;
 latestDate := MAX(covid.worldDs, update_date);
 leastDate := Std.Date.AdjustDate(latestDate,0,0,-6);
 
-_countriesFilter := 'US,ITALY,AUSTRALIA,SOUTH KOREA,UNITED KINGDOM,GERMANY,INDIA':STORED('countriesFilter'); 
+_countriesFilter := '':STORED('countriesFilter'); 
 
 sumByCountryDate := TABLE(covid.worldDs,
                           {country, 
@@ -44,5 +44,10 @@ increaseByDay := ITERATE(SORT(increaseByDayTemp,country,date),
 world := increaseByDay(country in Std.Str.SplitWords(_countriesFilter, ',')  and date > leastDate);
 
 OUTPUT(world,,NAMED('world'));
+
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-confirmed),,NAMED('top_confirmed'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths),,NAMED('top_deaths'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-confirmed_increase),,NAMED('top_confirmed_increase'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths_increase),,NAMED('top_deaths_increase'));
 
 OUTPUT (CHOOSEN(TABLE(DEDUP(SORT(covid.worldDs,country),country), {STRING50 name := country}),1000),,NAMED('countries_catalog'));

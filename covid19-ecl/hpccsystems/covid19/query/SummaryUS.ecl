@@ -37,7 +37,7 @@ END;
 
 statesIncreaseByDayTemp := TABLE(sumByUSStateDate, statesIncreaseByDayLayout);
 
-statesIncreaseByDay := ITERATE(SORT(statesIncreaseByDayTemp, state, date),
+increaseByDay := ITERATE(SORT(statesIncreaseByDayTemp, state, date),
                                TRANSFORM(statesIncreaseByDayLayout,
                                          SELF.confirmed_increase := IF(LEFT.state=RIGHT.state, IF(RIGHT.confirmed-LEFT.confirmed > 0, RIGHT.confirmed-LEFT.confirmed, 0), 0),
                                          SELF.deaths_increase := IF(LEFT.state=RIGHT.state, IF(RIGHT.deaths-LEFT.deaths > 0, RIGHT.deaths-LEFT.deaths, 0), 0),
@@ -48,7 +48,7 @@ statesIncreaseByDay := ITERATE(SORT(statesIncreaseByDayTemp, state, date),
  
 
 
-states := statesIncreaseByDay(state in statesFilter and date > leastDate);
+states := increaseByDay(state in statesFilter and date > leastDate);
 popStates := Pop.ds(state in statesFilter);
 
 joinStatesPop := JOIN(states, popStates, LEFT.state=RIGHT.state, 
@@ -62,4 +62,11 @@ OUTPUT(TABLE(SORT(popStates, state),{state, pop_2018}),,NAMED('pop_states'));
 OUTPUT(TABLE(sumByUSStateDate(date=latestDate), {STRING2 state_code := Utils.toStateCode(state), confirmed}),,NAMED('states_today'));
 
 OUTPUT(TABLE(Utils.states,{STRING50 state := name}),,NAMED('catalog_states'));
+
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-confirmed),,NAMED('top_confirmed'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths),,NAMED('top_deaths'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-confirmed_increase),,NAMED('top_confirmed_increase'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths_increase),,NAMED('top_deaths_increase'));
+
+OUTPUT (CHOOSEN(TABLE(DEDUP(SORT(covid.usDs,state),state), {STRING50 name := state}),1000),,NAMED('countries_catalog'));
 
