@@ -237,10 +237,10 @@ export default class StatesMetrics extends Component<StatesMetricsProps, StatesM
                                 groupField={'measure'}
                                 yField={'value'}
                                 xField={'location'}
-                                yAxisMin={-0.5}
+                                yAxisMin={-2}
                                 data={this.state.metrics_by_state}/>
 
-                    <Table style={{height: '500px'}} rowKey={'location'} bordered columns={layout} dataSource={this.state.all}
+                    <Table rowKey={'location'} bordered columns={layout} dataSource={this.state.all}
                            pagination={false} scroll={{ y: 240 }} rowSelection={{
                         type: 'checkbox',
                         ...rowSelection
