@@ -94,11 +94,15 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
 
             <Layout style={{padding: '20px', height: '100%'}}>
                 <PageHeader title={this.props.title} subTitle={this.props.description}
+                 extra={[
+                     <Button type="primary" onClick={this.showFilter}>
+                         Filter
+                     </Button>
 
+                 ]}
                 />
                 <Drawer
                     title="Apply Filters"
-                    // width={520}
                     placement={'right'}
                     closable={false}
                     onClose={this.filterOnClose}
@@ -129,9 +133,7 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
 
                 <Space direction={'vertical'}>
 
-                    <Button type="primary" onClick={this.showFilter}>
-                        Filter
-                    </Button>
+
                     <Tabs defaultActiveKey="1">
                         <TabPane tab="Cases" key="1">
 
