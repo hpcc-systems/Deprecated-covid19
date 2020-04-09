@@ -3,7 +3,6 @@ import React from "react";
 import {Button, Drawer, Select} from "antd";
 
 
-
 import {Space} from "antd/es";
 
 const {Option} = Select;
@@ -22,25 +21,27 @@ export function FilterDrawer(props: Props) {
     const [visible, setVisible] = React.useState(false);
 
 
-
     const renderStatesOptions = () => {
         return props.states.map((item: any) => {
             return <Option key={item.name} value={item.name} label={item.name}> {item.name}</Option>
         });
     };
 
-    const renderPeriod = () => {
+    const renderPeriodFilter = () => {
         if (props.periods) {
             return (
-                <Select
-                    style={{width: '100%'}}
-                    placeholder="select a Period"
-                    defaultValue={props.defaultPeriodValue}
-                    onChange={(value: any) => props.onFilterChange('periodFilter', value)}
-                    optionLabelProp="label"
-                >
-                    {renderPeriodsOptions()}
-                </Select>
+                <div>
+                    <div>Select a Period</div>
+                    <Select
+                        style={{width: '100%'}}
+                        placeholder="select a Period"
+                        defaultValue={props.defaultPeriodValue}
+                        onChange={(value: any) => props.onFilterChange('periodFilter', value)}
+                        optionLabelProp="label"
+                    >
+                        {renderPeriodsOptions()}
+                    </Select>
+                </div>
             );
         } else {
             return ('');
@@ -50,7 +51,8 @@ export function FilterDrawer(props: Props) {
 
     const renderPeriodsOptions = () => {
         return props.periods.map((item: any) => {
-            return <Option key={item.period} value={item.period} label={item.period}> {item.name}</Option>
+            return <Option key={item.period} value={item.period}
+                           label={`${item.period} - [ ${item.startdate}  -  ${item.enddate} ]`}> {`${item.period} - [ ${item.startdate}  -  ${item.enddate} ]`}</Option>
         });
     };
 
@@ -66,20 +68,20 @@ export function FilterDrawer(props: Props) {
                 visible={visible}
             >
                 <Space direction={'vertical'}>
-                            <div>Select (Multiple) States</div>
-                            <Select
-                                mode="multiple"
-                                style={{ width: '100%' }}
-                                placeholder="select one state"
-                                defaultValue={props.defaultStatesValue}
-                                onChange={(value: any) => props.onFilterChange('statesFilter',value)}
-                                optionLabelProp="label"
+                    <div>Select (Multiple) States</div>
+                    <Select
+                        mode="multiple"
+                        style={{width: '100%'}}
+                        placeholder="select one state"
+                        defaultValue={props.defaultStatesValue}
+                        onChange={(value: any) => props.onFilterChange('statesFilter', value)}
+                        optionLabelProp="label"
 
-                            >
-                                {renderStatesOptions()}
-                            </Select>
+                    >
+                        {renderStatesOptions()}
+                    </Select>
 
-                            {renderPeriod()}
+                    {renderPeriodFilter()}
 
                     <Button type="primary" onClick={() => setVisible(false)}>
                         Close

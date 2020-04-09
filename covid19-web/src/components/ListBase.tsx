@@ -3,7 +3,7 @@ import ListService, {ListMetadata} from "../services/ListService";
 import {Layout} from "antd";
 import SummaryStates from "../lists/us-states/Summary";
 import SummaryCountries from "../lists/world/Summary";
-import StatesStats from "../lists/us-states/StatesStats";
+import StatesStatsMetrics from "../lists/us-states/StatesMetrics";
 import StatesProgress from "../lists/us-states/StatesProgress";
 import {Home} from "../lists/Home";
 
@@ -60,11 +60,11 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
         if (this.state && this.state.listMetadata) {
 
             switch (this.state.listMetadata.id) {
-                case 'us_states/summary': return <SummaryStates/>;
-                case 'us_states/states_stats': return <StatesStats/>;
+                case 'us_states/summary': return <SummaryStates title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
+                case 'us_states/states_metrics': return <StatesStatsMetrics title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'us_states/states_progress': return <StatesProgress/>;
-                case 'world_countries/summary': return <SummaryCountries/>;
-                case 'home/summary': return <Home/>;
+                case 'world_countries/summary': return <SummaryCountries title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
+                case 'home/summary': return <Home title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 default: return '';
             }
         } else {

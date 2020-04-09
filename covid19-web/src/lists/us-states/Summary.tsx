@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 
-import {Button, Drawer, Layout, Select, Tabs} from "antd";
+import {Button, Drawer, Layout, PageHeader, Select, Tabs} from "antd";
 
 
 import {Space} from "antd/es";
@@ -14,7 +14,8 @@ const {Option} = Select;
 const {TabPane} = Tabs;
 
 interface SummaryProps {
-
+    title: string;
+    description: string;
 }
 
 interface SummaryState {
@@ -92,6 +93,12 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
         return (
 
             <Layout style={{padding: '20px', height: '100%'}}>
+                <PageHeader title={this.props.title} subTitle={this.props.description}
+                            extra={[
+                                <Button type="primary" onClick={this.showFilter}>
+                                    Filter
+                                </Button>]}
+                />
                 <Drawer
                     title="Apply Filters"
                     // width={520}
@@ -125,9 +132,6 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
 
                 <Space direction={'vertical'}>
 
-                    <Button type="primary" onClick={this.showFilter}>
-                        Filter
-                    </Button>
                     <Tabs defaultActiveKey="1">
                         <TabPane tab="Cases" key="1">
 

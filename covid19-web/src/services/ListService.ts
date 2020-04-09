@@ -4,16 +4,17 @@ export interface ListMetadata {
     moduleId: string;
     id: string;
     title: string;
+    description: string;
     isDefault: boolean;
     children?: ListMetadata[];
 }
 
 export default class ListService {
 
-    private lists = [{moduleId:'us_states', id:'us_states/summary', title: 'Summary', isDefault:true},
-                     {moduleId:'us_states', id:'us_states/states_stats', title: 'States Statistics', isDefault: false},
-                     {moduleId: 'world_countries', id: 'world_countries/summary', title: 'Summary', isDefault: true},
-                     {moduleId: 'home', id: 'home/summary', title: 'Summary', isDefault: true}
+    private lists = [{moduleId:'us_states', id:'us_states/summary', title: 'Summary', description: 'Daily snapshot of cases and deaths for US states. Please use the filter button to select the states.',  isDefault:true},
+                     {moduleId:'us_states', id:'us_states/states_metrics', title: 'Metrics', description: 'Daily snapshot of metrics for US states. Please use the filter button to select the states and period.',isDefault: false},
+                     {moduleId: 'world_countries', id: 'world_countries/summary', title: 'Summary', description: 'Daily snapshot of cases and deaths by countries. Please use the filter button to select the countries.', isDefault: true},
+                     {moduleId: 'home', id: 'home/summary', title: 'Summary', description: `Summary of cases, deaths, cases increases, deaths increase as of ${new Date()}`, isDefault: true}
                      ];//Inline Data
 
     getLists(moduleId: string): Promise<ListMetadata[]> {
