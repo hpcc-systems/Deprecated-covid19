@@ -9,6 +9,7 @@ export type GroupChartProps = {
     readonly xField: string;
     readonly groupField: string;
     readonly yAxisMin?: number;
+    readonly height?: string;
 };
 
 
@@ -42,6 +43,7 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
                 title: {
                     visible: true,
                     text: this.props.title,
+                    alignTo: "middle"
                 },
                 forceFit: true,
                 data,
@@ -49,6 +51,8 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
                 yField: this.props.yField,
                 yAxis: {
                     min: this.props.yAxisMin,
+
+
                 },
                 label: {
                     visible: true,
@@ -68,6 +72,6 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
     }
 
     render() {
-        return <div style={{width: '100%', height: '575px'}} ref={(e) => (this.$dom = e)}/>;
+        return <div style={{width: '100%', height: this.props.height}} ref={(e) => (this.$dom = e)}/>;
     }
 }

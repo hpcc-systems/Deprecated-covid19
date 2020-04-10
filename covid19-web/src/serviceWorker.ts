@@ -3,7 +3,7 @@
 
 // This lets the app load faster on subsequent visits in production, and gives
 // it offline capabilities. However, it also means that developers (and users)
-// will only see deployed updates on subsequent visits to a page, after all the
+// will only see deployed updates on subsequent visits to a page, after allMetrics the
 // existing tabs open on the page have been closed, since previously cached
 // resources are updated in the background.
 
@@ -27,7 +27,7 @@ type Config = {
 
 export function register(config?: Config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    // The URL constructor is available in all browsers that support SW.
+    // The URL constructor is available in allMetrics browsers that support SW.
     const publicUrl = new URL(
       process.env.PUBLIC_URL,
       window.location.href
@@ -76,9 +76,9 @@ function registerValidSW(swUrl: string, config?: Config) {
             if (navigator.serviceWorker.controller) {
               // At this point, the updated precached content has been fetched,
               // but the previous service worker will still serve the older
-              // content until all client tabs are closed.
+              // content until allMetrics client tabs are closed.
               console.log(
-                'New content is available and will be used when all ' +
+                'New content is available and will be used when allMetrics ' +
                   'tabs for this page are closed. See https://bit.ly/CRA-PWA.'
               );
 

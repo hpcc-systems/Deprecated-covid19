@@ -50,13 +50,13 @@ export default class StatesProgress extends Component <StatesProgressProp, State
 
         // await this.byState.initData(filters);
 
-        // let metricsData = this.byState.getData('metrics_by_state');
+        // let metricsData = this.byState.getData('statesFilteredMetrics');
         // let indicatorsData = this.byState.getData('indicators_by_state');
 
         // console.log('metrics data ' + metricsData);
         // console.log('indicators data ' + JSON.stringify(indicatorsData));
 
-        // this.setState({metrics_by_state: metricsData, indicators_by_state:indicatorsData});
+        // this.setState({statesFilteredMetrics: metricsData, indicators_by_state:indicatorsData});
     }
 
     private renderOptions() {
