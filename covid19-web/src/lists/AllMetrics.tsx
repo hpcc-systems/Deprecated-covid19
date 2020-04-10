@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 
-import {Badge, Button, Col, Collapse, Descriptions, Layout, PageHeader, Popover, Row, Table} from "antd";
+import {Button, Collapse, Descriptions, Layout, PageHeader, Popover, Table} from "antd";
 
 
 import {Space} from "antd/es";
