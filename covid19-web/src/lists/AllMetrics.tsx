@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 
-import {Button, Collapse, Descriptions, Layout, PageHeader, Popover, Table} from "antd";
+import {Button, Descriptions, Layout, PageHeader, Popover, Table} from "antd";
 
 
 import {Space} from "antd/es";
@@ -8,23 +8,23 @@ import {QueryData} from "../components/QueryData";
 import GroupChart from "../components/GroupChart";
 import {FilterRenderer} from "../components/FilterRenderer";
 
-const {Panel} = Collapse
-
 
 interface AllMetricsProps {
     title: string;
     description: string;
     typeFilter: string; //By states, world or counties
+    locationAlias: string;
 }
 
 export default function AllMetrics(props: AllMetricsProps) {
-    const [query] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_all_metrics'));
+    const [queryGrouped] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
+    const [queryPeriod] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
+    const [queryCatalog] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
     const [locationsMeasuresData, setLocationsMeasuresData] = React.useState<any>([]);
     const [allMeasuresData, setAllMeasuresData] = React.useState<any>([]);
     const [locationsFilter, setLocationsFilter] = React.useState<Array<string>>([]);
     const [periodFilter, setPeriodFilter] = React.useState<string>('1');
     const [periodsCatalog, setPeriodsCatalog] = React.useState<any>([]);
-    const [locationsCatalog, setLocationsCatalog] = React.useState<any>([]);
     const [dataLoadingStatus, setDataLoadingStatus] = React.useState<boolean>(false);
 
 
@@ -43,13 +43,21 @@ export default function AllMetrics(props: AllMetricsProps) {
         let filters: Map<string, string> = new Map();
         filters.set('typeFilter', props.typeFilter);
 
-        query.initData(filters).then(() => {
-            setAllMeasuresData(query.getData('measures_by_all'));
-            setPeriodsCatalog(query.getData('catalog_periods'));
-            setLocationsCatalog(query.getData('catalog_locations'));
-            setLocationsFilter(toLocationsFilter(query.getData('default_locations')));
+        queryCatalog.initData(filters).then(() => {
+            setPeriodsCatalog(queryCatalog.getData('catalog_periods'));
         });
     }, []);
+
+    useEffect(() => {
+        let filters: Map<string, string> = new Map();
+        filters.set('periodFilter', periodFilter);
+        filters.set('typeFilter', props.typeFilter);
+
+        queryPeriod.initData(filters).then(() => {
+            setAllMeasuresData(queryPeriod.getData('metrics_period'));
+            setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')));//Also set the default locations
+        });
+    }, [periodFilter]);
 
 
     useEffect(() => {
@@ -58,12 +66,13 @@ export default function AllMetrics(props: AllMetricsProps) {
         filters.set('locationsFilter', stringArrayToString(locationsFilter));
         filters.set('typeFilter', props.typeFilter);
         setDataLoadingStatus(true);
-        query.initData(filters).then(() => {
-            setLocationsMeasuresData(query.getData('measures_by_locations'));
+        queryGrouped.initData(filters).then(() => {
+
+            setLocationsMeasuresData(queryGrouped.getData('metrics_grouped'));
             setDataLoadingStatus(false);
         });
 
-    }, [locationsFilter, periodFilter])
+    }, [locationsFilter])
 
     const updateLocationsFilter = (value: any) => {
         if (value) {
@@ -90,7 +99,7 @@ export default function AllMetrics(props: AllMetricsProps) {
 
     const layout = [
         {
-            title: 'State',
+            title: props.locationAlias,
             dataIndex: 'location',
         },
         {
@@ -184,9 +193,9 @@ export default function AllMetrics(props: AllMetricsProps) {
 
             return <GroupChart title={''}
                                groupField={'measure'}
-                               yField={'value'}
-                               xField={'location'}
-                               height={'600px'}
+                               yField={'location'}
+                               xField={'value'}
+                               height={'2000px'}
                                data={locationsMeasuresData}/>
 
     }
@@ -252,32 +261,24 @@ export default function AllMetrics(props: AllMetricsProps) {
                 <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter} mode={undefined}
                                 onFilterChange={(value) => setPeriodFilter(value)}/>
 
-                <FilterRenderer title={'Select Locations'} data={locationsCatalog} value={locationsFilter}
-                                mode={"multiple"} onFilterChange={(value) => updateLocationsFilter(value)}/>
+                {/*<FilterRenderer title={'Select Locations'} data={locationsCatalog} value={locationsFilter}*/}
+                {/*                mode={"multiple"} onFilterChange={(value) => updateLocationsFilter(value)}/>*/}
 
+                {/*scroll={{y: 500}}*/}
+                {/*pagination={{total:20}}*/}
                 <Table rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} loading={{spinning:dataLoadingStatus}}
-                       pagination={false} scroll={{y: 500}} rowSelection={{
+                       rowSelection={{
                     type: "checkbox" as "checkbox",
                     ...rowSelection
                 }}/>
 
-                <div style={{height:20}}/>
+                {/*<div style={{height:20}}/>*/}
 
                 <Space direction={'horizontal'}>
                     <div>Quick Select, Render chart by:</div>
                     <Button type="primary"
-                            onClick={() => setLocationsFilter(toLocationsFilter(query.getData('default_locations')))}>
+                            onClick={() => setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')))}>
                         Top 10 Locations by Heat Index
-                    </Button>
-
-                    <Button type="primary"
-                    >
-                        Locations by Heat Index 1-2
-                    </Button>
-
-                    <Button type="primary"
-                    >
-                        Locations by Heat Index 0-1
                     </Button>
                 </Space>
 

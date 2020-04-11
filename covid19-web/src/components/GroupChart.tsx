@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {GroupedColumn} from '@antv/g2plot';
+import {GroupedBar, GroupedColumn, StackedBar} from '@antv/g2plot';
 
 
 export type GroupChartProps = {
@@ -38,22 +38,24 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
 
         let data = this.props.data;
         if (this.$dom) {
-            this.plot = new GroupedColumn(this.$dom, {
+            this.plot = new GroupedBar(this.$dom, {
 
                 title: {
                     visible: true,
                     text: this.props.title,
-                    alignTo: "middle"
                 },
-                forceFit: true,
+                // forceFit: true,
                 data,
                 xField: this.props.xField,
                 yField: this.props.yField,
-                yAxis: {
-                    min: this.props.yAxisMin,
-
-
+                xAxis: {
+                    minLimit: -1
                 },
+                // yAxis: {
+                //     min: this.props.yAxisMin,
+                //
+                //
+                // },
                 label: {
                     visible: true,
                 },
@@ -62,9 +64,6 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
                 },
 
                 groupField: this.props.groupField,
-
-                // theme: 'dark'
-
             });
             this.plot.render();
 
@@ -72,6 +71,6 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
     }
 
     render() {
-        return <div style={{width: '100%', height: this.props.height}} ref={(e) => (this.$dom = e)}/>;
+        return <div style={{width: '1000px', height: this.props.height}} ref={(e) => (this.$dom = e)}/>;
     }
 }
