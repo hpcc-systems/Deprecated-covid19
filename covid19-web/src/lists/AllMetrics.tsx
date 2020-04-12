@@ -101,6 +101,7 @@ export default function AllMetrics(props: AllMetricsProps) {
         {
             title: props.locationAlias,
             dataIndex: 'location',
+            minWidth: '50px'
         },
         {
             title: 'Heat Index',
