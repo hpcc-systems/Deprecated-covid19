@@ -44,7 +44,7 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
                     visible: true,
                     text: this.props.title,
                 },
-                // forceFit: true,
+                forceFit: true,
                 data,
                 xField: this.props.xField,
                 yField: this.props.yField,

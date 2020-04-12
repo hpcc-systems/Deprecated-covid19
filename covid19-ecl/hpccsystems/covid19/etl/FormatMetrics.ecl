@@ -21,7 +21,7 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
         locationsCatalog := TABLE(DEDUP(SORT(projectedMetrics(period=1), location), location), {STRING50 id:= location, STRING50 title:= location}); 
         defaultLocations := TABLE(TOPN(projectedMetrics(period=1),50,-heatindex), {location});
 
-        metricsByLocation := NORMALIZE(projectedMetrics,6,TRANSFORM
+        metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),6,TRANSFORM
                                         (
                                             metrics.groupedLayout,
                                             SELF.measure := CASE (COUNTER, 1 => 'cR', 2 => 'mR', 3 => 'sdIndicator', 4 => 'medIndicator', 5 => 'imort' ,6 => 'heatindex' ,''),

@@ -55,7 +55,7 @@ export default function AllMetrics(props: AllMetricsProps) {
 
         queryPeriod.initData(filters).then(() => {
             setAllMeasuresData(queryPeriod.getData('metrics_period'));
-            setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')));//Also set the default locations
+            setLocationsFilter(toLocationsFilter(queryPeriod.getData('default_locations')));//Also set the default locations
         });
     }, [periodFilter]);
 

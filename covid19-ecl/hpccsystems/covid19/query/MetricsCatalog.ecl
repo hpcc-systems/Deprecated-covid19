@@ -9,3 +9,4 @@ periodsCatalog := CASE (_typeFilter, 'states' => metrics.statesPeriodsCatalog, '
 
 OUTPUT(CHOOSEN(defaultLocations,10),,NAMED('default_locations'));
 OUTPUT(periodsCatalog,,NAMED('catalog_periods'));
+

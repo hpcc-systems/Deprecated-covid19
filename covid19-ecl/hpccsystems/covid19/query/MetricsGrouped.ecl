@@ -10,4 +10,6 @@ _locationsFilter := Std.Str.SplitWords(locationsFilter, ',');
 
 allData := CASE (_typeFilter, 'states' => metrics.statesGrouped, 'countries' => metrics.worldGrouped, 'counties' => metrics.countiesGrouped, metrics.statesGrouped);
 
-OUTPUT(allData(period = _periodFilter and location in _locationsFilter),,NAMED('metrics_grouped'));
+filtered := allData(period = _periodFilter and location in _locationsFilter);
+OUTPUT(filtered,,NAMED('metrics_grouped'));
+
