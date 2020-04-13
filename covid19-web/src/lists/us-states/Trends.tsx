@@ -13,25 +13,24 @@ import LineChart from "../../components/LineChart";
 const {Option} = Select;
 const {TabPane} = Tabs;
 
-interface SummaryProps {
+interface TrendsProps {
     title: string;
     description: string;
 }
 
-interface SummaryState {
+interface TrendsState {
     //ctpData: any;
     jhData: any;
     filterVisible: boolean;
-
 }
 
 
-export default class Summary extends Component <SummaryProps, SummaryState> {
+export default class Trends extends Component <TrendsProps, TrendsState> {
     //private ctpQuery: QueryData;//Covid Project
     private jhQuery: QueryData;//John Hopkins
 
 
-    constructor(props: SummaryProps) {
+    constructor(props: TrendsProps) {
         super(props);
         this.state = {jhData: [], filterVisible: false};
 
@@ -55,6 +54,20 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
         this.setState({jhData: jhData});
 
 
+    }
+
+    quickFilterLocation= (name: string) => {
+        let data = this.jhQuery.getData(name);
+        let filter = '';
+        data.forEach((item: any) => {
+            if (filter==='') {
+                filter += item.state;
+            } else {
+                filter += ',' + item.state;
+            }
+        });
+        this.handleStatesChange(filter).then(r => {
+        });
     }
 
     private renderStatesOptions() {
@@ -95,8 +108,14 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
             <Layout style={{padding: '20px', height: '100%'}}>
                 <PageHeader title={this.props.title} subTitle={this.props.description}
                             extra={[
+                                <Button type="primary" onClick = {() => this.quickFilterLocation('top_confirmed')}>
+                                    Top 10 States (highest cases)
+                                </Button>,
+                                <Button type="primary" onClick={() => this.quickFilterLocation('top_confirmed_increase')}>
+                                    Top 10 States (cases increase)
+                                </Button>,
                                 <Button type="primary" onClick={this.showFilter}>
-                                    Filter
+                                    Custom Filter
                                 </Button>]}
                 />
                 <Drawer
@@ -115,6 +134,7 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
                             style={{width: '100%'}}
                             placeholder="select one state"
                             defaultValue={statesFilterArray}
+                            value={statesFilterArray}
                             onChange={(value: any) => this.handleStatesChange(value)}
                             optionLabelProp="label"
 

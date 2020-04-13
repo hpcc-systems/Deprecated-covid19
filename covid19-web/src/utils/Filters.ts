@@ -8,14 +8,6 @@ export class Filters {
      */
     private constructor() {
         this.filtersMap = new Map<string, string>();
-        //defaults
-        let statesFilter = localStorage.getItem('statesFilter');
-        if (statesFilter && statesFilter.length > 0) {} else {statesFilter='GEORGIA,NEW YORK,CALIFORNIA,LOUISIANA'}
-        this.filtersMap.set('statesFilter', statesFilter);
-
-        let countriesFilter = localStorage.getItem('countriesFilter');
-        if (countriesFilter && countriesFilter.length > 0) {} else {countriesFilter='US,UK,FRANCE,ITALY,INDIA'}
-        this.filtersMap.set('countriesFilter', countriesFilter);
      }
 
     /**

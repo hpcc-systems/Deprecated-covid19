@@ -1,8 +1,8 @@
 import React from "react";
 import ListService, {ListMetadata} from "../services/ListService";
 import {Layout} from "antd";
-import SummaryStates from "../lists/us-states/Summary";
-import SummaryCountries from "../lists/world/Summary";
+import SummaryStates from "../lists/us-states/Trends";
+import SummaryCountries from "../lists/world/Trends";
 import AllMetrics from "../lists/AllMetrics";
 import StatesProgress from "../lists/us-states/StatesProgress";
 import {Home} from "../lists/Home";
@@ -59,11 +59,11 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
         if (this.state && this.state.listMetadata) {
 
             switch (this.state.listMetadata.id) {
-                case 'us_states/summary': return <SummaryStates title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
+                case 'us_states/trends': return <SummaryStates title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'us_states/states_metrics': return <AllMetrics locationAlias={'State'} typeFilter={'states'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'us_counties/counties_metrics': return <AllMetrics locationAlias={'County'} typeFilter={'counties'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'us_states/states_progress': return <StatesProgress/>;
-                case 'world_countries/summary': return <SummaryCountries title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
+                case 'world_countries/trends': return <SummaryCountries title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'world_countries/countries_metrics': return <AllMetrics locationAlias={'Country'} typeFilter={'countries'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'home/summary': return <Home title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 default: return '';

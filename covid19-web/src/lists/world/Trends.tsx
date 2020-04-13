@@ -13,12 +13,12 @@ import LineChart from "../../components/LineChart";
 const {Option} = Select;
 const {TabPane} = Tabs;
 
-interface SummaryProps {
+interface TrendsProps {
    title: string;
    description: string;
 }
 
-interface SummaryState {
+interface TrendsState {
     //ctpData: any;
     jhData: any;
     filterVisible: boolean;
@@ -26,12 +26,12 @@ interface SummaryState {
 }
 
 
-export default class Summary extends Component <SummaryProps, SummaryState> {
+export default class Trends extends Component <TrendsProps, TrendsState> {
     //private ctpQuery: QueryData;//Covid Project
     private jhQuery: QueryData;//John Hopkins
 
 
-    constructor(props: SummaryProps) {
+    constructor(props: TrendsProps) {
         super(props);
         this.state = {jhData: [], filterVisible: false};
 
@@ -40,11 +40,11 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
     }
 
     componentDidMount(): void {
-        this.handleStatesChange(undefined).then(r => {
+        this.handleLocationsChange(undefined).then(r => {
         });
     }
 
-    private async handleStatesChange(value: any) {
+    private async handleLocationsChange(value: any) {
         if (value) {
             Filters.getInstance().set('countriesFilter', value.toString());
         }
@@ -53,8 +53,20 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
         let jhData = this.jhQuery.getData('world');
 
         this.setState({jhData: jhData});
+    }
 
-
+    quickFilterLocation= (name: string) => {
+        let data = this.jhQuery.getData(name);
+        let filter = '';
+        data.forEach((item: any) => {
+            if (filter==='') {
+                filter += item.country;
+            } else {
+                filter += ',' + item.country;
+            }
+        });
+        this.handleLocationsChange(filter).then(r => {
+        });
     }
 
     private renderCountriesOptions() {
@@ -95,6 +107,12 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
             <Layout style={{padding: '20px', height: '100%'}}>
                 <PageHeader title={this.props.title} subTitle={this.props.description}
                  extra={[
+                     <Button type="primary" onClick = {() => this.quickFilterLocation('top_confirmed')}>
+                         Top 10 Countries (highest cases)
+                     </Button>,
+                     <Button type="primary" onClick={() => this.quickFilterLocation('top_confirmed_increase')}>
+                         Top 10 Countries (cases increase)
+                     </Button>,
                      <Button type="primary" onClick={this.showFilter}>
                          Filter
                      </Button>
@@ -116,7 +134,8 @@ export default class Summary extends Component <SummaryProps, SummaryState> {
                             style={{width: '100%'}}
                             placeholder="select countries"
                             defaultValue={countriesFilterArray}
-                            onChange={(value: any) => this.handleStatesChange(value)}
+                            value={countriesFilterArray}
+                            onChange={(value: any) => this.handleLocationsChange(value)}
                             optionLabelProp="label"
 
                         >

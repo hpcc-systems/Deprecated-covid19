@@ -5,9 +5,9 @@ IMPORT hpccsystems.covid19.file.public.USPopulation AS Pop;
 IMPORT hpccsystems.covid19.utils.CatalogUSStates As utils;
 IMPORT Std;
 
-_statesFilter := 'CALIFORNIA,NEW YORK,GEORGIA,LOUISIANA,MICHIGAN':STORED('statesFilter'); 
+statesFilter := '':STORED('statesFilter'); 
 
-statesFilter := Std.Str.SplitWords(_statesFilter, ',');
+_statesFilter := Std.Str.SplitWords(statesFilter, ',');
 
 latestDate := MAX(covid.worldDs, update_date);
 leastDate := Std.Date.AdjustDate(latestDate,0,0,-6);
@@ -48,8 +48,24 @@ increaseByDay := ITERATE(SORT(statesIncreaseByDayTemp, state, date),
  
 
 
-states := increaseByDay(state in statesFilter and date > leastDate);
-popStates := Pop.ds(state in statesFilter);
+
+    
+OUTPUT(TABLE(sumByUSStateDate(date=latestDate), {STRING2 state_code := Utils.toStateCode(state), confirmed}),,NAMED('states_today'));
+
+OUTPUT(TABLE(Utils.states,{STRING50 state := name}),,NAMED('catalog_states'));
+
+top10Confirmed := TOPN(increaseByDay(date=latestDate),10,-confirmed);
+
+OUTPUT(top10Confirmed,,NAMED('top_confirmed'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths),,NAMED('top_deaths'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-confirmed_increase),,NAMED('top_confirmed_increase'));
+OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths_increase),,NAMED('top_deaths_increase'));
+
+OUTPUT (CHOOSEN(TABLE(DEDUP(SORT(covid.usDs,state),state), {STRING50 name := state}),1000),,NAMED('countries_catalog'));
+
+_statesFilterWithDefaults := IF (COUNT(_statesFilter) = 0, SET(top10Confirmed,state), _statesFilter);
+states := increaseByDay(state in _statesFilterWithDefaults and date > leastDate);
+popStates := Pop.ds(state in _statesFilterWithDefaults);
 
 joinStatesPop := JOIN(states, popStates, LEFT.state=RIGHT.state, 
                       TRANSFORM(RECORDOF(states), 
@@ -58,15 +74,3 @@ joinStatesPop := JOIN(states, popStates, LEFT.state=RIGHT.state,
 OUTPUT(SORT(states, state, date),,NAMED('states'));
 
 OUTPUT(TABLE(SORT(popStates, state),{state, pop_2018}),,NAMED('pop_states'));
-    
-OUTPUT(TABLE(sumByUSStateDate(date=latestDate), {STRING2 state_code := Utils.toStateCode(state), confirmed}),,NAMED('states_today'));
-
-OUTPUT(TABLE(Utils.states,{STRING50 state := name}),,NAMED('catalog_states'));
-
-OUTPUT(TOPN(increaseByDay(date=latestDate),10,-confirmed),,NAMED('top_confirmed'));
-OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths),,NAMED('top_deaths'));
-OUTPUT(TOPN(increaseByDay(date=latestDate),10,-confirmed_increase),,NAMED('top_confirmed_increase'));
-OUTPUT(TOPN(increaseByDay(date=latestDate),10,-deaths_increase),,NAMED('top_deaths_increase'));
-
-OUTPUT (CHOOSEN(TABLE(DEDUP(SORT(covid.usDs,state),state), {STRING50 name := state}),1000),,NAMED('countries_catalog'));
-

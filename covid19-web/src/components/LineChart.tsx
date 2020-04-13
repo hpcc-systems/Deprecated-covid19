@@ -56,7 +56,7 @@ export default class LineChart extends PureComponent <LineChartProps> {
                 },
                 legend: {
                     visible: true,
-                    flipPage: false,
+                    flipPage: true,
 
                 },
 
