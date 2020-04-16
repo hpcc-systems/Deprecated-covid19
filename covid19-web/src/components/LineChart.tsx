@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {GroupedColumn, Line} from '@antv/g2plot';
+import {Line} from '@antv/g2plot';
 
 
 export type LineChartProps = {

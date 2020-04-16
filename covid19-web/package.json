@@ -16,6 +16,7 @@
     "jsonpath": "^1.0.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-g2plot": "^0.1.1",
     "react-scripts": "3.4.0",
     "typescript": "~3.7.2"
   },

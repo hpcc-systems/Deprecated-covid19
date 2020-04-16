@@ -13,7 +13,7 @@ export type GroupChartProps = {
 };
 
 
-export default class GroupChart extends PureComponent <GroupChartProps> {
+export default class GroupBarChart extends PureComponent <GroupChartProps> {
 
     private $dom: HTMLElement | null | undefined;
     private plot: any;
@@ -58,9 +58,11 @@ export default class GroupChart extends PureComponent <GroupChartProps> {
                 // },
                 label: {
                     visible: true,
+
                 },
                 legend: {
                     visible: true,
+                    flipPage: false,
                 },
 
                 groupField: this.props.groupField,

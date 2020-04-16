@@ -3,34 +3,41 @@ import React, {useEffect} from "react";
 interface Props {
     readonly chart: any;
     readonly config: object;
-    readonly data: object;
+    readonly data: any;
+    readonly height?: string;
 }
 
 
-export function CommonChart(props: Props) {
+export function Chart(props: Props) {
     const [plot, setPlot] = React.useState<any>(undefined);
     const [container, setContainer] = React.useState<HTMLElement|null>(null);
+    useEffect(() => {
+      // @ts-ignore
+        //console.log('Use effect ' + props.config.title.text + ' plot - ' + plot);
+      if (plot) {
+          plot.updateConfig(props.config);
+          plot.changeData(props.data);
+          plot.render();
+      }
+    })
 
     useEffect(() => {
+        if(container != null) {
+            const chart = new props.chart(container, props.config);
 
-        setPlot(new props.chart(container, props.config));
-        plot.updateData(props.data);
+            chart.render();
+            setPlot(chart);
+        }
 
-    },[]);
+    },[container]);
 
-    useEffect(() => {
 
-        plot.updateConfig(props.config);
-
-    },[props.config])
-
-    useEffect(() => {
-
-        plot.updateData(props.data);
-
-    },[props.data])
 
     return (
-        <div ref={(e) => (setContainer(e))} />
+        <div style={{width:'100%', height:props.height}} ref={(e) => (setContainer(e))} />
     )
+}
+
+Chart.defaultProps = {
+    height: '600px'
 }

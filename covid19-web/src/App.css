@@ -39,10 +39,25 @@
   pointer-events: none;
 }
 
+.site-drawer-render-in-current-wrapper {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #ebedf0;
+  border-radius: 2px;
+  padding: 48px;
+  text-align: center;
+  background: #fafafa;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+th.column-number,
+td.column-number {
+  text-align: right !important;
 }
 
 .App-header {
@@ -56,16 +71,7 @@
   color: white;
 }
 
-.site-drawer-render-in-current-wrapper {
-  height: 200px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid #ebedf0;
-  border-radius: 2px;
-  padding: 48px;
-  text-align: center;
-  background: #fafafa;
-}
+
 
 a {
   color: red;

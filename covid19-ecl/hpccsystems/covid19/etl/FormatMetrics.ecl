@@ -12,7 +12,7 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
                                                        metrics.layout,
                                                        locations := Std.Str.SplitWords(LEFT.location, ',');
                                                        SELF.location := IF(COUNT(locations) > 1,locations[1] + '-' + locations[2], LEFT.location);
-                                                       SELF.parentLocation := IF(COUNT(locations) = 2 ,locations[1], LEFT.location);//The 2 is a workaround to overcome optimization
+                                                       SELF.parentLocation := IF(COUNT(locations) > 1,locations[1], LEFT.location);//The 2 is a workaround to overcome optimization
                                                        SELF := LEFT;
                                                         
                                     ));

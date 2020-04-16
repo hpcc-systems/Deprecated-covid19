@@ -9,6 +9,8 @@ import Catalog from "../../utils/Catalog";
 import {Filters} from "../../utils/Filters";
 import StackedChart from "../../components/StackedChart";
 import LineChart from "../../components/LineChart";
+import {GroupedColumn} from "@antv/g2plot";
+import {Chart} from "../../components/Chart";
 
 const {Option} = Select;
 const {TabPane} = Tabs;
@@ -22,7 +24,7 @@ interface TrendsState {
     //ctpData: any;
     jhData: any;
     filterVisible: boolean;
-
+    locationsFilter: string[];
 }
 
 
@@ -33,7 +35,7 @@ export default class Trends extends Component <TrendsProps, TrendsState> {
 
     constructor(props: TrendsProps) {
         super(props);
-        this.state = {jhData: [], filterVisible: false};
+        this.state = {jhData: [], filterVisible: false, locationsFilter:[]};
 
         //this.ctpQuery = new QueryData('covid19_by_us_states_ctp');
         this.jhQuery = new QueryData('hpccsystems_covid19_query_summary_world');
@@ -47,12 +49,26 @@ export default class Trends extends Component <TrendsProps, TrendsState> {
     private async handleLocationsChange(value: any) {
         if (value) {
             Filters.getInstance().set('countriesFilter', value.toString());
+        } else {
+            //Really need to set the default query filters
+            let filteredData = this.jhQuery.getData('top_confirmed');
+            this.setState({locationsFilter: this.toLocationsFilter(filteredData)});
         }
 
         await this.jhQuery.initData(Filters.getInstance().getMap());
         let jhData = this.jhQuery.getData('world');
 
         this.setState({jhData: jhData});
+    }
+
+    private toLocationsFilter(data: any) {
+        let a: string[] = [];
+        if (data) {
+            data.forEach((item: any) => {
+                a.push(item.country);
+            })
+        }
+        return a;
     }
 
     quickFilterLocation= (name: string) => {
@@ -102,6 +118,20 @@ export default class Trends extends Component <TrendsProps, TrendsState> {
             countriesFilterArray = countriesFilter.split(',');
         }
 
+        const chartCases = {  title: {
+                visible: true,
+                text: 'Cases Confirmed',
+            },
+            label: {
+                visible: true
+            },
+            data:[],
+            xField: 'date',
+            yField: 'confirmed',
+            groupField: 'country',
+
+        }
+
         return (
 
             <Layout style={{padding: '20px', height: '100%'}}>
@@ -133,8 +163,8 @@ export default class Trends extends Component <TrendsProps, TrendsState> {
                             mode="multiple"
                             style={{width: '100%'}}
                             placeholder="select countries"
-                            defaultValue={countriesFilterArray}
-                            value={countriesFilterArray}
+                            // defaultValue={countriesFilterArray}
+                            value={this.state.locationsFilter}
                             onChange={(value: any) => this.handleLocationsChange(value)}
                             optionLabelProp="label"
 
@@ -156,11 +186,12 @@ export default class Trends extends Component <TrendsProps, TrendsState> {
                     <Tabs defaultActiveKey="1">
                         <TabPane tab="Cases" key="1">
 
-                                <StackedChart title={'Cases'}
-                                              groupField={'country'}
-                                              yField={'confirmed'}
-                                              xField={'date'}
-                                              data={this.state.jhData}/>
+                                {/*<StackedChart title={'Cases'}*/}
+                                {/*              groupField={'country'}*/}
+                                {/*              yField={'confirmed'}*/}
+                                {/*              xField={'date'}*/}
+                                {/*              data={this.state.jhData}/>*/}
+                                <Chart chart={GroupedColumn} config={chartCases} data={this.state.jhData}/>
                                 <div style={{height:'10px'}}/>
                                 <LineChart title={'Cases Increase'}
                                               groupField={'country'}
