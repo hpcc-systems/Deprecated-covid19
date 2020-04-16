@@ -268,7 +268,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
             </Space>
 
             <Drawer
-                title="Basic Drawer"
+                title="Filter Locations by selecting rows from the table. The charts will update immediately on selection."
                 placement="right"
                 onClose={() => setDrawerVisible(false)}
                 visible={drawerVisible}
