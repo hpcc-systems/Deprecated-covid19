@@ -206,10 +206,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
         <Layout style={{padding: '20px', height: '100%'}} >
 
             <PageHeader title={props.title} subTitle={props.description}
-                        extra={[
-                            <Button type="primary" onClick={() => setDrawerVisible(true)}>
-                                Filter
-                            </Button>]}
+
             />
 
             <Row gutter={16}>
@@ -263,23 +260,30 @@ export default function LocationTrends(props: LocationTrendsProps) {
                         <div style={{height:'10px'}}/>
                         <Chart chart={Line} config={chartDeathsIncrease} data={trends}/>
                     </TabPane>
+                    <TabPane tab="Data & Filters   " key="3">
+                        <Space direction={'vertical'}>
+                            <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />
+
+                            <Table  rowKey={'location'} scroll={{y: 500}}  pagination={false} columns={filterTable} dataSource={latest} rowSelection={rowSelection}/>
+                        </Space>
+                    </TabPane>
 
                 </Tabs>
             </Space>
 
-            <Drawer
-                title="Filter Locations by selecting rows from the table. The charts will update immediately on selection."
-                placement="right"
-                onClose={() => setDrawerVisible(false)}
-                visible={drawerVisible}
-                width={1000}
-            >
-                <Space direction={'vertical'}>
-                <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />
+            {/*<Drawer*/}
+            {/*    title="Filter Locations by selecting rows from the table. The charts will update immediately on selection."*/}
+            {/*    placement="right"*/}
+            {/*    onClose={() => setDrawerVisible(false)}*/}
+            {/*    visible={drawerVisible}*/}
+            {/*    width={1000}*/}
+            {/*>*/}
+            {/*    <Space direction={'vertical'}>*/}
+            {/*    <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />*/}
 
-                <Table  rowKey={'location'} scroll={{y: 500}}  pagination={false} columns={filterTable} dataSource={latest} rowSelection={rowSelection}/>
-                </Space>
-            </Drawer>
+            {/*    <Table  rowKey={'location'} scroll={{y: 500}}  pagination={false} columns={filterTable} dataSource={latest} rowSelection={rowSelection}/>*/}
+            {/*    </Space>*/}
+            {/*</Drawer>*/}
         </Layout>
     );
 }

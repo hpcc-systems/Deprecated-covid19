@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 
-import {Button, Descriptions, Layout, PageHeader, Popover, Table} from "antd";
+import {Button, Descriptions, Layout, PageHeader, Popover, Table, Tabs} from "antd";
 
 
 import {Space} from "antd/es";
@@ -8,6 +8,7 @@ import {QueryData} from "../components/QueryData";
 import GroupBarChart from "../components/GroupBarChart";
 import {FilterRenderer} from "../components/FilterRenderer";
 
+const {TabPane} = Tabs;
 
 interface AllMetricsProps {
     title: string;
@@ -101,29 +102,36 @@ export default function AllMetrics(props: AllMetricsProps) {
         {
             title: props.locationAlias,
             dataIndex: 'location',
-            minWidth: '50px'
+            minWidth: '50px',
+            // @ts-ignore
+            sorter: (a, b) => a.location.localeCompare(b.location)
         },
         {
             title: 'Heat Index',
             dataIndex: 'heatindex',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.heatindex - b.heatindex
+
         },
         {
             title: 'Weeks To Peak',
             dataIndex: 'weekstopeak',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.weekstopeak - b.weekstopeak
         },
         {
             title: 'Cases',
             dataIndex: 'cases',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.cases - b.cases
         },
         {
             title: 'Deaths',
             dataIndex: 'deaths',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.deaths - b.deaths
 
@@ -132,6 +140,7 @@ export default function AllMetrics(props: AllMetricsProps) {
         {
             title: 'New Cases',
             dataIndex: 'newcases',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.newcases - b.newcases
 
@@ -139,24 +148,28 @@ export default function AllMetrics(props: AllMetricsProps) {
         {
             title: 'New Deaths',
             dataIndex: 'newdeaths',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.newdeaths - b.newdeaths
         },
         {
             title: 'Recovered',
             dataIndex: 'recovered',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.recovered - b.recovered
         },
         {
             title: 'cR',
             dataIndex: 'cr',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.cr - b.cr
         },
         {
             title: 'mR',
             dataIndex: 'mr',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.mr - b.mr
 
@@ -164,18 +177,21 @@ export default function AllMetrics(props: AllMetricsProps) {
         {
             title: 'sdIndicator',
             dataIndex: 'sdindicator',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.sdindicator - b.sdindicator
         },
         {
             title: 'medIndicator',
             dataIndex: 'medindicator',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.dmr - b.dmr
         },
         {
             title: 'iMort',
             dataIndex: 'imort',
+            className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.imort - b.imort
 
@@ -192,58 +208,58 @@ export default function AllMetrics(props: AllMetricsProps) {
 
     const renderChart = () => {
 
-            return <GroupBarChart title={''}
-                                  groupField={'measure'}
-                                  yField={'location'}
-                                  xField={'value'}
-                                  height={'2000px'}
-                                  data={locationsMeasuresData}/>
+        return <GroupBarChart title={''}
+                              groupField={'measure'}
+                              yField={'location'}
+                              xField={'value'}
+                              height={'2000px'}
+                              data={locationsMeasuresData}/>
 
     }
 
     const definitions = (
-        <div style={{width:500}}>
-        <Descriptions  column={1}>
-            <Descriptions.Item label="cR">
-                Compound growth factor for Confirmed Cases. This is an indicator of the degree of spread and
-                should decrease with social distancing. In the absence of immunity and social mitigation's,
-                this would be equal to R0 (the natural spread rate of a virus).
-            </Descriptions.Item>
-            <Descriptions.Item label="mR">
-                Compound growth rate for Deaths. Though this lags the cR, it may be a better proxy for
-                actual number of cases because it is not confounded by test availability and policy.
-            </Descriptions.Item>
-            <Descriptions.Item label="sdIndicator">
-                Shows progress in social distancing behavior from period to period. Positive values indicate
-                progress in slowing the spread. Negative values indicate that the rate of spread is
-                increasing.
+        <div style={{width: 500}}>
+            <Descriptions column={1}>
+                <Descriptions.Item label="cR">
+                    Compound growth factor for Confirmed Cases. This is an indicator of the degree of spread and
+                    should decrease with social distancing. In the absence of immunity and social mitigation's,
+                    this would be equal to R0 (the natural spread rate of a virus).
+                </Descriptions.Item>
+                <Descriptions.Item label="mR">
+                    Compound growth rate for Deaths. Though this lags the cR, it may be a better proxy for
+                    actual number of cases because it is not confounded by test availability and policy.
+                </Descriptions.Item>
+                <Descriptions.Item label="sdIndicator">
+                    Shows progress in social distancing behavior from period to period. Positive values indicate
+                    progress in slowing the spread. Negative values indicate that the rate of spread is
+                    increasing.
 
-            </Descriptions.Item>
-            <Descriptions.Item label="medIndicator">
-                Shows progress in medical performance from period to period. Positive values indicate
-                improvement. Negative values may indicate overload conditions. A negative value early on in
-                a
-                given location’s progress may indicate a lack of testing or diagnosis. A return to negative
-                later in the cycle can indicate an erosion in the quality of medical care.
-            </Descriptions.Item>
+                </Descriptions.Item>
+                <Descriptions.Item label="medIndicator">
+                    Shows progress in medical performance from period to period. Positive values indicate
+                    improvement. Negative values may indicate overload conditions. A negative value early on in
+                    a
+                    given location’s progress may indicate a lack of testing or diagnosis. A return to negative
+                    later in the cycle can indicate an erosion in the quality of medical care.
+                </Descriptions.Item>
 
-            <Descriptions.Item label="iMort">
-                This is an approximation of Infection Mortality which is the likelihood that someone who
-                tests positive for the infection will die as a result of the infection. This number may be
-                exaggerated during the very early stages of the infection in a location due to lack of
-                diagnosis and testing.
-            </Descriptions.Item>
-            <Descriptions.Item label="HeatIndex">
-                This is a composite indicator designed to reflect a broad aspect of a location’s progress.
-                Higher values indicate locations with higher risk. This indicator combines Case Growth (cR),
-                Mortality Growth (mR), Social Distancing (sdIndicator) and Medical Indicator (medIndicator).
-                This indicator is designed to flag locations that are in need of attention, due to high
-                rates of
-                spread or that have begun to regress (e.g. as a result of loosened social distancing or
-                medical
-                overload).
-            </Descriptions.Item>
-        </Descriptions>
+                <Descriptions.Item label="iMort">
+                    This is an approximation of Infection Mortality which is the likelihood that someone who
+                    tests positive for the infection will die as a result of the infection. This number may be
+                    exaggerated during the very early stages of the infection in a location due to lack of
+                    diagnosis and testing.
+                </Descriptions.Item>
+                <Descriptions.Item label="HeatIndex">
+                    This is a composite indicator designed to reflect a broad aspect of a location’s progress.
+                    Higher values indicate locations with higher risk. This indicator combines Case Growth (cR),
+                    Mortality Growth (mR), Social Distancing (sdIndicator) and Medical Indicator (medIndicator).
+                    This indicator is designed to flag locations that are in need of attention, due to high
+                    rates of
+                    spread or that have begun to regress (e.g. as a result of loosened social distancing or
+                    medical
+                    overload).
+                </Descriptions.Item>
+            </Descriptions>
         </div>
     );
 
@@ -257,46 +273,60 @@ export default function AllMetrics(props: AllMetricsProps) {
             </PageHeader>
 
 
-            <Space direction={'vertical'}>
-
-                <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter} mode={undefined}
-                                onFilterChange={(value) => setPeriodFilter(value)}/>
-
-                {/*<FilterRenderer title={'Select Locations'} data={locationsCatalog} value={locationsFilter}*/}
-                {/*                mode={"multiple"} onFilterChange={(value) => updateLocationsFilter(value)}/>*/}
-
-                {/*scroll={{y: 500}}*/}
-                {/*pagination={{total:20}}*/}
-                <Table rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} loading={{spinning:dataLoadingStatus}}
-                       rowSelection={{
-                    type: "checkbox" as "checkbox",
-                    ...rowSelection
-                }}/>
+            <Tabs defaultActiveKey="1">
 
                 {/*<div style={{height:20}}/>*/}
-
-                <Space direction={'horizontal'}>
-                    <div>Quick Select, Render chart by:</div>
-                    <Button type="primary"
-                            onClick={() => setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')))}>
-                        Top 10 Locations by Heat Index
-                    </Button>
-                </Space>
-
-                <div style={{height:20}}/>
-
-                <Popover placement="rightTop"  title={'Metrics Definitions'} content={definitions} trigger="click" style={{width:300}}>
-                    <Button>Metrics Definitions</Button>
-                </Popover>
-
-                <div style={{height:20}}/>
-
-                {renderChart()}
+                <TabPane tab="Analysis" key="1">
 
 
+                    <div style={{height: 20}}/>
+
+                    <Popover placement="rightTop" title={'Metrics Definitions'} content={definitions} trigger="click"
+                             style={{width: 300}}>
+                        <Button>Metrics Definitions</Button>
+                    </Popover>
+
+                    <div style={{height: 20}}/>
+                    <div style={{height: '1000px', overflowY: 'scroll'}}>
+                        <GroupBarChart title={''}
+                                       groupField={'measure'}
+                                       yField={'location'}
+                                       xField={'value'}
+                                       height={'2000px'}
+                                       data={locationsMeasuresData}/>
+                    </div>
+                </TabPane>
 
 
-            </Space>
+                <TabPane tab="Data & Filter" key="2">
+                    <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}
+                                    mode={undefined}
+                                    onFilterChange={(value) => setPeriodFilter(value)}/>
+                    <div style={{height: 20}}/>
+
+                    {/*<FilterRenderer title={'Select Locations'} data={locationsCatalog} value={locationsFilter}*/}
+                    {/*                mode={"multiple"} onFilterChange={(value) => updateLocationsFilter(value)}/>*/}
+
+                    {/*scroll={{y: 500}}*/}
+                    {/*pagination={{total:20}}*/}
+                    <Space direction={'horizontal'}>
+                        <div>Quick Select, Render chart by:</div>
+                        <Button type="primary"
+                                onClick={() => setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')))}>
+                            Top 10 Locations by Heat Index
+                        </Button>
+                    </Space>
+                    <div style={{height: 20}}/>
+                    <Table rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} scroll={{y: 1000}}
+                           pagination={false} loading={{spinning: dataLoadingStatus}}
+                           rowSelection={{
+                               type: "checkbox" as "checkbox",
+                               ...rowSelection
+                           }}/>
+                </TabPane>
+            </Tabs>
+
+
         </Layout>
     )
 
