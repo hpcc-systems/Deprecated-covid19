@@ -47,8 +47,10 @@ jobs:
     displayName: web
     pool:
       vmImage: 'Ubuntu-18.04'
+    dependsOn: Build  
     environment:
       name: covid19-node-vm001
+      tags: covid19-node-vm001
       resourceType: VirtualMachine
     strategy:
         runOnce:
@@ -72,4 +74,6 @@ jobs:
             - task: CmdLine@2
               inputs:
                 script: 'pm2 start Covid19-Web' 
+
+
 
