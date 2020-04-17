@@ -24,26 +24,17 @@ jobs:
       - script: |
           cd covid19-web
           npm install
-          npm run build
           cd ..
-        displayName: 'npm install and build'
+        displayName: 'npm install'      
 
-      - task: ArchiveFiles@2
+      - task: PublishPipelineArtifact@1
         inputs:
-          rootFolderOrFile: '$(webSrc)'
-          includeRootFolder: false
-          archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-          replaceExistingArchive: true
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'drop'
-          publishLocation: 'Container'
+          targetPath: '/home/hpcclabs/covid19/covid19-web'
+          artifact: 'covid19-web'
+          publishLocation: 'pipeline'
 
   - deployment: VMDeploy
-    displayName: web
+    displayName: Deploy
     pool:
       vmImage: 'Ubuntu-18.04'
     dependsOn: 'Build'  
@@ -57,18 +48,7 @@ jobs:
           steps:
           - task: CmdLine@2
             inputs:
-              script: 'pm2 stop Covid19-Web'
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              buildType: 'current'
-              artifactName: 'drop'
-              targetPath: '/home/hpcclabs/covid19/covid19-web'
-          
-          - task: ExtractFiles@1
-            inputs:
-              archiveFilePatterns: 'drop.zip'
-              destinationFolder: '/home/hpcclabs/covid19/covid19-web'
-              cleanDestinationFolder: true
+              script: 'pm2 stop Covid19-Web'                            
           - task: CmdLine@2
             inputs:
               script: 'pm2 start Covid19-Web'
