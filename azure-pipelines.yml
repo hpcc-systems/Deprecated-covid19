@@ -20,10 +20,10 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    pushd ${webSrc}
+    cd covid19-web
     npm install
     npm run build
-    popd
+    cd ..
   displayName: 'npm install and build'
 
 - task: ArchiveFiles@2
