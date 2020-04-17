@@ -16,16 +16,9 @@ pool:
 jobs:
   - job: Build
     steps:
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '12.x'
-        displayName: 'Install Node.js'
-
       - script: |
           cd covid19-web
-          npm install
-          cd ..
-        displayName: 'npm install'      
+        displayName: 'cd..'           
 
       - task: PublishPipelineArtifact@1
         inputs:
@@ -48,7 +41,14 @@ jobs:
           steps:
           - task: CmdLine@2
             inputs:
-              script: 'pm2 stop Covid19-Web'                            
+              script: 'pm2 stop Covid19-Web'        
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(Pipeline.Workspace)/covid19-web'
+              Contents: '**'
+              TargetFolder: '/home/hpcclabs/covid19'
+              CleanTargetFolder: true
+              OverWrite: true
           - task: CmdLine@2
             inputs:
               script: 'pm2 start Covid19-Web'
