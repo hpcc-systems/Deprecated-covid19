@@ -50,7 +50,7 @@ jobs:
     dependsOn: Build  
     environment:
       name: covid19-node-vm001
-      tags: covid19-node-vm001
+      tags: covid19-node-vm-001
       resourceType: VirtualMachine
     strategy:
         runOnce:
