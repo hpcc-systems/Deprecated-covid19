@@ -58,12 +58,12 @@ jobs:
           - task: CmdLine@2
             inputs:
               script: 'pm2 stop Covid19-Web'
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: 'drop'
-              downloadPath: '/home/hpcclabs/covid19/covid19-web'
+              targetPath: '/home/hpcclabs/covid19/covid19-web'
+          
           - task: ExtractFiles@1
             inputs:
               archiveFilePatterns: 'drop.zip'
