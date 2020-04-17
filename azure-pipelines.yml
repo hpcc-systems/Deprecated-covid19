@@ -46,6 +46,7 @@ jobs:
     displayName: web
     pool:
       vmImage: 'Ubuntu-18.04'
+    dependsOn: 'Build'  
     environment:
       name: covid19-node-vm001
       resourceType: VirtualMachine
