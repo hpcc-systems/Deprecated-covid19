@@ -13,65 +13,63 @@ variables:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '12.x'
-  displayName: 'Install Node.js'
-
-- script: |
-    cd covid19-web
-    npm install
-    npm run build
-    cd ..
-  displayName: 'npm install and build'
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(webSrc)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    replaceExistingArchive: true
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-
 jobs:
-- deployment: VMDeploy
-  displayName: web
-  pool:
-    vmImage: 'Ubuntu-18.04'
-  environment:
-    name: covid19-node-vm001
-    resourceType: VirtualMachine
-  strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: CmdLine@2
-            inputs:
-              script: 'pm2 stop Covid19-Web'
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(Build.ArtifactStagingDirectory)/drop'
-              Contents: '**'
-              TargetFolder: '/home/hpcclabs/covid19/covid19-web'
-              CleanTargetFolder: true
-              OverWrite: true
-          - task: ExtractFiles@1
-            inputs:
-              archiveFilePatterns: '*.zip'
-              destinationFolder: '/home/hpcclabs/covid19/covid19-web'
-              cleanDestinationFolder: true
-          - task: CmdLine@2
-            inputs:
-              script: 'pm2 start Covid19-Web'    
+  - job: Build
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '12.x'
+        displayName: 'Install Node.js'
+
+      - script: |
+          cd covid19-web
+          npm install
+          npm run build
+          cd ..
+        displayName: 'npm install and build'
+
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(webSrc)'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          replaceExistingArchive: true
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
 
 
+  - deployment: VMDeploy
+    displayName: web
+    pool:
+      vmImage: 'Ubuntu-18.04'
+    environment:
+      name: covid19-node-vm001
+      resourceType: VirtualMachine
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: CmdLine@2
+              inputs:
+                script: 'pm2 stop Covid19-Web'
+            - task: CopyFiles@2
+              inputs:
+                SourceFolder: '$(Build.ArtifactStagingDirectory)/drop'
+                Contents: '**'
+                TargetFolder: '/home/hpcclabs/covid19/covid19-web'
+                CleanTargetFolder: true
+                OverWrite: true
+            - task: ExtractFiles@1
+              inputs:
+                archiveFilePatterns: '*.zip'
+                destinationFolder: '/home/hpcclabs/covid19/covid19-web'
+                cleanDestinationFolder: true
+            - task: CmdLine@2
+              inputs:
+                script: 'pm2 start Covid19-Web' 
 
-          
-          
