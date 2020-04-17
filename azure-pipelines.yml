@@ -46,7 +46,7 @@ jobs:
             inputs:
               SourceFolder: '$(Pipeline.Workspace)/covid19-web'
               Contents: '**'
-              TargetFolder: '/home/hpcclabs/covid19'
+              TargetFolder: '/home/hpcclabs/covid19/covid19'
               OverWrite: true
           - task: CmdLine@2
             inputs:
