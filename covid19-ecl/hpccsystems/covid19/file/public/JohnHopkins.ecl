@@ -2,8 +2,8 @@ IMPORT Std;
 
 EXPORT JohnHopkins := MODULE 
     
-    EXPORT worldFilePath := '~hpccsystems::covid19::file::public::johnhopkins_world.flat';  
-    EXPORT usFilePath := '~hpccsystems::covid19::file::public::johnhopkins_US.flat';
+    EXPORT worldFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';  
+    EXPORT usFilePath := '~hpccsystems::covid19::file::public::johnhopkins::US.flat';
 
     EXPORT layout := RECORD
         STRING50 fips;

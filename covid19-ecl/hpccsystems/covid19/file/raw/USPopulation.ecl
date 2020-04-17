@@ -1,6 +1,6 @@
 EXPORT USPopulation := MODULE
 
-  EXPORT filePath := '~hpccsystems::covid19::file::raw::us_population.csv';  
+  EXPORT filePath := '~hpccsystems::covid19::file::raw::us_population::population.csv';  
 
   EXPORT layout := RECORD
       STRING state;

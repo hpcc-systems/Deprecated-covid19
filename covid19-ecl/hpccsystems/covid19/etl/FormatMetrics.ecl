@@ -2,7 +2,7 @@ IMPORT hpccsystems.covid19.file.public.Metrics as metrics;
 IMPORT Std;
 
 
-metricsScope := '~hpccsystems::covid19::file::public::';
+metricsScope := '~hpccsystems::covid19::file::public::metrics::';
 
 
 formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFileScope, STRING destinationPrefix) := FUNCTION
@@ -46,6 +46,6 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
                    
 END;
 
-formatAllMetrics(metrics.states, metricsScope, 'metrics_states');
-formatAllMetrics(metrics.counties, metricsScope, 'metrics_counties');
-formatAllMetrics(metrics.world, metricsScope, 'metrics_world');
+formatAllMetrics(metrics.states, metricsScope, 'states');
+formatAllMetrics(metrics.counties, metricsScope, 'counties');
+formatAllMetrics(metrics.world, metricsScope, 'world');
