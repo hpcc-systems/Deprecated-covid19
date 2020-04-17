@@ -32,7 +32,7 @@ jobs:
       vmImage: 'Ubuntu-18.04'
     dependsOn: 'Build'  
     environment:
-      name: covid19-node-vm001
+      name: covid19-node-vm-001
       resourceType: VirtualMachine
       tags: covid19-node-vm-001
     strategy:
