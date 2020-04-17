@@ -42,5 +42,36 @@ jobs:
           ArtifactName: 'drop'
           publishLocation: 'Container'
 
+  - deployment: VMDeploy
+    displayName: web
+    pool:
+      vmImage: 'Ubuntu-18.04'
+    environment:
+      name: covid19-node-vm001
+      resourceType: VirtualMachine
+      tags: covid19-node-vm-001
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: CmdLine@2
+            inputs:
+              script: 'pm2 stop Covid19-Web'
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(Build.ArtifactStagingDirectory)/drop'
+              Contents: '**'
+              TargetFolder: '/home/hpcclabs/covid19/covid19-web'
+              CleanTargetFolder: true
+              OverWrite: true
+          - task: ExtractFiles@1
+            inputs:
+              archiveFilePatterns: '*.zip'
+              destinationFolder: '/home/hpcclabs/covid19/covid19-web'
+              cleanDestinationFolder: true
+          - task: CmdLine@2
+            inputs:
+              script: 'pm2 start Covid19-Web'
+
 
 
