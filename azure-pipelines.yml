@@ -16,14 +16,14 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '12.x'
   displayName: 'Install Node.js'
 
 - script: |
-    popd ${webSrc}
+    pushd ${webSrc}
     npm install
     npm run build
-    pop
+    popd
   displayName: 'npm install and build'
 
 - task: ArchiveFiles@2
