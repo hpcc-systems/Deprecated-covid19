@@ -2,6 +2,7 @@ import React, {PureComponent} from "react";
 import {GroupedBar, GroupedColumn, StackedBar} from '@antv/g2plot';
 
 
+
 export type GroupChartProps = {
     readonly title: string;
     readonly data: any;
@@ -44,25 +45,26 @@ export default class GroupBarChart extends PureComponent <GroupChartProps> {
                     visible: true,
                     text: this.props.title,
                 },
-                forceFit: true,
                 data,
                 xField: this.props.xField,
                 yField: this.props.yField,
                 xAxis: {
-                    minLimit: -1
+                    minLimit: -10
                 },
-                // yAxis: {
-                //     min: this.props.yAxisMin,
-                //
-                //
-                // },
+                yAxis: {
+
+                    label: {
+                        visible: true,
+                        autoRotate: false,
+                        autoHide: true
+                    }
+                },
                 label: {
                     visible: true,
-
                 },
                 legend: {
                     visible: true,
-                    flipPage: false,
+                    flipPage: true,
                 },
 
                 groupField: this.props.groupField,

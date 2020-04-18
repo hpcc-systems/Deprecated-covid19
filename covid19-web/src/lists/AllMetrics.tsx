@@ -8,6 +8,7 @@ import {QueryData} from "../components/QueryData";
 import GroupBarChart from "../components/GroupBarChart";
 import {FilterRenderer} from "../components/FilterRenderer";
 
+
 const {TabPane} = Tabs;
 
 interface AllMetricsProps {
@@ -265,7 +266,7 @@ export default function AllMetrics(props: AllMetricsProps) {
 
     return (
 
-        <Layout style={{padding: '20px', height: '100%'}}>
+        <Layout style={{padding: '20px'}}>
 
             <PageHeader title={props.title} subTitle={props.description}
             >
@@ -287,14 +288,14 @@ export default function AllMetrics(props: AllMetricsProps) {
                     </Popover>
 
                     <div style={{height: 20}}/>
-                    <div style={{height: '1000px', overflowY: 'scroll'}}>
+                    {/*<div style={{height: '800px', overflowY: 'scroll'}}>*/}
                         <GroupBarChart title={''}
                                        groupField={'measure'}
                                        yField={'location'}
                                        xField={'value'}
-                                       height={'2000px'}
+                                       height={(200 * locationsFilter.length) + 'px' }
                                        data={locationsMeasuresData}/>
-                    </div>
+                    {/*</div>*/}
                 </TabPane>
 
 
@@ -317,12 +318,13 @@ export default function AllMetrics(props: AllMetricsProps) {
                         </Button>
                     </Space>
                     <div style={{height: 20}}/>
-                    <Table rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} scroll={{y: 1000}}
-                           pagination={false} loading={{spinning: dataLoadingStatus}}
+                    <Table size={'small'} rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} 
+                           pagination={{pageSize:100}} loading={{spinning: dataLoadingStatus}}
                            rowSelection={{
                                type: "checkbox" as "checkbox",
                                ...rowSelection
                            }}/>
+
                 </TabPane>
             </Tabs>
 
