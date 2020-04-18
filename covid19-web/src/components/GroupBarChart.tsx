@@ -68,6 +68,7 @@ export default class GroupBarChart extends PureComponent <GroupChartProps> {
                 },
 
                 groupField: this.props.groupField,
+                barSize: 10
             });
             this.plot.render();
 

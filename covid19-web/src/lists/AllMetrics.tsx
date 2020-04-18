@@ -7,6 +7,7 @@ import {Space} from "antd/es";
 import {QueryData} from "../components/QueryData";
 import GroupBarChart from "../components/GroupBarChart";
 import {FilterRenderer} from "../components/FilterRenderer";
+import {ChartX} from "../components/ChartX";
 
 
 const {TabPane} = Tabs;
@@ -289,12 +290,13 @@ export default function AllMetrics(props: AllMetricsProps) {
 
                     <div style={{height: 20}}/>
                     {/*<div style={{height: '800px', overflowY: 'scroll'}}>*/}
-                        <GroupBarChart title={''}
-                                       groupField={'measure'}
-                                       yField={'location'}
-                                       xField={'value'}
-                                       height={(200 * locationsFilter.length) + 'px' }
-                                       data={locationsMeasuresData}/>
+                    {/*    <GroupBarChart title={''}*/}
+                    {/*                   groupField={'measure'}*/}
+                    {/*                   yField={'location'}*/}
+                    {/*                   xField={'value'}*/}
+                    {/*                   height={(200 * locationsFilter.length) + 'px' }*/}
+                    {/*                   data={locationsMeasuresData}/>*/}
+                        <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'location'} valueFiled={'value'} height={200 * 20}/>
                     {/*</div>*/}
                 </TabPane>
 

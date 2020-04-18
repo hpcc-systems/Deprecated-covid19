@@ -157,6 +157,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
         xField: 'date',
         yField: 'confirmed',
         groupField: 'location',
+        barSize: 10
     }
     const chartDeaths = {
         padding: 'auto',
@@ -171,6 +172,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
         xField: 'date',
         yField: 'deaths',
         groupField: 'location',
+        barSize: 10
     }
 
     const chartCasesIncrease = {
