@@ -38,7 +38,7 @@ jobs:
             inputs:
               SourceFolder: '/home/hpcclabs/azagent/_work/1/covid19/s/covid19-web'
               Contents: '**'
-              TargetFolder: '/home/hpcclabs/covid19/covid19'
+              TargetFolder: '/home/hpcclabs/covid19/covid19/covid19-web'
               OverWrite: true
           - task: CmdLine@2
             inputs:
