@@ -36,9 +36,9 @@ jobs:
               script: 'pm2 stop Covid19-Web'        
           - task: CopyFiles@2
             inputs:
-              SourceFolder: '$(Pipeline.Workspace)'
-              Contents: '\covid19-web\s\*.*'
-              TargetFolder: '/home/hpcclabs/covid19/covid19'
+              SourceFolder: '$(Pipeline.Workspace)/s'
+              Contents: 
+              TargetFolder: '/home/hpcclabs/covid19/covid19/'
               OverWrite: true
           - task: CmdLine@2
             inputs:
