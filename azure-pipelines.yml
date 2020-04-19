@@ -6,31 +6,23 @@
 trigger:
 - master
 
-variables:
- webSrc: 'covid19-web'
- webSrcBuild: ${webSrc}/build
-
 pool:
   vmImage: 'ubuntu-latest'
 
 jobs:
-  - job: Build
+  - job: Publish
     steps:
-      - script: |
-          cd covid19-web
-        displayName: 'cd..'           
-
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(Pipeline.Workspace)/covid19-web'
-          artifact: 'covid19-web'
-          publishLocation: 'pipeline'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifact: 'covid19'
+        publishLocation: 'pipeline'
 
   - deployment: VMDeploy
     displayName: Deploy
     pool:
       vmImage: 'Ubuntu-18.04'
-    dependsOn: 'Build'  
+    dependsOn: 'Publish'  
     environment:
       name: covid19-node-vm-001
       resourceType: VirtualMachine
@@ -44,13 +36,12 @@ jobs:
               script: 'pm2 stop Covid19-Web'        
           - task: CopyFiles@2
             inputs:
-              SourceFolder: '$(Pipeline.Workspace)/covid19-web'
+              SourceFolder: '/home/hpcclabs/azagent/_work/1/covid19/s/covid19-web'
               Contents: '**'
               TargetFolder: '/home/hpcclabs/covid19/covid19/covid19-web'
               OverWrite: true
           - task: CmdLine@2
             inputs:
               script: 'pm2 start Covid19-Web'
-
 
 
