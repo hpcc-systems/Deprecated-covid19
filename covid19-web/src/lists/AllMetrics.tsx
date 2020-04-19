@@ -109,7 +109,7 @@ export default function AllMetrics(props: AllMetricsProps) {
             sorter: (a, b) => a.location.localeCompare(b.location)
         },
         {
-            title: 'Status-Test',
+            title: 'Status',
             dataIndex: 'istate',
             minWidth: '30px',
             // @ts-ignore
