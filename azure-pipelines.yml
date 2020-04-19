@@ -37,7 +37,7 @@ jobs:
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(Pipeline.Workspace)/s'
-              Contents: 
+              Contents: '**'
               TargetFolder: '/home/hpcclabs/covid19/covid19/'
               OverWrite: true
           - task: CmdLine@2
