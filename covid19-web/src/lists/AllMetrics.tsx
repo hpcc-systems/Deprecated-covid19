@@ -8,6 +8,7 @@ import {QueryData} from "../components/QueryData";
 import GroupBarChart from "../components/GroupBarChart";
 import {FilterRenderer} from "../components/FilterRenderer";
 import {ChartX} from "../components/ChartX";
+import Search from "antd/es/input/Search";
 
 
 const {TabPane} = Tabs;
@@ -29,7 +30,10 @@ export default function AllMetrics(props: AllMetricsProps) {
     const [periodFilter, setPeriodFilter] = React.useState<string>('1');
     const [periodsCatalog, setPeriodsCatalog] = React.useState<any>([]);
     const [dataLoadingStatus, setDataLoadingStatus] = React.useState<boolean>(false);
-
+    const [tableFilterValue, setTableFilterValue]=  React.useState<string>('');
+    const [hasFilterChanged, setHasFilterChanged] = React.useState<boolean>(false);
+    const [refreshFilter, setRefreshFilter] = React.useState<boolean>(false);
+    const [filterLength, setFilterLength] = React.useState<number>(2);
 
     function toLocationsFilter(data: any) {
         let a: string[] = [];
@@ -48,34 +52,37 @@ export default function AllMetrics(props: AllMetricsProps) {
 
         queryCatalog.initData(filters).then(() => {
             setPeriodsCatalog(queryCatalog.getData('catalog_periods'));
+
         });
+
+            queryPeriod.initData(filters).then(() => {
+                setAllMeasuresData(queryPeriod.getData('metrics_period'));
+                setLocationsFilter(toLocationsFilter(queryPeriod.getData('default_locations')));//Also set the default locations
+                setHasFilterChanged(true);
+                setRefreshFilter(true);
+            });
     }, []);
 
-    useEffect(() => {
-        let filters: Map<string, string> = new Map();
-        filters.set('periodFilter', periodFilter);
-        filters.set('typeFilter', props.typeFilter);
 
-        queryPeriod.initData(filters).then(() => {
-            setAllMeasuresData(queryPeriod.getData('metrics_period'));
-            setLocationsFilter(toLocationsFilter(queryPeriod.getData('default_locations')));//Also set the default locations
-        });
-    }, [periodFilter]);
 
 
     useEffect(() => {
-        let filters: Map<string, string> = new Map();
-        filters.set('periodFilter', periodFilter);
-        filters.set('locationsFilter', stringArrayToString(locationsFilter));
-        filters.set('typeFilter', props.typeFilter);
-        setDataLoadingStatus(true);
-        queryGrouped.initData(filters).then(() => {
+        if (refreshFilter) {
+            let filters: Map<string, string> = new Map();
+            filters.set('periodFilter', periodFilter);
+            filters.set('locationsFilter', stringArrayToString(locationsFilter));
+            filters.set('typeFilter', props.typeFilter);
+            setDataLoadingStatus(true);
+            setFilterLength(Math.max(2, locationsFilter.length));
+            queryGrouped.initData(filters).then(() => {
 
-            setLocationsMeasuresData(queryGrouped.getData('metrics_grouped'));
-            setDataLoadingStatus(false);
-        });
+                setLocationsMeasuresData(queryGrouped.getData('metrics_grouped'));
+                setDataLoadingStatus(false);
+                setRefreshFilter(false);
+            });
+        }
 
-    }, [locationsFilter])
+    }, [refreshFilter])
 
     const updateLocationsFilter = (value: any) => {
         if (value) {
@@ -83,9 +90,15 @@ export default function AllMetrics(props: AllMetricsProps) {
         } else {
             setLocationsFilter([]);
         }
+        setHasFilterChanged(true);
     }
 
-
+    const applyFilter = (key: string) => {
+        if (key==='1' && hasFilterChanged) {
+            setRefreshFilter(true);
+            setHasFilterChanged(false);
+        }
+    }
     const stringArrayToString = (value: string[]) => {
         let rslt = '';
         if (value) {
@@ -106,7 +119,14 @@ export default function AllMetrics(props: AllMetricsProps) {
             dataIndex: 'location',
             minWidth: '50px',
             // @ts-ignore
-            sorter: (a, b) => a.location.localeCompare(b.location)
+            sorter: (a, b) => a.location.localeCompare(b.location),
+            onFilter: (value: any, record: any) =>
+                record['location']
+                    .toString()
+                    .toLowerCase()
+                    .includes(value.toLowerCase()),
+            filteredValue: tableFilterValue.split(',')
+
         },
         {
             title: 'Status',
@@ -282,7 +302,7 @@ export default function AllMetrics(props: AllMetricsProps) {
             </PageHeader>
 
 
-            <Tabs defaultActiveKey="1">
+            <Tabs defaultActiveKey="1" onChange={(activeKey)=>{applyFilter(activeKey)}}>
 
                 {/*<div style={{height:20}}/>*/}
                 <TabPane tab="Analysis" key="1">
@@ -303,7 +323,7 @@ export default function AllMetrics(props: AllMetricsProps) {
                     {/*                   xField={'value'}*/}
                     {/*                   height={(200 * locationsFilter.length) + 'px' }*/}
                     {/*                   data={locationsMeasuresData}/>*/}
-                        <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'} valueFiled={'value'} height={200 * 20}/>
+                        <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'} valueFiled={'value'} height={filterLength * 200}/>
                     {/*</div>*/}
                 </TabPane>
 
@@ -319,13 +339,14 @@ export default function AllMetrics(props: AllMetricsProps) {
 
                     {/*scroll={{y: 500}}*/}
                     {/*pagination={{total:20}}*/}
-                    <Space direction={'horizontal'}>
-                        <div>Quick Select, Render chart by:</div>
-                        <Button type="primary"
-                                onClick={() => setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')))}>
-                            Top 10 Locations by Heat Index
-                        </Button>
-                    </Space>
+                    {/*<Space direction={'horizontal'}>*/}
+                    {/*    <div>Quick Select, Render chart by:</div>*/}
+                    {/*    <Button type="primary"*/}
+                    {/*            onClick={() => setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')))}>*/}
+                    {/*        Top 10 Locations by Heat Index*/}
+                    {/*    </Button>*/}
+                    {/*</Space>*/}
+                    <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />
                     <div style={{height: 20}}/>
                     <Table size={'small'} rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} 
                            pagination={{pageSize:100}} loading={{spinning: dataLoadingStatus}}

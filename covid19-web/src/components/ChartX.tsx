@@ -17,18 +17,28 @@ export function ChartX(props: Props) {
 
     useEffect(() => {
       if (plot) {
-
-          plot.data(props.data);
+          // console.log('Height render ' + props.height);
+          // plot.changeConfig({height: props.height});
+          plot.changeData(props.data);
           plot.render();
       }
     })
 
     useEffect(() => {
-        if(container != null) {
+        console.log('Height Changed ' + props.height);
+        if(plot) {
+            plot.destroy();
+            initChart();
+        }
+    },[props.height]);
+
+    function initChart() {
+        if (container != null) {
             const chart = new Chart({
                 container: container,
                 autoFit: true,
-                height: props.height,
+                height: Math.max(props.height, 500),
+                renderer: 'svg'
             });
             chart.data(props.data);
             chart
@@ -70,6 +80,10 @@ export function ChartX(props: Props) {
             chart.render();
             setPlot(chart);
         }
+    }
+
+    useEffect(() => {
+        initChart();
 
     },[container]);
 

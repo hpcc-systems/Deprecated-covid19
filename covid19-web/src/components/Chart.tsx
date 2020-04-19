@@ -33,6 +33,8 @@ export function Chart(props: Props) {
 
 
 
+
+
     return (
         <div style={{width:'100%', height:props.height}} ref={(e) => (setContainer(e))} />
     )
