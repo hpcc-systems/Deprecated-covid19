@@ -113,6 +113,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
             title: props.locationAlias,
             dataIndex: 'location',
             minWidth: '50px',
+            // @ts-ignore
+            sorter: (a, b) => a.location.localeCompare(b.location),
             onFilter: (value: any, record: any) =>
                 record['location']
                     .toString()
@@ -124,22 +126,30 @@ export default function LocationTrends(props: LocationTrendsProps) {
             title: 'Total Cases',
             dataIndex: 'confirmed',
             className: 'column-number',
+            // @ts-ignore
+            sorter: (a, b) => a.confirmed - b.confirmed
 
         },
         {
             title: 'Cases Increase',
             dataIndex: 'confirmed_increase',
             className: 'column-number',
+            // @ts-ignore
+            sorter: (a, b) => a.confirmed_increase - b.confirmed_increase
         },
         {
             title: 'Total Deaths',
             dataIndex: 'deaths',
             className: 'column-number',
+            // @ts-ignore
+            sorter: (a, b) => a.deaths - b.deaths
         },
         {
             title: 'Deaths Increase',
             dataIndex: 'deaths_increase',
             className: 'column-number',
+            // @ts-ignore
+            sorter: (a, b) => a.deaths_increase - b.deaths_increase
         },
 
 
@@ -205,7 +215,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
         seriesField: 'location',
     }
     return (
-        <Layout style={{padding: '20px', height: '100%'}} >
+        <Layout style={{padding: '20px'}} >
 
             <PageHeader title={props.title} subTitle={props.description}
 
@@ -266,7 +276,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
                         <Space direction={'vertical'}>
                             <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />
 
-                            <Table  rowKey={'location'} scroll={{y: 500}}  pagination={false} columns={filterTable} dataSource={latest} rowSelection={rowSelection}/>
+                            <Table size={'small'} rowKey={'location'} scroll={{y: 500}}  pagination={false} columns={filterTable} dataSource={latest} rowSelection={rowSelection}/>
                         </Space>
                     </TabPane>
 

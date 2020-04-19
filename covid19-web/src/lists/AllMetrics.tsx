@@ -109,6 +109,13 @@ export default function AllMetrics(props: AllMetricsProps) {
             sorter: (a, b) => a.location.localeCompare(b.location)
         },
         {
+            title: 'Status',
+            dataIndex: 'istate',
+            minWidth: '30px',
+            // @ts-ignore
+            sorter: (a, b) => a.location.localeCompare(b.location)
+        },
+        {
             title: 'Heat Index',
             dataIndex: 'heatindex',
             className: 'column-number',
@@ -296,7 +303,7 @@ export default function AllMetrics(props: AllMetricsProps) {
                     {/*                   xField={'value'}*/}
                     {/*                   height={(200 * locationsFilter.length) + 'px' }*/}
                     {/*                   data={locationsMeasuresData}/>*/}
-                        <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'location'} valueFiled={'value'} height={200 * 20}/>
+                        <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'} valueFiled={'value'} height={200 * 20}/>
                     {/*</div>*/}
                 </TabPane>
 

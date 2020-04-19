@@ -11,14 +11,14 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
         projectedMetrics := PROJECT(metricsData, TRANSFORM(
                                                        metrics.layout,
                                                        locations := Std.Str.SplitWords(LEFT.location, ',');
-                                                       SELF.location := IF(COUNT(locations) > 1,locations[1] + '-' + locations[2], LEFT.location);
-                                                       SELF.parentLocation := IF(COUNT(locations) > 1,locations[1], LEFT.location);//The 2 is a workaround to overcome optimization
+                                                       SELF.location := IF(COUNT(locations) > 1,locations[1] + '-' + locations[2], TRIM(LEFT.location));
+                                                       SELF.parentLocation := IF(COUNT(locations) > 1,locations[1], TRIM(LEFT.location));//The 2 is a workaround to overcome optimization
                                                        SELF := LEFT;
                                                         
                                     ));
         
 
-        locationsCatalog := TABLE(DEDUP(SORT(projectedMetrics(period=1), location), location), {STRING50 id:= location, STRING50 title:= location}); 
+        locationsCatalog := TABLE(DEDUP(SORT(projectedMetrics(period=1), location), location), {STRING50 id:= TRIM(location), STRING50 title:= TRIM(location)}); 
         defaultLocations := TABLE(TOPN(projectedMetrics(period=1),50,-heatindex), {location});
 
         metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),6,TRANSFORM
@@ -26,6 +26,7 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
                                             metrics.groupedLayout,
                                             SELF.measure := CASE (COUNTER, 6 => 'cR', 5 => 'mR', 4 => 'sdIndicator', 3 => 'medIndicator', 2 => 'imort' ,1 => 'heatindex' ,''),
                                             SELF.value := CASE (COUNTER, 6 => LEFT.cr, 5 => LEFT.mr, 4 => LEFT.sdIndicator, 3 => LEFT.medIndicator, 2 => LEFT.imort, 1 => LEFT.heatindex,0),
+                                            SELF.locationstatus := TRIM(LEFT.location) + ' [' + TRIM(LEFT.istate) + ']',
                                             SELF := LEFT;
                                         )
                                       );   

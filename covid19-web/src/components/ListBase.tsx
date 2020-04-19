@@ -62,8 +62,8 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
             switch (this.state.listMetadata.id) {
                 // case 'us_states/trends': return <SummaryStates title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'us_states/trends': return <LocationTrends title={this.state.listMetadata.title} description = {this.state.listMetadata.description} locationAlias={'State'} typeFilter={'states'}/>;
-                case 'us_states/states_metrics': return <AllMetrics locationAlias={'State'} typeFilter={'states'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
-                case 'us_states/counties_metrics': return <AllMetrics locationAlias={'County'} typeFilter={'counties'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
+                case 'us_states/states_metrics': return <AllMetrics key={'states'} locationAlias={'State'} typeFilter={'states'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
+                case 'us_states/counties_metrics': return <AllMetrics key={'counties'} locationAlias={'County'} typeFilter={'counties'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
                 case 'us_states/states_progress': return <StatesProgress/>;
                 case 'world_countries/trends': return <LocationTrends title={this.state.listMetadata.title} description = {this.state.listMetadata.description} locationAlias={'Country'} typeFilter={'countries'}/>;
                 case 'world_countries/countries_metrics': return <AllMetrics locationAlias={'Country'} typeFilter={'countries'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;

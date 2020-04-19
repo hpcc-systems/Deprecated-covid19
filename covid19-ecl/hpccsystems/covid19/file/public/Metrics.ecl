@@ -40,6 +40,7 @@ END;
 
 EXPORT GroupedLayout := RECORD
     string location;
+    string locationstatus;
     unsigned8 period;
     unsigned4 startdate;
     unsigned4 enddate;
