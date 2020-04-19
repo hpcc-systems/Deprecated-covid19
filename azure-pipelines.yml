@@ -13,24 +13,19 @@ variables:
 pool:
   vmImage: 'ubuntu-latest'
 
-jobs:
-  - job: Build
-    steps:
-      - script: |
-          cd covid19-web
-        displayName: 'cd..'           
-
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(Pipeline.Workspace)/covid19-web'
-          artifact: 'covid19-web'
-          publishLocation: 'pipeline'
-
+  steps:    
+    - task: PublishArtifacts
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifact: 'covid19'
+        publishLocation: 'pipeline'
+  
+  jobs:
   - deployment: VMDeploy
     displayName: Deploy
     pool:
       vmImage: 'Ubuntu-18.04'
-    dependsOn: 'Build'  
+    dependsOn: 'PublishArtifacts'  
     environment:
       name: covid19-node-vm-001
       resourceType: VirtualMachine
@@ -44,9 +39,9 @@ jobs:
               script: 'pm2 stop Covid19-Web'        
           - task: CopyFiles@2
             inputs:
-              SourceFolder: '$(Pipeline.Workspace)/covid19-web'
+              SourceFolder: '$(Pipeline.Workspace)/s'
               Contents: '**'
-              TargetFolder: '/home/hpcclabs/covid19/covid19/covid19-web'
+              TargetFolder: '/home/hpcclabs/covid19/covid19'
               OverWrite: true
           - task: CmdLine@2
             inputs:
