@@ -154,7 +154,7 @@ export default function AllMetrics(props: AllMetricsProps) {
             dataIndex: 'istate',
             minWidth: '30px',
             // @ts-ignore
-            sorter: (a, b) => a.location.localeCompare(b.location)
+            sorter: (a, b) => a.istate.localeCompare(b.istate)
         },
         {
             title: 'Heat Index',

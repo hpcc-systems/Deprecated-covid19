@@ -13,6 +13,15 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
                                                        locations := Std.Str.SplitWords(LEFT.location, ',');
                                                        SELF.location := IF(COUNT(locations) > 1,locations[1] + '-' + locations[2], TRIM(LEFT.location));
                                                        SELF.parentLocation := IF(COUNT(locations) > 1,locations[1], TRIM(LEFT.location));//The 2 is a workaround to overcome optimization
+                                                       SELF.istate := CASE(LEFT.istate, 
+                                                                      'Initial' => '0-Initial', 
+                                                                      'Recovered' => '1-Recovered', 
+                                                                      'Recovering' => '2-Recovering',
+                                                                      'Stabilized' => '3-Stabilized',
+                                                                      'Stabilizing' => '4-Stabilizing',
+                                                                      'Emerging' => '5-Emerging',
+                                                                      'Spreading' => '6-Spreading',
+                                                                      'Regressing' => '7-Regressing', '8-Unknown');
                                                        SELF := LEFT;
                                                         
                                     ));

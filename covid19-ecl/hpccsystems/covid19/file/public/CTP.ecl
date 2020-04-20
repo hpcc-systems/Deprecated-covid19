@@ -41,7 +41,7 @@ EXPORT CTP := MODULE
     STRING state;
     UNSIGNED4 positive;
     UNSIGNED4 neagtive;
-    DECIMAL8_2 positiveRatio;
+    DECIMAL8_2 positivePercent;
   END;
 
   EXPORT metrics := DATASET(metricsFilePath, metricsLayout, THOR); 
