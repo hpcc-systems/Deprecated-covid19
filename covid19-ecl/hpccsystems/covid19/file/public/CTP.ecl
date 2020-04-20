@@ -34,4 +34,16 @@ EXPORT CTP := MODULE
 
   EXPORT daily := DATASET(dailyFilePath, dailyLayout, CSV(HEADING(1)));  
 
+  EXPORT metricsFilePath := '~hpccsystems::covid19::file::public::ctp::metrics.flat';
+
+  EXPORT metricsLayout := RECORD
+    Std.Date.Date_t  date;
+    STRING state;
+    UNSIGNED4 positive;
+    UNSIGNED4 neagtive;
+    DECIMAL8_2 positiveRatio;
+  END;
+
+  EXPORT metrics := DATASET(metricsFilePath, metricsLayout, THOR); 
+
 END;

@@ -10,4 +10,4 @@ OUTPUT(clean,,public.dailyFilePath, THOR, COMPRESSED, OVERWRITE);
 
 metrics := TABLE(clean, {date, state, positive, negative, DECIMAL8_2 positiveRatio := positive/MAX(1,totaltestresults) * 100});
 
-OUTPUT(metrics);
+OUTPUT(metrics,,public.metricsFilePath,THOR, COMPRESSED, OVERWRITE);
