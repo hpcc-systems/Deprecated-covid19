@@ -45,6 +45,16 @@ export default function AllMetrics(props: AllMetricsProps) {
         return a;
     }
 
+    function periodTitle(): string {
+        let title = '';
+        periodsCatalog.forEach((item:any) => {
+            if (periodFilter === item.id) {
+                title = item.title;
+            }
+        })
+        return title;
+    }
+
     useEffect(() => {
         //This will be called once. Maybe fetch the catalog info and defaults here
         let filters: Map<string, string> = new Map();
@@ -64,6 +74,17 @@ export default function AllMetrics(props: AllMetricsProps) {
     }, []);
 
 
+    useEffect(() => {
+        let filters: Map<string, string> = new Map();
+        filters.set('periodFilter', periodFilter);
+        filters.set('typeFilter', props.typeFilter);
+
+        queryPeriod.initData(filters).then(() => {
+            setAllMeasuresData(queryPeriod.getData('metrics_period'));
+            setLocationsFilter(toLocationsFilter(queryPeriod.getData('default_locations')));//Also set the default locations
+            setHasFilterChanged(true);
+        });
+    }, [periodFilter]);
 
 
     useEffect(() => {
@@ -307,7 +328,7 @@ export default function AllMetrics(props: AllMetricsProps) {
                 {/*<div style={{height:20}}/>*/}
                 <TabPane tab="Analysis" key="1">
 
-
+                    <span>Selected Period: {periodTitle()}</span>
                     <div style={{height: 20}}/>
 
                     <Popover placement="rightTop" title={'Metrics Definitions'} content={definitions} trigger="click"
@@ -316,15 +337,9 @@ export default function AllMetrics(props: AllMetricsProps) {
                     </Popover>
 
                     <div style={{height: 20}}/>
-                    {/*<div style={{height: '800px', overflowY: 'scroll'}}>*/}
-                    {/*    <GroupBarChart title={''}*/}
-                    {/*                   groupField={'measure'}*/}
-                    {/*                   yField={'location'}*/}
-                    {/*                   xField={'value'}*/}
-                    {/*                   height={(200 * locationsFilter.length) + 'px' }*/}
-                    {/*                   data={locationsMeasuresData}/>*/}
-                        <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'} valueFiled={'value'} height={filterLength * 200}/>
-                    {/*</div>*/}
+
+
+                    <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'} valueFiled={'value'} height={filterLength * 200} />
                 </TabPane>
 
 
@@ -334,18 +349,7 @@ export default function AllMetrics(props: AllMetricsProps) {
                                     onFilterChange={(value) => setPeriodFilter(value)}/>
                     <div style={{height: 20}}/>
 
-                    {/*<FilterRenderer title={'Select Locations'} data={locationsCatalog} value={locationsFilter}*/}
-                    {/*                mode={"multiple"} onFilterChange={(value) => updateLocationsFilter(value)}/>*/}
 
-                    {/*scroll={{y: 500}}*/}
-                    {/*pagination={{total:20}}*/}
-                    {/*<Space direction={'horizontal'}>*/}
-                    {/*    <div>Quick Select, Render chart by:</div>*/}
-                    {/*    <Button type="primary"*/}
-                    {/*            onClick={() => setLocationsFilter(toLocationsFilter(queryCatalog.getData('default_locations')))}>*/}
-                    {/*        Top 10 Locations by Heat Index*/}
-                    {/*    </Button>*/}
-                    {/*</Space>*/}
                     <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />
                     <div style={{height: 20}}/>
                     <Table size={'small'} rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} 

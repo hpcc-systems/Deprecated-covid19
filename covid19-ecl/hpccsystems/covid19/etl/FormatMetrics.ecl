@@ -24,8 +24,8 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
         metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),6,TRANSFORM
                                         (
                                             metrics.groupedLayout,
-                                            SELF.measure := CASE (COUNTER, 6 => 'cR', 5 => 'mR', 4 => 'sdIndicator', 3 => 'medIndicator', 2 => 'imort' ,1 => 'heatindex' ,''),
-                                            SELF.value := CASE (COUNTER, 6 => LEFT.cr, 5 => LEFT.mr, 4 => LEFT.sdIndicator, 3 => LEFT.medIndicator, 2 => LEFT.imort, 1 => LEFT.heatindex,0),
+                                            SELF.measure := CASE (COUNTER, 1 => 'cR', 2=> 'mR', 3 => 'sdIndicator', 4 => 'medIndicator', 5 => 'imort' ,6 => 'heatindex' ,''),
+                                            SELF.value := CASE (COUNTER, 1 => LEFT.cr, 2 => LEFT.mr, 3 => LEFT.sdIndicator, 4 => LEFT.medIndicator, 5 => LEFT.imort, 6 => LEFT.heatindex,0),
                                             SELF.locationstatus := TRIM(LEFT.location) + ' [' + TRIM(LEFT.istate) + ']',
                                             SELF := LEFT;
                                         )

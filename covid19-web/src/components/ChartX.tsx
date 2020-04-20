@@ -44,14 +44,14 @@ export function ChartX(props: Props) {
             chart
                 .coordinate()
                 .transpose()
-                .scale(1, -1);
+                .scale(0.8, -1);
 
             chart.axis(props.valueFiled, {
-                position: 'right',
+                position: 'right'
             });
             chart.axis(props.labelField, {
                 label: {
-                    offset: 12,
+                    offset:12,
                 },
             });
 
@@ -73,7 +73,9 @@ export function ChartX(props: Props) {
                     },
                 ]);
             chart.legend({
-                position: 'right-top',
+                position: 'left-top',
+                // offsetX: -8
+
             });
 
             chart.interaction('active-region');
@@ -90,7 +92,7 @@ export function ChartX(props: Props) {
 
 
     return (
-        <div style={{width:'100%'}} ref={(e) => (setContainer(e))} />
+        <div ref={(e) => (setContainer(e))} />
     )
 }
 
