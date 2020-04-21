@@ -4,12 +4,14 @@ IMPORT Std;
 IMPORT Types;
 IMPORT $ AS COVID19;
 
+
 metric_t := Types.metric_t;
 statsRec := Types.statsRec;
 metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
+CalcMetrics := COVID19.CalcMetrics;
 
-rawFilePath := '~hpccsystems::covid19::file::public::johnhopkins_world.flat';
+rawFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';
 
 scRecord := RECORD
   string50 fips;
@@ -64,7 +66,12 @@ OUTPUT(statsData, ALL, NAMED('InputStats'));
 popData := DATASET([], populationRec);
 
 OUTPUT(popData, NAMED('PopulationData'));
-metrics := COVID19.CalcMetrics(statsData, popData);
+
+// Extended Statistics
+statsE := CalcMetrics.DailyStats(statsData);
+OUTPUT(statsE, ,'~research::covid19::out::daily_metrics_by_country.flat', Thor, OVERWRITE);
+
+metrics := CalcMetrics.WeeklyMetrics(statsData, popData);
 
 
 
@@ -94,6 +101,11 @@ OUTPUT(sortedBySdInd, ALL, NAMED('metricsBySocialDistanceIndicator'));
 
 sortedByWeeksToPeak := SORT(metrics(period = 1 AND weeksToPeak > 0 AND weeksToPeak < 999), weeksToPeak, location);
 OUTPUT(sortedByWeeksToPeak, NAMED('metricsByWeeksToPeak'));
+
+withSeverity := JOIN(metrics(period = 1), COVID19.iStateSeverity, LEFT.iState = RIGHT.stateName, TRANSFORM({metricsRec, UNSIGNED severity},
+                          SELF.severity := RIGHT.severity, SELF := LEFT), LOOKUP);
+sortedBySeverity := SORT(withSeverity, -severity, location);
+OUTPUT(sortedBySeverity, ALL, NAMED('ByInfectionState'));
 
 sortedByHeatIndx := COVID19.HotSpotsRpt(metrics);
 OUTPUT(sortedByHeatIndx, ALL, NAMED('HotSpots'));

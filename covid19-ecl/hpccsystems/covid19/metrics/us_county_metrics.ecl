@@ -7,8 +7,9 @@ IMPORT $ AS COVID19;
 statsRec := Types.statsRec;
 metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
+CalcMetrics := COVID19.CalcMetrics;
 
-countyFilePath := '~hpccsystems::covid19::file::public::johnhopkins_us.flat';
+countyFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
 _stateFilter := '':STORED('stateCountyFilter'); 
 
 stateFilter := Std.Str.SplitWords(_stateFilter, ',');
@@ -53,12 +54,17 @@ OUTPUT(statsData[.. 10000], ALL, NAMED('InputStats'));
 popData := DATASET([], populationRec);
 
 OUTPUT(popData, NAMED('PopulationData'));
-metrics := COVID19.CalcMetrics(statsData, popData);
+
+// Extended Statistics
+statsE := CalcMetrics.DailyStats(statsData);
+OUTPUT(statsE, ,'~research::covid19::out::daily_metrics_by_us_county.flat', Thor, OVERWRITE);
+
+metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData);
 
 
 OUTPUT(metrics, ,'~research::covid19::out::weekly_metrics_by_us_county.flat', Thor, OVERWRITE);
 
-metricsRed := metrics(cases > 10)[ .. 10000 ]; // Reduced set for wu output
+metricsRed := metrics[ .. 10000 ]; // Reduced set for wu output
 OUTPUT(metricsRed, ALL, NAMED('MetricsByWeek'));
 
 sortedByCases := SORT(metricsRed, period, -cases);
@@ -84,6 +90,11 @@ OUTPUT(sortedByMedInd, ALL, NAMED('metricsByMedicalIndicator'));
 
 sortedBySdInd := SORT(metrics(sdIndicator != 0), period, sdIndicator, location);
 OUTPUT(sortedBySdInd, ALL, NAMED('metricsBySocialDistanceIndicator'));
+
+withSeverity := JOIN(metrics(period = 1 AND iState != 'Initial'), COVID19.iStateSeverity, LEFT.iState = RIGHT.stateName, TRANSFORM({metricsRec, UNSIGNED severity},
+                          SELF.severity := RIGHT.severity, SELF := LEFT), LOOKUP);
+sortedBySeverity := SORT(withSeverity, -severity, location);
+OUTPUT(sortedBySeverity, ALL, NAMED('ByInfectionState'));
 
 sortedByHeatIndx := COVID19.HotSpotsRpt(metrics);
 OUTPUT(sortedByHeatIndx, ALL, NAMED('HotSpots'));
