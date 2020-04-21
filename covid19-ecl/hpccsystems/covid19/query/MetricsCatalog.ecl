@@ -1,6 +1,6 @@
 #WORKUNIT('name', 'hpccsystems_covid19_query_metrics_catalog');
 
-IMPORT hpccsystems.covid19.file.public.Metrics as metrics;
+IMPORT hpccsystems.covid19.file.public.WeeklyMetrics as metrics;
 
 _typeFilter := 'states':STORED('typeFilter');
 

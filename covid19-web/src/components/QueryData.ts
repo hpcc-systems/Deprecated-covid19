@@ -33,15 +33,15 @@ export  class QueryData {
 
 
     getData(resultName: string): any {
-        console.log(this.data);
+        //console.log(this.data);
         let stack: any[] = [];
 
         this.traverse(this.data, resultName, stack);
-        console.log('stack ' + stack.length);
+        //console.log('stack ' + stack.length);
 
         if (stack.length > 0) {
             let resultData = stack.pop();
-            console.log('result data: ' + resultData);
+            //console.log('result data: ' + resultData);
             return resultData;
         } else return [];
     }
@@ -51,8 +51,8 @@ export  class QueryData {
             Object.entries(jsonObj).forEach(([key, value]) => {
 
                 if (key===resultName) {
-                    console.log('stack push ' + key);
-                    console.log('stack push data' + value.Row);
+                    //console.log('stack push ' + key);
+                    //console.log('stack push data' + value.Row);
                     stack.push(value.Row);
                 } else {
                     this.traverse(value, resultName, stack);
