@@ -9,6 +9,11 @@ import Catalog from "../../utils/Catalog";
 import {Filters} from "../../utils/Filters";
 import StackedChart from "../../components/StackedChart";
 import LineChart from "../../components/LineChart";
+//import GroupBarChart from "../../components/GroupBarChart";
+
+import ReactG2Plot from 'react-g2plot';
+import {Chart} from "../../components/Chart";
+import {GroupedBar, GroupedColumn} from "@antv/g2plot";
 
 const {Option} = Select;
 const {TabPane} = Tabs;
@@ -103,6 +108,28 @@ export default class Trends extends Component <TrendsProps, TrendsState> {
             statesFilterArray = statesFilter.split(',');
         }
 
+
+        const chartCases = {
+            padding: 'auto',
+            title: {
+                visible: true,
+                text: 'Cases Confirmed',
+            },
+            label: {
+                visible: true
+            },
+            data:[],
+            xField: 'date',
+            yField: 'confirmed',
+            groupField: 'state',
+        }
+
+
+            // color: ['#1383ab', '#c52125'],
+            // label: {
+            //     //formatter: (v) => `${v}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`),
+            // }
+
         return (
 
             <Layout style={{padding: '20px', height: '100%'}}>
@@ -155,11 +182,19 @@ export default class Trends extends Component <TrendsProps, TrendsState> {
                     <Tabs defaultActiveKey="1">
                         <TabPane tab="Cases" key="1">
 
-                                <StackedChart title={'Cases'}
-                                              groupField={'state'}
-                                              yField={'confirmed'}
-                                              xField={'date'}
-                                              data={this.state.jhData}/>
+                                {/*<GroupBarChart title={'Cases'}*/}
+                                {/*               groupField={'state'}*/}
+                                {/*               yField={'confirmed'}*/}
+                                {/*               xField={'date'}*/}
+                                {/*               data={this.state.jhData}/>*/}
+                            {/*<ReactG2Plot*/}
+                            {/*    Ctor={GroupBarChart}*/}
+                            {/*    config={chartCases}*/}
+                            {/*/>*/}
+
+
+                                <Chart chart={GroupedColumn} config={chartCases} data={this.state.jhData}/>
+
                                 <div style={{height:'10px'}}/>
                                 <LineChart title={'Cases Increase'}
                                               groupField={'state'}

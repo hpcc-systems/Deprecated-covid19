@@ -1,10 +1,10 @@
 EXPORT JohnHopkinsV1 := MODULE
 
-  EXPORT filePath := '~{hpccsystems::covid19::file::raw::03-21-2020.csv,' +
-                        'hpccsystems::covid19::file::raw::03-20-2020.csv,' +
-                        'hpccsystems::covid19::file::raw::03-19-2020.csv,' +
-                        'hpccsystems::covid19::file::raw::03-18-2020.csv,' + 
-                        'hpccsystems::covid19::file::raw::03-17-2020.csv}';  
+  EXPORT filePath := '~{hpccsystems::covid19::file::raw::JohnHopkinsV1::03-21-2020.csv,' +
+                        'hpccsystems::covid19::file::raw::JohnHopkinsV1::03-20-2020.csv,' +
+                        'hpccsystems::covid19::file::raw::JohnHopkinsV1::03-19-2020.csv,' +
+                        'hpccsystems::covid19::file::raw::JohnHopkinsV1::03-18-2020.csv,' + 
+                        'hpccsystems::covid19::file::raw::JohnHopkinsV1::03-17-2020.csv}';  
 
   EXPORT layout := RECORD
       STRING state;

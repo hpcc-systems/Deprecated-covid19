@@ -10,6 +10,6 @@ allData := CASE (_typeFilter, 'states' => metrics.statesAll, 'countries' => metr
 filtered := SORT(allData(period = _periodFilter),-heatindex);
 
 
-OUTPUT(filtered,,NAMED('metrics_period'));
+OUTPUT(CHOOSEN(filtered, 10000),,NAMED('metrics_period'));
 
 OUTPUT(CHOOSEN(TABLE(filtered, {location}), 10),,NAMED('default_locations'));
