@@ -1,8 +1,8 @@
 EXPORT WeeklyMetrics := MODULE
   
-EXPORT statesPath := '~research::covid19::out::weekly_metrics_by_state.flat';
-EXPORT worldPath := '~research::covid19::out::weekly_metrics_by_country.flat';
-EXPORT countiesPath := '~research::covid19::out::weekly_metrics_by_us_county.flat';  
+EXPORT statesPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_state.flat';
+EXPORT worldPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat';
+EXPORT countiesPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat';  
 
 export inputLayout := RECORD 
   string location;

@@ -3,7 +3,7 @@ Import Std;
 EXPORT USPopulationFiles := MODULE
 
 
-  EXPORT rawPath := '~research::covid19::in::us_population.csv';  
+  EXPORT rawPath := '~hpccsystems::covid19::file::raw::uspopulation::v1::us_population.csv';  
 
   EXPORT rawLayout := RECORD
       STRING state;
@@ -16,7 +16,7 @@ EXPORT USPopulationFiles := MODULE
 
   EXPORT raw := DATASET(rawPath, rawLayout, CSV(HEADING(1)));  
 
-  EXPORT cleanPath := '~research::covid19::out::us_population.flat';  
+  EXPORT cleanPath := '~hpccsystems::covid19::file::public::uspopulation::population.flat';  
 
 	EXPORT cleanLayout := RECORD
       STRING state;

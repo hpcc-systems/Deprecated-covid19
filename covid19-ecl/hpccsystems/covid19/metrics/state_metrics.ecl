@@ -63,12 +63,12 @@ OUTPUT(popData, NAMED('PopulationData'));
 
 // Extended Statistics
 statsE := CalcMetrics.DailyStats(statsData);
-OUTPUT(statsE, ,'~research::covid19::out::daily_metrics_by_state.flat', Thor, OVERWRITE);
+OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_state.flat', Thor, OVERWRITE);
 
 metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData);
 
 OUTPUT(metrics, ALL, NAMED('MetricsByWeek'));
-OUTPUT(metrics, ,'~research::covid19::out::weekly_metrics_by_state.flat', Thor, OVERWRITE);
+OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_state.flat', Thor, OVERWRITE);
 sortedByCR := SORT(metrics, period, -cR, location);
 OUTPUT(sortedByCR, ALL, NAMED('metricsByCR'));
 sortedByMR := SORT(metrics, period, -mR, location);

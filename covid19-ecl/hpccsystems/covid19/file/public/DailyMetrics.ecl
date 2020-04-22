@@ -1,8 +1,8 @@
 EXPORT DailyMetrics := MODULE
   
-    EXPORT statesPath := '~research::covid19::out::daily_metrics_by_state.flat';
-    EXPORT countriesPath := '~research::covid19::out::daily_metrics_by_country.flat';
-    EXPORT countiesPath := '~research::covid19::out::daily_metrics_by_us_county.flat';  
+    EXPORT statesPath := '~hpccsystems::covid19::file::public::metrics::daily_by_state.flat';
+    EXPORT countriesPath := '~hpccsystems::covid19::file::public::metrics::daily_by_country.flat';
+    EXPORT countiesPath := '~hpccsystems::covid19::file::public::metrics::daily_by_us_county.flat';  
 
 
     EXPORT statsrec := RECORD

@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Menu} from "antd";
+import {Menu} from "antd";
 import ListService, {ListMetadata} from "../services/ListService";
 import {Module} from "../services/ModuleService";
 

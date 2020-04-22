@@ -57,12 +57,12 @@ OUTPUT(popData, NAMED('PopulationData'));
 
 // Extended Statistics
 statsE := CalcMetrics.DailyStats(statsData);
-OUTPUT(statsE, ,'~research::covid19::out::daily_metrics_by_us_county.flat', Thor, OVERWRITE);
+OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_us_county.flat', Thor, OVERWRITE);
 
 metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData);
 
 
-OUTPUT(metrics, ,'~research::covid19::out::weekly_metrics_by_us_county.flat', Thor, OVERWRITE);
+OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat', Thor, OVERWRITE);
 
 metricsRed := metrics[ .. 10000 ]; // Reduced set for wu output
 OUTPUT(metricsRed, ALL, NAMED('MetricsByWeek'));

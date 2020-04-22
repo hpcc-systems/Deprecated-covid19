@@ -1,14 +1,8 @@
 import React from "react";
 import ListService, {ListMetadata} from "../services/ListService";
 import {Layout} from "antd";
-import SummaryStates from "../lists/us-states/Trends";
-import SummaryCountries from "../lists/world/Trends";
 import AllMetrics from "../lists/AllMetrics";
-import StatesProgress from "../lists/us-states/StatesProgress";
-import {Home} from "../lists/Home";
 import LocationTrends from "../lists/LocationTrends";
-
-
 
 
 const {Content} = Layout;

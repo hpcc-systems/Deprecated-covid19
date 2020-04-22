@@ -27,7 +27,12 @@ export  class QueryData {
     }
 
     getAPIData(filterStr: string): Promise<any> {
-        return fetch(`http://play.hpccsystems.com:8002/WsEcl/submit/query/roxie/`+ this.queryName +`/json?`+ filterStr +`&submit_type=json`)
+        let url = `http://40.71.7.106:8002/WsEcl/submit/query/roxie/`+ this.queryName +`/json?`+ filterStr +`&submit_type=json`;
+        let headers = new Headers();
+        let username = 'chalaax';
+        let password = 'hpcc';
+        headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
+        return fetch(url, {method:'GET', headers})
             .then(res => res.json())
     }
 

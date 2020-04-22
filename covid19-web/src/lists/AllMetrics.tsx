@@ -2,10 +2,7 @@ import React, {useEffect} from "react";
 
 import {Button, Descriptions, Layout, PageHeader, Popover, Table, Tabs} from "antd";
 
-
-import {Space} from "antd/es";
 import {QueryData} from "../components/QueryData";
-import GroupBarChart from "../components/GroupBarChart";
 import {FilterRenderer} from "../components/FilterRenderer";
 import {ChartX} from "../components/ChartX";
 import Search from "antd/es/input/Search";
@@ -256,16 +253,7 @@ export default function AllMetrics(props: AllMetricsProps) {
 
     };
 
-    const renderChart = () => {
 
-        return <GroupBarChart title={''}
-                              groupField={'measure'}
-                              yField={'location'}
-                              xField={'value'}
-                              height={'2000px'}
-                              data={locationsMeasuresData}/>
-
-    }
 
     const definitions = (
         <div style={{width: 500}}>
