@@ -1,8 +1,8 @@
 #WORKUNIT('name', 'metrics_by_us_states');
 
 IMPORT Std;
-IMPORT USPopulationFiles as pop;
-IMPORT Types;
+IMPORT $.USPopulationFiles as pop;
+IMPORT $.Types;
 IMPORT $ AS COVID19;
 
 statsRec := Types.statsRec;

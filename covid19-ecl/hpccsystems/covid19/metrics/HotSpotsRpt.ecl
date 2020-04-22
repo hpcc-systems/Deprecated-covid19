@@ -1,4 +1,4 @@
-IMPORT Types;
+IMPORT $.Types;
 
 metricsRec := Types.metricsRec;
 hsFormat := Types.hsFormat;
