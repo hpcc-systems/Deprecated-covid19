@@ -15,7 +15,7 @@ EXPORT Types := MODULE
         UNSIGNED cumHosp := 0; // Cumulative number hospitalized
         UNSIGNED tested := 0; // Cumulative number tested
         UNSIGNED positive := 0; // Cumulative positive tests
-        UNSIGNED negative := 0; // Cumulative negative tests
+        UNSIGNED negative := 0; // Cumulative negative te&sts
     END;
     // Metrics Record
     EXPORT metricsRec := RECORD

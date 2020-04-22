@@ -1,4 +1,4 @@
-IMPORT Types;
+IMPORT $.Types;
 metric_t := Types.metric_t;
 statsRec := Types.statsRec;
 metricsRec := Types.metricsRec;

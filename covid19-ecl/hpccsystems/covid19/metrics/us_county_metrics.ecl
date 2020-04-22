@@ -1,7 +1,7 @@
 #WORKUNIT('name', 'metrics_by_us_county');
 
 IMPORT Std;
-IMPORT Types;
+IMPORT $.Types;
 IMPORT $ AS COVID19;
 
 statsRec := Types.statsRec;
