@@ -13,5 +13,11 @@ export default class AuthService {
         localStorage.setItem('hpccsystems.covid19.auth.password', password);
     }
 
+    logout() {
+        localStorage.removeItem('hpccsystems.covid19.auth.status');
+        localStorage.removeItem('hpccsystems.covid19.auth.password');
+        localStorage.removeItem('hpccsystems.covid19.auth.user');
+    }
+
 
 }

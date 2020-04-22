@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Layout, Menu} from 'antd';
+import {Button, Layout, Menu} from 'antd';
 import './App.css';
 import Nav from "./components/Nav";
 import ModuleService, {Module} from "./services/ModuleService"
@@ -88,9 +88,22 @@ export class App extends Component<AppProps, AppState> {
         })
     }
 
-    renderAuth() {
+    logout() {
+        this.authService.logout();
+        this.setState({menus: [], selectedModule: null, menuKey: ''});
+    }
+
+    renderAuthForm() {
         if (!this.authService.isAuthenticated()) {
             return <AuthForm onAuthenticate={(values: any) => this.processAuthentication(values)}/>
+        } else {
+            return '';
+        }
+    }
+
+    renderLogoutButton() {
+        if (this.authService.isAuthenticated()) {
+            return <Button style={{float: "right", marginTop: 20}} type="link" onClick={() => this.logout()}>Logout</Button>
         } else {
             return '';
         }
@@ -113,8 +126,11 @@ export class App extends Component<AppProps, AppState> {
                         {
                             this.renderMenu(this.state.menus)
                         }
-
+                        {
+                            this.renderLogoutButton()
+                        }
                     </Menu>
+
                 </Header>
 
                 <Layout>
@@ -123,7 +139,7 @@ export class App extends Component<AppProps, AppState> {
                              selectedKey={this.state.selectedListId} module={this.state.selectedModule}/>
                     </Sider>
 
-                    {this.renderAuth()}
+                    {this.renderAuthForm()}
                     <ListBase listId={this.state.selectedListId}/>
 
 
