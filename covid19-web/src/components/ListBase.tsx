@@ -3,6 +3,8 @@ import ListService, {ListMetadata} from "../services/ListService";
 import {Layout} from "antd";
 import AllMetrics from "../lists/AllMetrics";
 import LocationTrends from "../lists/LocationTrends";
+import AuthService from "../services/AuthService";
+import {AuthForm} from "./AuthForm";
 
 
 const {Content} = Layout;
@@ -23,12 +25,14 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
 
 
     listService: ListService;
+
     
 
     constructor(props: ListProps) {
         super(props);
 
         this.listService = new ListService();
+
     }
 
     componentDidUpdate(prevProps: Readonly<ListProps>,
@@ -51,20 +55,37 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
 
     private renderContent() {
 
-        if (this.state && this.state.listMetadata) {
+            if (this.state && this.state.listMetadata) {
 
-            switch (this.state.listMetadata.id) {
-                // case 'us_states/trends': return <SummaryStates title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
-                case 'us_states/trends': return <LocationTrends key={'states-trends'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description} locationAlias={'State'} typeFilter={'states'}/>;
-                case 'us_states/states_metrics': return <AllMetrics key={'states-metrics'} locationAlias={'State'} typeFilter={'states'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
-                case 'us_states/counties_metrics': return <AllMetrics key={'counties'} locationAlias={'County'} typeFilter={'counties'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
-                case 'world_countries/trends': return <LocationTrends key={'countries-trends'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description} locationAlias={'Country'} typeFilter={'countries'}/>;
-                case 'world_countries/countries_metrics': return <AllMetrics key={'countries-metrics'} locationAlias={'Country'} typeFilter={'countries'} title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>
-                default: return '';
+                switch (this.state.listMetadata.id) {
+                    // case 'us_states/trends': return <SummaryStates title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;
+                    case 'us_states/trends':
+                        return <LocationTrends key={'states-trends'} title={this.state.listMetadata.title}
+                                               description={this.state.listMetadata.description} locationAlias={'State'}
+                                               typeFilter={'states'}/>;
+                    case 'us_states/states_metrics':
+                        return <AllMetrics key={'states-metrics'} locationAlias={'State'} typeFilter={'states'}
+                                           title={this.state.listMetadata.title}
+                                           description={this.state.listMetadata.description}/>;
+                    case 'us_states/counties_metrics':
+                        return <AllMetrics key={'counties'} locationAlias={'County'} typeFilter={'counties'}
+                                           title={this.state.listMetadata.title}
+                                           description={this.state.listMetadata.description}/>;
+                    case 'world_countries/trends':
+                        return <LocationTrends key={'countries-trends'} title={this.state.listMetadata.title}
+                                               description={this.state.listMetadata.description}
+                                               locationAlias={'Country'} typeFilter={'countries'}/>;
+                    case 'world_countries/countries_metrics':
+                        return <AllMetrics key={'countries-metrics'} locationAlias={'Country'} typeFilter={'countries'}
+                                           title={this.state.listMetadata.title}
+                                           description={this.state.listMetadata.description}/>
+                    default:
+                        return '';
+                }
+            } else {
+                return '';
             }
-        } else {
-            return '';
-        }
+
     }
 
 
