@@ -1,4 +1,4 @@
-EXPORT Metrics := MODULE
+EXPORT WeeklyMetrics := MODULE
   
 EXPORT statesPath := '~research::covid19::out::weekly_metrics_by_state.flat';
 EXPORT worldPath := '~research::covid19::out::weekly_metrics_by_country.flat';

@@ -1,6 +1,7 @@
 #WORKUNIT('name', 'metrics_by_country');
 
 IMPORT Std;
+IMPORT $.Types;
 
 IMPORT $ AS COVID19;
 IMPORT $.Types;
