@@ -6,6 +6,7 @@ populationRec := Types.populationRec;
 statsExtRec := Types.statsExtRec;
 
 InfectionPeriod := 10;
+periodDays := 7;
 scaleFactor := 5;  // Lower will give more hot spots.
 minActive := 20; // Minimum cases to be considered emerging
 
@@ -41,7 +42,7 @@ EXPORT CalcMetrics := MODULE
         // Now combine the records for each week.
         // First add a period to records for each state
         statsGrpd0 := GROUP(statsE, location);
-        statsGrpd1 := PROJECT(statsGrpd0, TRANSFORM(RECORDOF(LEFT), SELF.period := (COUNTER-1) DIV 7 + 1, SELF := LEFT));
+        statsGrpd1 := PROJECT(statsGrpd0, TRANSFORM(RECORDOF(LEFT), SELF.period := (COUNTER-1) DIV periodDays + 1, SELF := LEFT));
         statsGrpd := GROUP(statsGrpd1, location, period);
         //OUTPUT(ctpgrpd[..10000], ALL, NAMED('ctpgrpd'));
         metricsRec doRollup(statsExtRec r, DATASET(statsExtRec) recs) := TRANSFORM
@@ -60,19 +61,15 @@ EXPORT CalcMetrics := MODULE
             SELF.periodDays := IF(cCount = 0, SKIP, cCount);
             SELF.cases := lastC.cumCases;
             SELF.deaths := lastM.cumDeaths;
-            SELF.newCases := lastC.cumCases - firstC.prevCases;
-            SELF.newDeaths := lastM.cumDeaths - firstM.prevDeaths;
+            SELF.newCases := IF(lastC.cumCases > firstC.prevCases, lastC.cumCases - firstC.prevCases, 0);
+            SELF.newDeaths := IF(lastM.cumDeaths > firstM.prevDeaths, lastM.cumDeaths - firstM.prevDeaths, 0);
             SELF.active := lastC.active,
             SELF.recovered := lastC.recovered,
             SELF.iMort := lastC.iMort,
             //cGrowth := lastC.active / firstC.prevActive;
-            cGrowth := SELF.newCases / firstC.prevActive;
-            mGrowth := (lastM.cumDeaths-firstC.prevDeaths) / firstC.prevDeaths;
-            cR := POWER(POWER(cGrowth, 1/cCount),InfectionPeriod);
-            mR := POWER(POWER(mGrowth, 1/mCount),InfectionPeriod);
+            cGrowth := SELF.newCases / firstC.active;
+            cR := POWER(cGrowth, InfectionPeriod/cCount);
             SELF.cR := IF(cR > 0 AND SELF.active > minActive, cR, 0);
-            SELF.mR := IF(mR > 0 AND SELF.deaths > minActive, mR, 0);
-            SELF.cmRatio := IF(mR > 0, SELF.cR / SELF.mR, 0);
         END;
 
         metrics0 := ROLLUP(statsGrpd, GROUP, doRollup(LEFT, ROWS(LEFT)));
@@ -83,24 +80,31 @@ EXPORT CalcMetrics := MODULE
                                     SELF.immunePct := LEFT.recovered / SELF.population;
                                     SELF := LEFT), LEFT OUTER);
         metricsRec calc1(metricsRec l, metricsRec r) := TRANSFORM
+            prevNewDeaths := IF(r.newDeaths > 0, r.newDeaths, 1);
+            mGrowth :=  l.newDeaths / prevNewDeaths;
+            mR := POWER(mGrowth, InfectionPEriod/periodDays);
+            SELF.mR := mR;
+            R1 := IF(l.mR > 0, (l.cr + mR) / 2, l.cR);
+            SELF.cmRatio := IF(mR > 0, l.cR / mR, 0);
             SELF.dcR := IF(r.cR > 0, l.cR / r.cR - 1, 0);
             SELF.dmR := IF (r.mR > 0, l.mR / r.mR - 1, 0);
-            SELF.medIndicator := IF(l.cmRatio > 0 AND r.cmRatio > 0, l.cmRatio / r.cmRatio - 1, 0);
-            SELF.sdIndicator := IF(l.cR > 1, -SELF.dcR, 0);
-            lgr := MAX(l.cR, l.mR);
-            rgr := MAX(r.cR, r.mR);
+            SELF.medIndicator := IF(SELF.cmRatio > 0 AND r.cmRatio > 0, l.cmRatio / r.cmRatio - 1, 0);
+            SELF.sdIndicator := IF(R1 > 1, -SELF.dcR, 0);
             // Assume that cR decreases with the inverse log of time.  First we calculate the base of the log
-            b := POWER(10, (lgr/rgr * LOG(7)));
-            wtp0 := POWER(b, lgr-1);
+            b := POWER(10, (l.cR/r.cR * LOG(periodDays)));
+            wtp0 := POWER(b, l.cR - 1);
             // Don't project beyond 10 weeks
             wtp := IF(wtp0 > 10, 999, wtp0);
-            SELF.weeksToPeak := IF(lgr > 1, IF(lgr < rgr, wtp, 999), 0);
+            SELF.weeksToPeak := IF(l.cR > 1, IF(l.cR < r.cR, wtp, 999), 0);
             SELF := l;
         END;
         metrics2 := JOIN(metrics1, metrics1, LEFT.location = RIGHT.location AND LEFT.period = RIGHT.period - 1,
                             calc1(LEFT, RIGHT), LEFT OUTER);
+        metrics3 := JOIN(metrics2, metrics2, LEFT.location = RIGHT.location AND LEFT.period = RIGHT.period - 1,
+                            calc1(LEFT, RIGHT), LEFT OUTER);
+
         // Gavin, why is this calculation wrong occasionally?
-        metrics3 := ASSERT(PROJECT(metrics2, TRANSFORM(RECORDOF(LEFT),
+        metrics4 := ASSERT(PROJECT(metrics3, TRANSFORM(RECORDOF(LEFT),
                                         SELF.heatIndex := LOG(LEFT.active) * (IF(LEFT.cR > 1, LEFT.cR - 1, 0) +
                                                 IF(LEFT.mr > 1,LEFT.mR - 1, 0) +
                                                 IF(LEFT.medIndicator < 0, -LEFT.medIndicator, 0) +
@@ -126,9 +130,9 @@ EXPORT CalcMetrics := MODULE
             SELF.heatIndex := LOG(r.active) * (cR + mR + mi + sdi) / scaleFactor;
             SELF := r;          
         END;
-        metrics4 := SORT(metrics3, location, -period);
-        metrics5 := ITERATE(metrics4, calc2(LEFT, RIGHT));
-        metrics := SORT(metrics5, location, period);
+        metrics5 := SORT(metrics4, location, -period);
+        metrics6 := ITERATE(metrics5, calc2(LEFT, RIGHT));
+        metrics := SORT(metrics6, location, period);
         return metrics;
     END;
 END;

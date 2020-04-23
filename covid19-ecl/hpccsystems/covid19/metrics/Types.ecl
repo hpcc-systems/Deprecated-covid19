@@ -24,11 +24,11 @@ EXPORT Types := MODULE
         Date_t startDate;
         Date_t endDate;
         STRING iState := 'Initial';
-        DECIMAL8_2 cases;
-        DECIMAL8_2 deaths;
-        DECIMAL8_2 active;
-        metric_t cR;
-        metric_t mR;
+        UNSIGNED cases;
+        UNSIGNED deaths;
+        UNSIGNED active;
+        metric_t cR := 0;
+        metric_t mR := 0;
         metric_t sdIndicator := 0;
         metric_t medIndicator := 0;
         DECIMAL6_3 heatIndex := 0;
@@ -39,7 +39,7 @@ EXPORT Types := MODULE
         DECIMAL8_2 recovered;
         metric_t cases_per_capita := 0;
         metric_t deaths_per_capita := 0;
-        metric_t cmRatio;
+        metric_t cmRatio := 0;
         metric_t dcR := 0;
         metric_t dmR := 0;
         metric_t weeksToPeak := 0;
