@@ -4,8 +4,7 @@ IMPORT hpccsystems.covid19.file.public.JohnHopkins as jh;
 
 IMPORT Std; 
 
-                                    // formattedDate := Std.Date.FromStringToDate(LEFT.last_update[..10], '%Y-%m-%d');
-                                    // SELF.update_date := IF(formattedDate != 0, formattedDate, Std.Date.FromStringToDate(LEFT.last_update[..7], '%m/%d/%Y')),
+
 
 v1CleanDs := PROJECT(jhv1.ds, 
                             TRANSFORM

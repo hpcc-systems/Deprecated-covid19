@@ -2,7 +2,7 @@ IMPORT Std;
 
 EXPORT CTP := MODULE
 
-  EXPORT dailyFilePath := '~hpccsystems::covid19::file::raw::ctp::daily.csv';  
+  EXPORT dailyFilePath := '~hpccsystems::covid19::file::raw::ctp::v1::daily.csv';  
 
 //date,state,positive,negative,pending,hospitalizedCurrently,hospitalizedCumulative,inIcuCurrently,
 //inIcuCumulative,onVentilatorCurrently,onVentilatorCumulative,recovered,hash,dateChecked,death,hospitalized,total,

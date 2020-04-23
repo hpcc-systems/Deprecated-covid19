@@ -20,8 +20,8 @@ export inputLayout := RECORD
   decimal6_3 heatindex;
   decimal5_3 imort;
   decimal5_2 immunepct;
-  unsigned8 newcases;
-  unsigned8 newdeaths;
+  DECIMAL8_2 newcases;
+  DECIMAL8_2 newdeaths;
   unsigned8 recovered;
   decimal5_2 cases_per_capita;
   decimal5_2 deaths_per_capita;

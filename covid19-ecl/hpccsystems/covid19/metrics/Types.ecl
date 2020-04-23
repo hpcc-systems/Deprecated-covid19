@@ -10,12 +10,12 @@ EXPORT Types := MODULE
     EXPORT statsRec := RECORD
         STRING Location;
         Date_t date;
-        UNSIGNED cumCases; // Cumulative confirmed cases
-        UNSIGNED cumDeaths; // Cumulative deaths
-        UNSIGNED cumHosp := 0; // Cumulative number hospitalized
-        UNSIGNED tested := 0; // Cumulative number tested
-        UNSIGNED positive := 0; // Cumulative positive tests
-        UNSIGNED negative := 0; // Cumulative negative te&sts
+        DECIMAL8_2 cumCases; // Cumulative confirmed cases
+        DECIMAL8_2 cumDeaths; // Cumulative deaths
+        DECIMAL8_2 cumHosp := 0; // Cumulative number hospitalized
+        DECIMAL8_2 tested := 0; // Cumulative number tested
+        DECIMAL8_2 positive := 0; // Cumulative positive tests
+        DECIMAL8_2 negative := 0; // Cumulative negative te&sts
     END;
     // Metrics Record
     EXPORT metricsRec := RECORD
@@ -24,9 +24,9 @@ EXPORT Types := MODULE
         Date_t startDate;
         Date_t endDate;
         STRING iState := 'Initial';
-        UNSIGNED cases;
-        UNSIGNED deaths;
-        UNSIGNED active;
+        DECIMAL8_2 cases;
+        DECIMAL8_2 deaths;
+        DECIMAL8_2 active;
         metric_t cR;
         metric_t mR;
         metric_t sdIndicator := 0;
@@ -34,9 +34,9 @@ EXPORT Types := MODULE
         DECIMAL6_3 heatIndex := 0;
         DECIMAL5_3 iMort;
         metric_t immunePct := 0;
-        UNSIGNED newCases;
-        UNSIGNED newDeaths;
-        UNSIGNED recovered;
+        DECIMAL8_2 newCases;
+        DECIMAL8_2 newDeaths;
+        DECIMAL8_2 recovered;
         metric_t cases_per_capita := 0;
         metric_t deaths_per_capita := 0;
         metric_t cmRatio;
@@ -50,15 +50,15 @@ EXPORT Types := MODULE
     EXPORT statsExtRec := RECORD(statsRec)
         UNSIGNED id;
         INTEGER period := 1;
-        UNSIGNED prevCases := 0;
-        UNSIGNED newCases := 0;
-        UNSIGNED prevDeaths := 0;
-        UNSIGNED newDeaths := 0;
+        DECIMAL8_2 prevCases := 0;
+        DECIMAL8_2 newCases := 0;
+        DECIMAL8_2 prevDeaths := 0;
+        DECIMAL8_2 newDeaths := 0;
         REAL periodCGrowth := 0;
         REAL periodMGrowth := 0;
-        UNSIGNED active := 0;
-        UNSIGNED prevActive := 0;
-        UNSIGNED recovered := 0;
+        DECIMAL8_2 active := 0;
+        DECIMAL8_2 prevActive := 0;
+        DECIMAL8_2 recovered := 0;
         REAL iMort := 0;
     END;
     // Population Record
