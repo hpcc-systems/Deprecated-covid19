@@ -30,7 +30,9 @@ EXPORT JohnHopkinsV2 := MODULE
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-19-2020.csv,'+
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-20-2020.csv,'+
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-21-2020.csv,'+
-                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-22-2020.csv' + '}'; 
+                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-22-2020.csv,'+
+                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-23-2020.csv,'+
+                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-24-2020.csv' + '}'; 
                         
 
     EXPORT layout := RECORD

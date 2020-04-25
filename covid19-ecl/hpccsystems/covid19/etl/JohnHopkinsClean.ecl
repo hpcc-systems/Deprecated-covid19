@@ -45,9 +45,16 @@ v2CleanDs := PROJECT(jhv2.ds,
                                 )
       				);  
 
-clean := SORT(v2CleanDs + v1CleanDs, -update_date);
+world := SORT(v2CleanDs + v1CleanDs, -update_date);
+OUTPUT(world,,jh.worldFilePath, THOR, COMPRESSED, OVERWRITE);
 
-OUTPUT(clean,,jh.worldFilePath, THOR, COMPRESSED, OVERWRITE);
-OUTPUT(clean(country='US'),,jh.usFilePath, THOR, COMPRESSED, OVERWRITE);
+
+us := world(country='US');
+OUTPUT(us,,jh.usFilePath, THOR, COMPRESSED, OVERWRITE);
+
+latestDt := MAX(us, update_date);
+
+OUTPUT(TABLE(us(update_date=latestDt), {update_date, REAL total_cases:= SUM(GROUP, confirmed)}, update_date),,NAMED('total_cases_world'));
+OUTPUT(TABLE(world(update_date=latestDt), {update_date, REAL total_cases:= SUM(GROUP, confirmed)}, update_date),,NAMED('total_cases_us'));
 
 

@@ -5,7 +5,7 @@ IMPORT Std;
 
 _typeFilter := 'states':STORED('typeFilter');
 
-latestDate := MAX(metrics.counties, date);
+latestDate := MAX(metrics.states, date);
 leastDate := Std.Date.AdjustDate(latestDate,0,0,-6);
 
 locationsFilter := '':STORED('locationsFilter'); 
