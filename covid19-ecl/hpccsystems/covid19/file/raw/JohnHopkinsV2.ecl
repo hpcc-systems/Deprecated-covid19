@@ -32,7 +32,9 @@ EXPORT JohnHopkinsV2 := MODULE
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-21-2020.csv,'+
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-22-2020.csv,'+
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-23-2020.csv,'+
-                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-24-2020.csv' + '}'; 
+                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-24-2020.csv,'+
+                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-25-2020.csv,'+
+                        'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-26-2020.csv' + '}'; 
                         
 
     EXPORT layout := RECORD
@@ -48,6 +50,8 @@ EXPORT JohnHopkinsV2 := MODULE
         STRING recovered;
         STRING active;
         STRING combined_key;
+        STRING fileName {VIRTUAL(logicalfilename)}
+
     END;
 
     EXPORT ds := DATASET(filePath, layout, CSV(HEADING(1)));  
