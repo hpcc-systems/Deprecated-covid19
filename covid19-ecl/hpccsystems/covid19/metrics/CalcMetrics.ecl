@@ -1,4 +1,4 @@
-IMPORT $.Types;
+﻿IMPORT $.Types;
 metric_t := Types.metric_t;
 statsRec := Types.statsRec;
 metricsRec := Types.metricsRec;
@@ -16,14 +16,15 @@ EXPORT CalcMetrics := MODULE
         statsE0 := PROJECT(statsS, TRANSFORM(statsExtRec, SELF.id := COUNTER, SELF := LEFT));
         // Compute the extended data
         // Extend data with previous reading on each record. Note: sort is descending by date, so current has lower id
-        statsE1 := JOIN(statsE0, statsE0, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - 1, TRANSFORM(RECORDOF(LEFT),
+        statsE1 := ASSERT(JOIN(statsE0, statsE0, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - 1,
+											TRANSFORM(RECORDOF(LEFT),
                             SELF.prevCases := RIGHT.cumCases,
                             SELF.newCases := LEFT.cumCases - RIGHT.cumCases,
                             SELF.prevDeaths := RIGHT.cumDeaths;
                             SELF.newDeaths := LEFT.cumDeaths - RIGHT.cumDeaths,
                             SELF.periodCGrowth := IF(SELF.prevCases > 0, SELF.newCases / SELF.prevCases, 0),
                             SELF.periodMGrowth := IF(SELF.prevDeaths > 0, SELF.newDeaths / SELF.prevDeaths, 0),
-                            SELF := LEFT), LEFT OUTER);
+                            SELF := LEFT), LEFT OUTER),newCases >= 0, 'Warning: newCases < 0.  Location = ' + location + '(' + date + ')');
 
         // Go infectionPeriod days back to see how many have recovered and how many are still active
         statsE2 := JOIN(statsE1, statsE1, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod, TRANSFORM(RECORDOF(LEFT),

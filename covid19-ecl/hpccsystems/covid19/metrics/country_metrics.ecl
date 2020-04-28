@@ -1,4 +1,4 @@
-#WORKUNIT('name', 'metrics_by_country');
+﻿#WORKUNIT('name', 'metrics_by_country');
 
 IMPORT Std;
 IMPORT $.Types;
@@ -43,7 +43,8 @@ rawData3 := rawData2(country != '' AND update_date != 0 AND (COUNT(countryFilter
 //OUTPUT(rawData3[..10000], ALL, NAMED('rawData'));
 //OUTPUT(rawData3(country = 'CHINA'), ALL, NAMED('ChinaRaw'));
 // Make sure there are no missing dates for any of the regions.
-rawData4 := COVID19.FixupMissingDates(rawData3);
+//rawData4 := COVID19.FixupMissingDates(rawData3);
+rawData4 := rawData3;
 //OUTPUT(rawData4[..10000], ALL, NAMED('fixedupData'));
 //OUTPUT(rawData4(country = 'CHINA'), ALL, NAMED('ChinaFixed'));
 // Roll up the data by country for each date
@@ -72,8 +73,10 @@ OUTPUT(popData, NAMED('PopulationData'));
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_country.flat', Thor, OVERWRITE);
 
-metrics := CalcMetrics.WeeklyMetrics(statsData, popData);
+metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData);
 
+// Filter out some bad country names that only had data for one period
+metrics := metrics0(period != 1 OR endDate > 20200401);
 
 
 OUTPUT(metrics, ALL, NAMED('MetricsByWeek'));
