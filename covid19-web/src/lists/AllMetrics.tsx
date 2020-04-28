@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 
 import {Button, Descriptions, Layout, PageHeader, Popover, Table, Tabs} from "antd";
 
@@ -18,9 +18,16 @@ interface AllMetricsProps {
 }
 
 export default function AllMetrics(props: AllMetricsProps) {
-    const [queryGrouped] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
-    const [queryPeriod] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
-    const [queryCatalog] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
+    // const [queryGrouped] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
+    // const [queryPeriod] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
+    // const [queryCatalog] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
+    const queryGrouped =  useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
+    const queryPeriod = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
+    const queryCatalog = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
+    const [queryLocationsFilter, setQueryLocationsFilter] = React.useState<Array<string>>([]);
+    const [queryPeriodFilter, setQueryPeriodFilter] = React.useState<string>('1');
+
+
     const [locationsMeasuresData, setLocationsMeasuresData] = React.useState<any>([]);
     const [allMeasuresData, setAllMeasuresData] = React.useState<any>([]);
     const [locationsFilter, setLocationsFilter] = React.useState<Array<string>>([]);
@@ -28,8 +35,6 @@ export default function AllMetrics(props: AllMetricsProps) {
     const [periodsCatalog, setPeriodsCatalog] = React.useState<any>([]);
     const [dataLoadingStatus, setDataLoadingStatus] = React.useState<boolean>(false);
     const [tableFilterValue, setTableFilterValue]=  React.useState<string>('');
-    const [hasFilterChanged, setHasFilterChanged] = React.useState<boolean>(false);
-    const [refreshFilter, setRefreshFilter] = React.useState<boolean>(false);
     const [filterLength, setFilterLength] = React.useState<number>(2);
 
     function toLocationsFilter(data: any) {
@@ -54,69 +59,76 @@ export default function AllMetrics(props: AllMetricsProps) {
 
     useEffect(() => {
         //This will be called once. Maybe fetch the catalog info and defaults here
-        let filters: Map<string, string> = new Map();
-        filters.set('typeFilter', props.typeFilter);
-
-        queryCatalog.initData(filters).then(() => {
-            setPeriodsCatalog(queryCatalog.getData('catalog_periods'));
-
-        });
-
-            queryPeriod.initData(filters).then(() => {
-                setAllMeasuresData(queryPeriod.getData('metrics_period'));
-                setLocationsFilter(toLocationsFilter(queryPeriod.getData('default_locations')));//Also set the default locations
-                setHasFilterChanged(true);
-                setRefreshFilter(true);
-            });
-    }, []);
-
-
-    useEffect(() => {
-        let filters: Map<string, string> = new Map();
-        filters.set('periodFilter', periodFilter);
-        filters.set('typeFilter', props.typeFilter);
-
-        queryPeriod.initData(filters).then(() => {
-            setAllMeasuresData(queryPeriod.getData('metrics_period'));
-            setLocationsFilter(toLocationsFilter(queryPeriod.getData('default_locations')));//Also set the default locations
-            setHasFilterChanged(true);
-        });
-    }, [periodFilter]);
-
-
-    useEffect(() => {
-        if (refreshFilter) {
+        const fetchData = async () => {
             let filters: Map<string, string> = new Map();
-            filters.set('periodFilter', periodFilter);
-            filters.set('locationsFilter', stringArrayToString(locationsFilter));
             filters.set('typeFilter', props.typeFilter);
-            setDataLoadingStatus(true);
-            setFilterLength(Math.max(2, locationsFilter.length));
-            queryGrouped.initData(filters).then(() => {
 
-                setLocationsMeasuresData(queryGrouped.getData('metrics_grouped'));
-                setDataLoadingStatus(false);
-                setRefreshFilter(false);
-            });
+            await queryCatalog.current.initData(filters);
+            setPeriodsCatalog(queryCatalog.current.getData('catalog_periods'));
+
+            await queryPeriod.current.initData(filters);
+
+            setAllMeasuresData(queryPeriod.current.getData('metrics_period'));
+            let lf = toLocationsFilter(queryPeriod.current.getData('default_locations'));
+            setQueryLocationsFilter(lf);
+            setLocationsFilter(lf);
+
         }
 
-    }, [refreshFilter])
+        fetchData().then();
+    }, [props.typeFilter]); //This will be called only if the typeFilter changes. Should be only once.
+
+
+    useEffect(() => {
+        let filters: Map<string, string> = new Map();
+        filters.set('periodFilter', queryPeriodFilter);
+        filters.set('typeFilter', props.typeFilter);
+
+        queryPeriod.current.initData(filters).then(() => {
+            setAllMeasuresData(queryPeriod.current.getData('metrics_period'));
+            let lf = toLocationsFilter(queryPeriod.current.getData('default_locations'));
+            setQueryLocationsFilter(lf);
+            setLocationsFilter(lf);
+        });
+    }, [queryPeriodFilter, props.typeFilter]);
+
+
+    useEffect(() => {
+
+                let filters: Map<string, string> = new Map();
+                filters.set('periodFilter', queryPeriodFilter);
+                filters.set('locationsFilter', stringArrayToString(queryLocationsFilter));
+                filters.set('typeFilter', props.typeFilter);
+                setDataLoadingStatus(true);
+                setFilterLength(Math.max(2, queryLocationsFilter.length));
+                queryGrouped.current.initData(filters).then(() => {
+
+                    setLocationsMeasuresData(queryGrouped.current.getData('metrics_grouped'));
+                    setDataLoadingStatus(false);
+
+                });
+
+    }, [queryLocationsFilter, queryPeriodFilter, props.typeFilter])
 
     const updateLocationsFilter = (value: any) => {
         if (value) {
-            setLocationsFilter(value.toString().split(','))
+            setLocationsFilter(value.toString().split(','));
         } else {
             setLocationsFilter([]);
         }
-        setHasFilterChanged(true);
+
     }
 
-    const applyFilter = (key: string) => {
-        if (key==='1' && hasFilterChanged) {
-            setRefreshFilter(true);
-            setHasFilterChanged(false);
-        }
+    const applyPeriodFilter = (value: any) => {
+        setQueryPeriodFilter(value);
+        setPeriodFilter(value);
     }
+
+    const applyLocationFilter = () => {
+        setQueryLocationsFilter(locationsFilter);
+    }
+
+
     const stringArrayToString = (value: string[]) => {
         let rslt = '';
         if (value) {
@@ -310,13 +322,17 @@ export default function AllMetrics(props: AllMetricsProps) {
 
             </PageHeader>
 
-
-            <Tabs defaultActiveKey="1" onChange={(activeKey)=>{applyFilter(activeKey)}}>
+            <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}
+                            mode={undefined}
+                            onFilterChange={(value) => applyPeriodFilter(value)}/>
+                            
+            <Tabs defaultActiveKey="1"  onChange={(key)=>{applyLocationFilter()}}>
 
                 {/*<div style={{height:20}}/>*/}
                 <TabPane tab="Analysis" key="1">
 
-                    <span>Selected Period: {periodTitle()}</span>
+
+
                     <div style={{height: 20}}/>
 
                     <Popover placement="rightTop" title={'Metrics Definitions'} content={definitions} trigger="click"
@@ -331,10 +347,8 @@ export default function AllMetrics(props: AllMetricsProps) {
                 </TabPane>
 
 
-                <TabPane tab="Data & Filter" key="2">
-                    <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}
-                                    mode={undefined}
-                                    onFilterChange={(value) => setPeriodFilter(value)}/>
+                <TabPane tab="Data & Locations Filter" key="2">
+
                     <div style={{height: 20}}/>
 
 

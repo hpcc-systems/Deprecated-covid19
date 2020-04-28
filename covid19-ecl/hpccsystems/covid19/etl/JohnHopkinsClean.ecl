@@ -25,6 +25,10 @@ v1CleanDs := PROJECT(jhv1.ds,
                                 )
       				    );  
 
+
+//                                    dt := Std.Date.ConvertDateFormatMultiple(LEFT.last_update, ['%Y-%m-%d', '%m/%d/%y'], '%Y-%m-%d');
+//                                    SELF.update_date :=  Std.Date.FromStringToDate(dt, '%Y-%m-%d');
+
 v2CleanDs := PROJECT(jhv2.ds, 
                             TRANSFORM
                                 (
@@ -35,8 +39,8 @@ v2CleanDs := PROJECT(jhv2.ds,
                                     SELF.country := IF(LEFT.country='Korea, South','SOUTH KOREA',Std.Str.ToUpperCase(LEFT.country)),
                                     SELF.geo_lat := (DECIMAL9_6)LEFT.geo_lat,
                                     SELF.geo_long := (DECIMAL9_6)LEFT.geo_long,
-                                    dt := Std.Date.ConvertDateFormatMultiple(LEFT.last_update, ['%Y-%m-%d', '%m/%d/%y'], '%Y-%m-%d');
-                                    SELF.update_date :=  Std.Date.FromStringToDate(dt, '%Y-%m-%d');
+                                    dtStr := LEFT.fileName[LENGTH(LEFT.fileName)-13..LENGTH(LEFT.fileName)-4];
+                                    SELF.update_date :=  Std.Date.FromStringToDate(dtStr, '%m-%d-%Y');
                                     SELF.confirmed := (UNSIGNED4)LEFT.confirmed,
                                     SELF.deaths := (UNSIGNED4)LEFT.deaths,
                                     SELF.recovered := (UNSIGNED4)LEFT.recovered,
@@ -45,9 +49,16 @@ v2CleanDs := PROJECT(jhv2.ds,
                                 )
       				);  
 
-clean := SORT(v2CleanDs + v1CleanDs, -update_date);
+world := SORT(v2CleanDs + v1CleanDs, -update_date);
+OUTPUT(world,,jh.worldFilePath, THOR, COMPRESSED, OVERWRITE);
+//OUTPUT(CHOOSEN(SORT(world, -update_date), 10000));
 
-OUTPUT(clean,,jh.worldFilePath, THOR, COMPRESSED, OVERWRITE);
-OUTPUT(clean(country='US'),,jh.usFilePath, THOR, COMPRESSED, OVERWRITE);
+us := world(country='US');
+OUTPUT(us,,jh.usFilePath, THOR, COMPRESSED, OVERWRITE);
+
+latestDt := MAX(us, update_date);
+
+OUTPUT(TABLE(us(update_date=latestDt), {update_date, REAL total_cases:= SUM(GROUP, confirmed)}, update_date),,NAMED('total_cases_world'));
+OUTPUT(TABLE(world(update_date=latestDt), {update_date, REAL total_cases:= SUM(GROUP, confirmed)}, update_date),,NAMED('total_cases_us'));
 
 
