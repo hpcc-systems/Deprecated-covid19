@@ -22,10 +22,10 @@ scRecord := RECORD
   unsigned4 update_date;
   decimal9_6 geo_lat;
   decimal9_6 geo_long;
-  unsigned4 confirmed;
-  unsigned4 deaths;
-  unsigned4 recovered;
-  unsigned4 active;
+  REAL8 confirmed;
+  REAL8 deaths;
+  REAL8 recovered;
+  REAL8 active;
   string combined_key;
  END;
 
@@ -49,6 +49,9 @@ rawData4 := rawData3;
 //OUTPUT(rawData4(country = 'CHINA'), ALL, NAMED('ChinaFixed'));
 // Roll up the data by country for each date
 rollupDat := SORT(TABLE(rawData4, {country, update_date, cConfirmed := SUM(GROUP, confirmed), cDeaths := SUM(GROUP, deaths)}, country, update_date), country, update_date);
+
+OUTPUT(rollupDat, ALL, NAMED('RollupStats'));
+
 // Temp for China fixup
 chinaDat := rollupDat(country = 'CHINA');
 //OUTPUT(chinaDat, ALL,  NAMED('ChinaDataFixed'));
