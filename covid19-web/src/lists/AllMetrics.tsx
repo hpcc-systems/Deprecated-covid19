@@ -21,7 +21,7 @@ export default function AllMetrics(props: AllMetricsProps) {
     // const [queryGrouped] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
     // const [queryPeriod] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
     // const [queryCatalog] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
-    const queryGrouped =  useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
+    const queryGrouped = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
     const queryPeriod = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
     const queryCatalog = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
     const [queryLocationsFilter, setQueryLocationsFilter] = React.useState<Array<string>>([]);
@@ -34,7 +34,7 @@ export default function AllMetrics(props: AllMetricsProps) {
     const [periodFilter, setPeriodFilter] = React.useState<string>('1');
     const [periodsCatalog, setPeriodsCatalog] = React.useState<any>([]);
     const [dataLoadingStatus, setDataLoadingStatus] = React.useState<boolean>(false);
-    const [tableFilterValue, setTableFilterValue]=  React.useState<string>('');
+    const [tableFilterValue, setTableFilterValue] = React.useState<string>('');
     const [filterLength, setFilterLength] = React.useState<number>(2);
 
     function toLocationsFilter(data: any) {
@@ -49,7 +49,7 @@ export default function AllMetrics(props: AllMetricsProps) {
 
     function periodTitle(): string {
         let title = '';
-        periodsCatalog.forEach((item:any) => {
+        periodsCatalog.forEach((item: any) => {
             if (periodFilter === item.id) {
                 title = item.title;
             }
@@ -95,18 +95,24 @@ export default function AllMetrics(props: AllMetricsProps) {
 
     useEffect(() => {
 
-                let filters: Map<string, string> = new Map();
-                filters.set('periodFilter', queryPeriodFilter);
-                filters.set('locationsFilter', stringArrayToString(queryLocationsFilter));
-                filters.set('typeFilter', props.typeFilter);
-                setDataLoadingStatus(true);
-                setFilterLength(Math.max(2, queryLocationsFilter.length));
-                queryGrouped.current.initData(filters).then(() => {
+        let filters: Map<string, string> = new Map();
+        filters.set('periodFilter', queryPeriodFilter);
+        filters.set('locationsFilter', stringArrayToString(queryLocationsFilter));
+        filters.set('typeFilter', props.typeFilter);
+        setDataLoadingStatus(true);
+        setFilterLength(queryLocationsFilter.length);
+        if (queryLocationsFilter.length > 0) {
+            queryGrouped.current.initData(filters).then(() => {
 
-                    setLocationsMeasuresData(queryGrouped.current.getData('metrics_grouped'));
-                    setDataLoadingStatus(false);
+                setLocationsMeasuresData(queryGrouped.current.getData('metrics_grouped'));
+                setDataLoadingStatus(false);
 
-                });
+            });
+        } else {
+            console.log('cleared measure data')
+            setLocationsMeasuresData([]);
+            setDataLoadingStatus(false);
+        }
 
     }, [queryLocationsFilter, queryPeriodFilter, props.typeFilter])
 
@@ -266,7 +272,6 @@ export default function AllMetrics(props: AllMetricsProps) {
     };
 
 
-
     const definitions = (
         <div style={{width: 500}}>
             <Descriptions column={1}>
@@ -325,12 +330,13 @@ export default function AllMetrics(props: AllMetricsProps) {
             <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}
                             mode={undefined}
                             onFilterChange={(value) => applyPeriodFilter(value)}/>
-                            
-            <Tabs defaultActiveKey="1"  onChange={(key)=>{applyLocationFilter()}}>
+
+            <Tabs defaultActiveKey="1" onChange={(key) => {
+                applyLocationFilter()
+            }}>
 
                 {/*<div style={{height:20}}/>*/}
                 <TabPane tab="Analysis" key="1">
-
 
 
                     <div style={{height: 20}}/>
@@ -343,7 +349,8 @@ export default function AllMetrics(props: AllMetricsProps) {
                     <div style={{height: 20}}/>
 
 
-                    <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'} valueFiled={'value'} height={filterLength * 200} />
+                    <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'}
+                            valueFiled={'value'} height={filterLength * 200}/>
                 </TabPane>
 
 
@@ -352,10 +359,14 @@ export default function AllMetrics(props: AllMetricsProps) {
                     <div style={{height: 20}}/>
 
 
-                    <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />
+                    <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton/>
                     <div style={{height: 20}}/>
-                    <Table size={'small'} rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData} 
-                           pagination={{pageSize:100}} loading={{spinning: dataLoadingStatus}}
+                    <Button onClick={() => {
+                        updateLocationsFilter('')
+                    }}>Clear Table Selections</Button>
+                    <div style={{height: 20}}/>
+                    <Table size={'small'} rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData}
+                           pagination={{pageSize: 50}} loading={{spinning: dataLoadingStatus}}
                            rowSelection={{
                                type: "checkbox" as "checkbox",
                                ...rowSelection
