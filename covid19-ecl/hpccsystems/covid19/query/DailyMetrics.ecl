@@ -15,12 +15,12 @@ _topX := 5:STORED('topX');
 raw := CASE(_typeFilter, 'states' => metrics.states, 'countries' => metrics.countries, 'counties' => metrics.counties, metrics.states);
 daily := TABLE(raw, {location, 
             date, 
-            DECIMAL8_2 cases:= cumcases, 
-            DECIMAL8_2 new_cases := newcases,
-            DECIMAL8_2 deaths:= cumdeaths,
-            DECIMAL8_2 new_deaths:= newdeaths,
-            DECIMAL8_2 active := active,
-            DECIMAL8_2 recovered:= recovered});
+            REAL8 cases:= cumcases, 
+            REAL8 new_cases := newcases,
+            REAL8 deaths:= cumdeaths,
+            REAL8 new_deaths:= newdeaths,
+            REAL8 active := active,
+            REAL8 recovered:= recovered});
 
 latest := daily(date=latestDate);
 topConfirmed := TOPN(latest,_topX,-cases);
