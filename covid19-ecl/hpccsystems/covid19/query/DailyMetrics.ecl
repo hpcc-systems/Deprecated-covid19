@@ -15,6 +15,7 @@ _topX := 5:STORED('topX');
 raw := CASE(_typeFilter, 'states' => metrics.states, 'countries' => metrics.countries, 'counties' => metrics.counties, metrics.states);
 daily := TABLE(raw, {location, 
             date, 
+            STRING date_string := STD.Date.Year(date) + '-' + STD.Date.Month(date) + '-' + STD.Date.Day(date),
             REAL8 cases:= cumcases, 
             REAL8 new_cases := newcases,
             REAL8 deaths:= cumdeaths,
@@ -23,7 +24,7 @@ daily := TABLE(raw, {location,
             REAL8 recovered:= recovered});
 
 latest := daily(date=latestDate);
-topConfirmed := TOPN(latest,_topX,-cases);
+topConfirmed := TOPN(latest,_topX,-active);
 
 OUTPUT (CHOOSEN(latest,1000),,NAMED('latest'));
 

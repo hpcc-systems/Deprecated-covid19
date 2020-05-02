@@ -324,7 +324,11 @@ export default function AllMetrics(props: AllMetricsProps) {
 
             <PageHeader title={props.title} subTitle={props.description}
             >
-
+                <Descriptions size="small" column={1}>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University, Covid Tracking Project</Descriptions.Item>
+                    <Descriptions.Item label="Filters">Default filters select the top 10 locations by heat index and the current period. Use
+                        the Data & Location Filters tab to customize filters.</Descriptions.Item>
+                </Descriptions>
             </PageHeader>
 
             <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}

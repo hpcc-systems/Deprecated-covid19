@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {QueryData} from "../components/QueryData";
-import {Card, Col, Input, Layout, PageHeader, Row, Statistic, Table, Tabs} from "antd";
+import {Card, Col, Descriptions, Input, Layout, PageHeader, Row, Statistic, Table, Tabs} from "antd";
 import {Space} from "antd/es";
 import {Chart} from "../components/Chart";
 import {GroupedColumn, Line} from "@antv/g2plot";
@@ -205,8 +205,11 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
+        xAxis: {
+          title: {visible:false}
+        },
         data: [],
-        xField: 'date',
+        xField: 'date_string',
         yField: 'active',
         groupField: 'location',
         barSize: 10
@@ -217,11 +220,14 @@ export default function LocationTrends(props: LocationTrendsProps) {
             visible: true,
             text: 'Recovered Cases',
         },
+        xAxis: {
+            title: {visible:false}
+        },
         label: {
             visible: true
         },
         data: [],
-        xField: 'date',
+        xField: 'date_string',
         yField: 'recovered',
         groupField: 'location',
         barSize: 10
@@ -235,8 +241,11 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
+        xAxis: {
+            title: {visible:false}
+        },
         data: [],
-        xField: 'date',
+        xField: 'date_string',
         yField: 'cases',
         groupField: 'location',
         barSize: 10
@@ -250,8 +259,11 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
+        xAxis: {
+            title: {visible:false}
+        },
         data: [],
-        xField: 'date',
+        xField: 'date_string',
         yField: 'deaths',
         groupField: 'location',
         barSize: 10
@@ -267,7 +279,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
             visible: true
         },
         data: [],
-        xField: 'date',
+        xField: 'date_string',
         yField: 'new_cases',
         seriesField: 'location',
     }
@@ -282,16 +294,20 @@ export default function LocationTrends(props: LocationTrendsProps) {
             visible: true
         },
         data: [],
-        xField: 'date',
+        xField: 'date_string',
         yField: 'new_deaths',
         seriesField: 'location',
     }
     return (
         <Layout style={{padding: '20px'}}>
 
-            <PageHeader title={props.title} subTitle={props.description}
-
-            />
+            <PageHeader title={props.title} subTitle={props.description}>
+                <Descriptions size="small" column={1}>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
+                    <Descriptions.Item label="Filters">Default filters select the top 5 locations by active cases. Use
+                        the Data & Filters tab to customize filters.</Descriptions.Item>
+                </Descriptions>
+            </PageHeader>
 
             <Row gutter={16}>
                 <Col span={4}>
@@ -358,9 +374,9 @@ export default function LocationTrends(props: LocationTrendsProps) {
                         <Chart chart={Line} config={chartDeathsIncrease} data={trends}/>
                     </TabPane>
                     <TabPane tab="Cumulative" key="2">
-                        <Chart chart={GroupedColumn} config={chartCases} data={trends}/>
-                        <div style={{height: '10px'}}/>
                         <Chart chart={GroupedColumn} config={chartActive} data={trends}/>
+                        <div style={{height: '10px'}}/>
+                        <Chart chart={GroupedColumn} config={chartCases} data={trends}/>
                         <div style={{height: '10px'}}/>
                         <Chart chart={GroupedColumn} config={chartRecovered} data={trends}/>
                         <div style={{height: '10px'}}/>
