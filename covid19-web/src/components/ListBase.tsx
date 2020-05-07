@@ -5,6 +5,8 @@ import AllMetrics from "../lists/AllMetrics";
 import LocationTrends from "../lists/LocationTrends";
 import AuthService from "../services/AuthService";
 import {AuthForm} from "./AuthForm";
+import StateMetrics from "../lists/StateMetrics";
+import StateMap from "../lists/StateMap";
 
 
 const {Content} = Layout;
@@ -67,10 +69,14 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                         return <AllMetrics key={'states-metrics'} locationAlias={'State'} typeFilter={'states'}
                                            title={this.state.listMetadata.title}
                                            description={this.state.listMetadata.description}/>;
-                    case 'us_states/counties_metrics':
+                    case 'us_counties/counties_metrics':
                         return <AllMetrics key={'counties'} locationAlias={'County'} typeFilter={'counties'}
                                            title={this.state.listMetadata.title}
                                            description={this.state.listMetadata.description}/>;
+                    case 'us_states/map':
+                        // return <StateMetrics title={this.state.listMetadata.title} description={this.state.listMetadata.description}/>
+                        return <StateMap key={'states-map'} title={this.state.listMetadata.title}
+                                         description={this.state.listMetadata.description}/>
                     case 'world_countries/trends':
                         return <LocationTrends key={'countries-trends'} title={this.state.listMetadata.title}
                                                description={this.state.listMetadata.description}

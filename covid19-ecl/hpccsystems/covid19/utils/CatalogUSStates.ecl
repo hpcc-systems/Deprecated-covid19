@@ -124,8 +124,10 @@ EXPORT CatalogUSStates := MODULE
 
 
   EXPORT stateCodeDict := DICTIONARY(states, {code => name});
+  EXPORT stateNameDict := DICTIONARY(states, {name => code});
  
   EXPORT toState(STRING2 stateCode) := stateCodeDict[stateCode].name;
+  EXPORT toCode(STRING stateName) := stateNameDict[stateName].code;
 
 
 END;

@@ -1,4 +1,5 @@
 IMPORT hpccsystems.covid19.file.public.WeeklyMetrics as metrics;
+IMPORT hpccsystems.covid19.utils.CatalogUSStates as states;
 IMPORT Std;
 
 
