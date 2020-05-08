@@ -60,6 +60,16 @@ td.column-number {
   text-align: right !important;
 }
 
+.common_IconBar .icon-bar {
+  display: flex;
+  opacity: .95;
+  flex-wrap: nowrap;
+  margin: 0;
+  white-space: nowrap;
+  line-height: 28px;
+  z-index: 1;
+}
+
 #components-form-demo-normal-login .login-form {
   max-width: 300px;
 }

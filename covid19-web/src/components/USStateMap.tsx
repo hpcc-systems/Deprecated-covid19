@@ -4,19 +4,145 @@ import { Leaflet, topoJsonFolder } from "@hpcc-js/map";
 
 topoJsonFolder("https://cdn.jsdelivr.net/npm/@hpcc-js/map@2.0.0/TopoJSON");
 
+const mapStyle= [
+    {
+        "featureType": "administrative",
+        "elementType": "all",
+        "stylers": [
+            {
+                "saturation": "-100"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative.province",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "landscape",
+        "elementType": "all",
+        "stylers": [
+            {
+                "saturation": -100
+            },
+            {
+                "lightness": 65
+            },
+            {
+                "visibility": "on"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "all",
+        "stylers": [
+            {
+                "saturation": -100
+            },
+            {
+                "lightness": "50"
+            },
+            {
+                "visibility": "simplified"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "all",
+        "stylers": [
+            {
+                "saturation": "-100"
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "simplified"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "all",
+        "stylers": [
+            {
+                "lightness": "30"
+            }
+        ]
+    },
+    {
+        "featureType": "road.local",
+        "elementType": "all",
+        "stylers": [
+            {
+                "lightness": "40"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "elementType": "all",
+        "stylers": [
+            {
+                "saturation": -100
+            },
+            {
+                "visibility": "simplified"
+            }
+        ]
+    },
+    {
+        "featureType": "water",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "hue": "#ffff00"
+            },
+            {
+                "lightness": -25
+            },
+            {
+                "saturation": -97
+            }
+        ]
+    },
+    {
+        "featureType": "water",
+        "elementType": "labels",
+        "stylers": [
+            {
+                "lightness": -25
+            },
+            {
+                "saturation": -100
+            }
+        ]
+    }
+];
+
 interface Props {
     height: string,
     width: string;
     data: any;
     columns: string[];
-    toolTipHandler: (rowObj: any) => void;
+    toolTipHandler: (rowObj: any) => string;
     clickHandler: (rowObj: any, sel: any) => void
 }
 
 class USStates extends Leaflet.USStates {
-    _toolTipHandler: (rowObj: any) => void;
+    _toolTipHandler: (rowObj: any) => string;
 
-    constructor(toolTipHandler: (rowObj: any) => void) {
+    constructor(toolTipHandler: (rowObj: any) => string) {
         super();
         this._toolTipHandler = toolTipHandler;
     }
@@ -25,8 +151,7 @@ class USStates extends Leaflet.USStates {
         let data: any = this._dataMap;
         const row: any = data[featureID];
         const rowObj: any = this.rowToObj(row);
-        this._toolTipHandler(rowObj);
-        return '';
+        return this._toolTipHandler(rowObj);
     }
 
 }
@@ -46,6 +171,7 @@ export function USStateMap(props: Props) {
             if (container.current != null && !plot.current) {
                 const chart =
                     new USStates(props.toolTipHandler)
+                        .mapType("Google")
                         .target(container.current)
                         .columns(props.columns)
                         .data(props.data)
@@ -58,7 +184,7 @@ export function USStateMap(props: Props) {
                         })
 
                 ;
-
+                chart._gmapLayer.googleMapStyles(mapStyle);
                 chart.render();
                 plot.current = chart;
             } else {

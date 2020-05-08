@@ -63,4 +63,4 @@ OUTPUT(TABLE(latest, {date,
                       new_deaths_total:= SUM(GROUP, new_deaths),
                       active_total:= SUM(GROUP, active),
                       recovered_total := SUM(GROUP, recovered)
-                      }, date),,NAMED('summary'));
+                      }, date),,NAMED('summary'));          

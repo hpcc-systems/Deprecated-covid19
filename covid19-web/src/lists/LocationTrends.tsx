@@ -281,7 +281,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
         data: [],
         xField: 'date_string',
         yField: 'new_cases',
-        seriesField: 'location',
+        groupField: 'location',
+        barSize: 10
     }
 
     const chartDeathsIncrease = {
@@ -296,7 +297,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
         data: [],
         xField: 'date_string',
         yField: 'new_deaths',
-        seriesField: 'location',
+        groupField: 'location',
+        barSize: 10
     }
     return (
         <Layout style={{padding: '20px'}}>
@@ -369,9 +371,9 @@ export default function LocationTrends(props: LocationTrendsProps) {
 
                 <Tabs defaultActiveKey="1">
                     <TabPane tab="New" key="1">
-                        <Chart chart={Line} config={chartCasesIncrease} data={trends}/>
+                        <Chart chart={GroupedColumn} config={chartCasesIncrease} data={trends}/>
                         <div style={{height: '10px'}}/>
-                        <Chart chart={Line} config={chartDeathsIncrease} data={trends}/>
+                        <Chart chart={GroupedColumn} config={chartDeathsIncrease} data={trends}/>
                     </TabPane>
                     <TabPane tab="Cumulative" key="2">
                         <Chart chart={GroupedColumn} config={chartActive} data={trends}/>

@@ -11,6 +11,8 @@ interface StateMapProps {
    description: string;
 }
 
+
+
 class SummaryData {
     newCases: number = 0;
     newDeaths: number = 0;
@@ -123,7 +125,10 @@ export default function StateMap(props: StateMapProps) {
     const mapToolTipHandler = (row: any) => {
         //console.log('Current selected status - ' + mapSelectedStatus.current);
         if (!mapSelectedStatus.current) {
-            setMapToolTip(row)
+            setMapToolTip(row);
+            return row.location;
+        } else {
+            return '';
         }
     };
 
@@ -142,12 +147,13 @@ export default function StateMap(props: StateMapProps) {
         "cases", "deaths", "active", "recovered", "status", "period", "cr", "mr",
         "sd_indicator", "med_indicator", "imort", "heat_index"];
 
-    const chartModelData = [{"name": "cR", "value": mapToolTip['cr']},
-        {"name": "mR", "value": mapToolTip['mr']},
-        {"name": "medIndicator", "value": mapToolTip['med_indicator']},
-        {"name": "sdIndicator", "value": mapToolTip['sd_indicator']},
+    const chartModelData = [{"name": "heatIndex", "value": mapToolTip['heat_index']},
         {"name": "iMort", "value": mapToolTip['imort']},
-        {"name": "heatIndex", "value": mapToolTip['heat_index']}];
+        {"name": "sdIndicator", "value": mapToolTip['sd_indicator']},
+        {"name": "medIndicator", "value": mapToolTip['med_indicator']},
+        {"name": "mR", "value": mapToolTip['mr']},
+        {"name": "cR", "value": mapToolTip['cr']}
+        ];
 
     const chartModel = {
         padding: 'auto',
@@ -168,8 +174,7 @@ export default function StateMap(props: StateMapProps) {
         xField: 'value',
         yField: 'name',
         colorField: 'name',
-        color: ['#FF9']
-
+        color: ['#f0a2a4']
     }
 
     const chartSummaryData = [{"name": "New Cases", "value": mapToolTip['new_cases']},
@@ -198,7 +203,7 @@ export default function StateMap(props: StateMapProps) {
         xField: 'value',
         yField: 'name',
         colorField: 'name',
-        color: ['#e86b5b']
+        color: ['#f0a2a4']
 
     }
 
@@ -298,7 +303,7 @@ export default function StateMap(props: StateMapProps) {
                                 clickHandler={(row: any, sel: any) => mapClickHandler(row, sel)}/>
                 </Col>
 
-                <Col span={9} style={{paddingLeft:10}}>
+                <Col span={9} style={{paddingLeft:10, background:'#fff'}   }>
                     <Row>
                         <Col span={24}>
                             {getMapToolTipHeader()}
