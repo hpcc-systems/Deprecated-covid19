@@ -73,10 +73,21 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                         return <AllMetrics key={'counties'} locationAlias={'County'} typeFilter={'counties'}
                                            title={this.state.listMetadata.title}
                                            description={this.state.listMetadata.description}/>;
+                    case 'us_counties/trends':
+                        return <LocationTrends key={'states-trends'} title={this.state.listMetadata.title}
+                                               description={this.state.listMetadata.description} locationAlias={'County'}
+                                               typeFilter={'counties'}/>;
+                    case 'us_counties/map':
+                        // return <StateMetrics title={this.state.listMetadata.title} description={this.state.listMetadata.description}/>
+                        return <StateMap key={'counties-map'} title={this.state.listMetadata.title}
+                                         description={this.state.listMetadata.description} type={'counties'}
+                                         query={'hpccsystems_covid19_query_counties_map'}
+                                         zoomLevel={5}/>
                     case 'us_states/map':
                         // return <StateMetrics title={this.state.listMetadata.title} description={this.state.listMetadata.description}/>
                         return <StateMap key={'states-map'} title={this.state.listMetadata.title}
-                                         description={this.state.listMetadata.description}/>
+                                         description={this.state.listMetadata.description} type={'states'}
+                                         query={'hpccsystems_covid19_query_states_map'} zoomLevel={5}/>
                     case 'world_countries/trends':
                         return <LocationTrends key={'countries-trends'} title={this.state.listMetadata.title}
                                                description={this.state.listMetadata.description}

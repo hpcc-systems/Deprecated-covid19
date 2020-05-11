@@ -36,12 +36,14 @@ processJHClean := FUNCTION
 
 
     tempJhV2 := DATASET(tempSuperFileName, jhv2.layout, CSV(HEADING(1)));        
+    
+    //IF (LENGTH(LEFT.fips) = 4, '0' + LEFT.fips, LEFT.fips),
 
     v2Clean := PROJECT(tempJhV2, 
                                 TRANSFORM
                                     (
                                         jh.layout,
-                                        SELF.fips  := LEFT.fips,
+                                        SELF.fips  := IF (LENGTH(LEFT.fips) = 4, '0' + LEFT.fips, LEFT.fips),
                                         SELF.admin2 := Std.Str.ToUpperCase(LEFT.admin2), 
                                         SELF.state := Std.Str.ToUpperCase(LEFT.state),
                                         SELF.country := IF(LEFT.country='Korea, South','SOUTH KOREA',Std.Str.ToUpperCase(LEFT.country)),

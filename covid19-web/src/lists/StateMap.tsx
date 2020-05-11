@@ -7,10 +7,12 @@ import {Chart} from "../components/Chart";
 
 
 interface StateMapProps {
-   title: string ;
-   description: string;
+    title: string;
+    description: string;
+    type: 'states' | 'counties';
+    query: string;
+    zoomLevel: number;
 }
-
 
 
 class SummaryData {
@@ -23,7 +25,7 @@ class SummaryData {
 }
 
 export default function StateMap(props: StateMapProps) {
-    const queryStatesMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_states_map'));
+    const queryStatesMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_counties_map'));
     const summaryData = useRef<SummaryData>(new SummaryData());
     const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
     const [mapData, setMapData] = useState<any>([]);
@@ -41,7 +43,7 @@ export default function StateMap(props: StateMapProps) {
                 //weights
                 switch (heatMapType) {
                     case 'new_cases':
-                        a.push(item.new_cases);
+                        a.push(item.new_cases > 500? 1000: (item.new_cases > 200? 700: item.new_cases));
                         break;
                     case 'new_deaths':
                         a.push(item.new_deaths);
@@ -51,6 +53,9 @@ export default function StateMap(props: StateMapProps) {
                         break;
                     case 'deaths':
                         a.push(item.deaths);
+                        break;
+                    case 'status':
+                        a.push(item.status_numb);
                         break;
                     default:
                         a.push(item.new_cases);
@@ -82,13 +87,13 @@ export default function StateMap(props: StateMapProps) {
 
     useEffect(() => {
 
-
+        queryStatesMap.current = new QueryData(props.query);
         queryStatesMap.current.initData(undefined).then(() => {
             setSummaryQueryData(queryStatesMap.current.getData('summary'));
             setMapData(toMapData(queryStatesMap.current.getData('latest'), 'new_cases'));
         })
 
-    }, []);
+    }, [props]);
 
     useEffect(() => {
 
@@ -126,7 +131,34 @@ export default function StateMap(props: StateMapProps) {
         //console.log('Current selected status - ' + mapSelectedStatus.current);
         if (!mapSelectedStatus.current) {
             setMapToolTip(row);
-            return row.location;
+            return `<b>${row.location}</b> 
+                    <table>
+                        <tr>
+                        <td>New Cases</td>
+                        <td>${row.new_cases} </td>
+                        </tr>
+                        <tr>
+                        <td>Still Active</td>
+                        <td>${row.active} </td>
+                        </tr>
+                        <tr>
+                        <td>Recovered</td>
+                        <td>${row.recovered} </td>
+                        </tr>
+                        <tr>
+                        <td>New Deaths</td>
+                        <td style="color: red"><b>${row.new_deaths}</b></td>
+                        </tr>
+                        <tr>
+                        <td>Total Deaths</td>
+                        <td style="color: red"><b>${row.deaths}</b></td>
+                        </tr>                        
+                        <tr>
+                        <td>Overall Status</td>
+                        <td style="color: cornflowerblue">${row.status}</td>
+                        </tr>      
+                    </table>
+                   `;
         } else {
             return '';
         }
@@ -153,7 +185,7 @@ export default function StateMap(props: StateMapProps) {
         {"name": "medIndicator", "value": mapToolTip['med_indicator']},
         {"name": "mR", "value": mapToolTip['mr']},
         {"name": "cR", "value": mapToolTip['cr']}
-        ];
+    ];
 
     const chartModel = {
         padding: 'auto',
@@ -211,7 +243,7 @@ export default function StateMap(props: StateMapProps) {
         if (mapToolTip['location']) {
             return mapToolTip['location'];
         } else {
-            return  'PLEASE: View the metrics my selecting a state or mouse over'
+            return 'PLEASE: View the metrics my selecting a state or mouse over'
         }
     }
 
@@ -222,8 +254,10 @@ export default function StateMap(props: StateMapProps) {
             <PageHeader title={props.title} subTitle={props.description}
             >
                 <Descriptions size="small" column={2}>
-                    <Descriptions.Item label="Data Attribution">John Hopkins University, Covid Tracking Project</Descriptions.Item>
-                    <Descriptions.Item label="Filters">Please select a state from the chart to view the metrics</Descriptions.Item>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University, Covid Tracking
+                        Project</Descriptions.Item>
+                    <Descriptions.Item label="Filters">Please select a state from the chart to view the
+                        metrics</Descriptions.Item>
                 </Descriptions>
             </PageHeader>
             <Row gutter={16}>
@@ -291,70 +325,62 @@ export default function StateMap(props: StateMapProps) {
                     <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
                     <Radio.Button value={'cases'}>Total Cases</Radio.Button>
                     <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
+                    <Radio.Button value={'status'}>Stabilized, Spreading...</Radio.Button>
                 </Space>
             </Radio.Group>
             <div style={{height: 20}}/>
+            <USStateMap height={'700px'} width={'inherited'}
+                        columns={mapColumns}
+                        data={mapData} toolTipHandler={(row: any) => mapToolTipHandler(row)}
+                        clickHandler={(row: any, sel: any) => mapClickHandler(row, sel)}
+                        type={props.type} zoomLevel={props.zoomLevel}/>
 
-            <Row>
-                <Col span={15}>
-                    <USStateMap height={'650px'} width={'inherited'}
-                                columns={mapColumns}
-                                data={mapData} toolTipHandler={(row: any) => mapToolTipHandler(row)}
-                                clickHandler={(row: any, sel: any) => mapClickHandler(row, sel)}/>
-                </Col>
+            <h3>{getMapToolTipHeader()}</h3>
+            <Tabs defaultActiveKey={'summary'}>
+                <Tabs.TabPane key={'summary'} tab={'Summary'}>
 
-                <Col span={9} style={{paddingLeft:10, background:'#fff'}   }>
+                    <div style={{height: 20}}/>
+
                     <Row>
-                        <Col span={24}>
-                            {getMapToolTipHeader()}
+                        <Col span={10}>
+                            <h3>Daily Stats</h3>
+                        </Col>
+                        <Col>
+                            {mapToolTip['date_string']}
                         </Col>
                     </Row>
-                    <Tabs defaultActiveKey={'summary'}>
-                        <Tabs.TabPane key={'summary'} tab={'Summary'}>
 
-                            <div style={{height: 20}}/>
+                    <Chart chart={Bar} config={chartSummary} data={chartSummaryData} height={'200px'}/>
 
-                            <Row>
-                                <Col span={10}>
-                                    <h3>Daily Stats</h3>
-                                </Col>
-                                <Col>
-                                    {mapToolTip['date_string']}
-                                </Col>
-                            </Row>
+                    <div style={{height: 20}}/>
 
-                            <Chart chart={Bar} config={chartSummary} data={chartSummaryData} height={'200px'}/>
+                    <Row>
+                        <Col span={10}>
+                            <h3>SIR Model</h3>
+                        </Col>
+                        <Col span={14}>
+                            {mapToolTip['period']}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={10}>
+                            <h4>Status</h4>
+                        </Col>
+                        <Col span={14}>
+                            {mapToolTip['status']}
+                        </Col>
+                    </Row>
 
-                            <div style={{height: 20}}/>
+                    <Chart chart={Bar} config={chartModel} data={chartModelData} height={'200px'}/>
+                </Tabs.TabPane>
+                <Tabs.TabPane key={'daily_trends'} tab={'Daily Trends'}>
 
-                            <Row>
-                                <Col span={10}>
-                                    <h3>SIR Model</h3>
-                                </Col>
-                                <Col span={14}>
-                                    {mapToolTip['period']}
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={10}>
-                                    <h4>Status</h4>
-                                </Col>
-                                <Col span={14}>
-                                    {mapToolTip['status']}
-                                </Col>
-                            </Row>
+                </Tabs.TabPane>
+                <Tabs.TabPane key={'model_trends'} tab={'Model Trends'}>
 
-                            <Chart chart={Bar} config={chartModel} data={chartModelData} height={'200px'}/>
-                        </Tabs.TabPane>
-                        <Tabs.TabPane key={'daily_trends'} tab={'Daily Trends'}>
+                </Tabs.TabPane>
+            </Tabs>
 
-                        </Tabs.TabPane>
-                        <Tabs.TabPane key={'model_trends'} tab={'Model Trends'}>
-
-                        </Tabs.TabPane>
-                    </Tabs>
-                </Col>
-            </Row>
 
         </Layout>);
 }

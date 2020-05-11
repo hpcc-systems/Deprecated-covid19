@@ -5,136 +5,181 @@ import { Leaflet, topoJsonFolder } from "@hpcc-js/map";
 topoJsonFolder("https://cdn.jsdelivr.net/npm/@hpcc-js/map@2.0.0/TopoJSON");
 
 const mapStyle= [
-    {
-        "featureType": "administrative",
-        "elementType": "all",
-        "stylers": [
-            {
-                "saturation": "-100"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative.province",
-        "elementType": "all",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
-        "featureType": "landscape",
-        "elementType": "all",
-        "stylers": [
-            {
-                "saturation": -100
-            },
-            {
-                "lightness": 65
-            },
-            {
-                "visibility": "on"
-            }
-        ]
-    },
-    {
-        "featureType": "poi",
-        "elementType": "all",
-        "stylers": [
-            {
-                "saturation": -100
-            },
-            {
-                "lightness": "50"
-            },
-            {
-                "visibility": "simplified"
-            }
-        ]
-    },
-    {
-        "featureType": "road",
-        "elementType": "all",
-        "stylers": [
-            {
-                "saturation": "-100"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway",
-        "elementType": "all",
-        "stylers": [
-            {
-                "visibility": "simplified"
-            }
-        ]
-    },
-    {
-        "featureType": "road.arterial",
-        "elementType": "all",
-        "stylers": [
-            {
-                "lightness": "30"
-            }
-        ]
-    },
-    {
-        "featureType": "road.local",
-        "elementType": "all",
-        "stylers": [
-            {
-                "lightness": "40"
-            }
-        ]
-    },
-    {
-        "featureType": "transit",
-        "elementType": "all",
-        "stylers": [
-            {
-                "saturation": -100
-            },
-            {
-                "visibility": "simplified"
-            }
-        ]
-    },
-    {
-        "featureType": "water",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "hue": "#ffff00"
-            },
-            {
-                "lightness": -25
-            },
-            {
-                "saturation": -97
-            }
-        ]
-    },
-    {
-        "featureType": "water",
-        "elementType": "labels",
-        "stylers": [
-            {
-                "lightness": -25
-            },
-            {
-                "saturation": -100
-            }
-        ]
-    }
-];
+        {
+            "featureType": "all",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "saturation": 36
+                },
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 40
+                }
+            ]
+        },
+        {
+            "featureType": "all",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+                {
+                    "visibility": "on"
+                },
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 16
+                }
+            ]
+        },
+        {
+            "featureType": "all",
+            "elementType": "labels.icon",
+            "stylers": [
+                {
+                    "visibility": "off"
+                }
+            ]
+        },
+        {
+            "featureType": "administrative",
+            "elementType": "geometry.fill",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 20
+                }
+            ]
+        },
+        {
+            "featureType": "administrative",
+            "elementType": "geometry.stroke",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 17
+                },
+                {
+                    "weight": 1.2
+                }
+            ]
+        },
+        {
+            "featureType": "landscape",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 20
+                }
+            ]
+        },
+        {
+            "featureType": "poi",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 21
+                }
+            ]
+        },
+        {
+            "featureType": "road.highway",
+            "elementType": "geometry.fill",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 17
+                }
+            ]
+        },
+        {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 29
+                },
+                {
+                    "weight": 0.2
+                }
+            ]
+        },
+        {
+            "featureType": "road.arterial",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 18
+                }
+            ]
+        },
+        {
+            "featureType": "road.local",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 16
+                }
+            ]
+        },
+        {
+            "featureType": "transit",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 19
+                }
+            ]
+        },
+        {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#000000"
+                },
+                {
+                    "lightness": 17
+                }
+            ]
+        }
+    ]
+;
 
 interface Props {
     height: string,
     width: string;
     data: any;
+    zoomLevel: number;
     columns: string[];
+    type: 'states' | 'counties';
     toolTipHandler: (rowObj: any) => string;
     clickHandler: (rowObj: any, sel: any) => void
 }
@@ -155,7 +200,22 @@ class USStates extends Leaflet.USStates {
     }
 
 }
+class USCounties extends Leaflet.USCounties {
+    _toolTipHandler: (rowObj: any) => string;
 
+    constructor(toolTipHandler: (rowObj: any) => string) {
+        super();
+        this._toolTipHandler = toolTipHandler;
+    }
+
+    tooltipHandler(l: any, featureID: any) {
+        let data: any = this._dataMap;
+        const row: any = data[featureID];
+        const rowObj: any = this.rowToObj(row);
+        return this._toolTipHandler(rowObj);
+    }
+
+}
 export function USStateMap(props: Props) {
     const plot = React.useRef<any>(undefined);
     const container = React.useRef<HTMLElement|null>(null);
@@ -169,21 +229,24 @@ export function USStateMap(props: Props) {
     useEffect(() => {
         function initChart() {
             if (container.current != null && !plot.current) {
-                const chart =
-                    new USStates(props.toolTipHandler)
-                        .mapType("Google")
-                        .target(container.current)
-                        .columns(props.columns)
-                        .data(props.data)
-                        .autoZoomToFit(false)
-                        .defaultLat(38.2)
-                        .defaultLong(-98.6)
-                        .defaultZoom(4)
-                        .on("click", (row: any, col: any, sel: any) => {
-                            props.clickHandler(row, sel);
-                        })
-
-                ;
+                let chart: any;
+                if (props.type === 'states') {
+                    chart =
+                        new USStates(props.toolTipHandler)
+                } else {
+                    chart = new USCounties(props.toolTipHandler)
+                }
+                chart.mapType("Google")
+                    .target(container.current)
+                    .columns(props.columns)
+                    .data(props.data)
+                    .autoZoomToFit(false)
+                    .defaultLat(38.2)
+                    .defaultLong(-98.6)
+                    .defaultZoom(props.zoomLevel)
+                    .on("click", (row: any, col: any, sel: any) => {
+                        props.clickHandler(row, sel);
+                    });
                 chart._gmapLayer.googleMapStyles(mapStyle);
                 chart.render();
                 plot.current = chart;

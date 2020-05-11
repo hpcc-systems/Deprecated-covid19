@@ -6,6 +6,7 @@ EXPORT DailyMetrics := MODULE
 
 
     EXPORT statsrec := RECORD
+        string fips;
         string location;
         unsigned4 date;
         REAL8 cumcases;

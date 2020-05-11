@@ -1,14 +1,17 @@
-#WORKUNIT('name', 'hpccsystems_covid19_query_states_map');
+#WORKUNIT('name', 'hpccsystems_covid19_query_counties_map');
 
 IMPORT hpccsystems.covid19.file.public.DailyMetrics AS dailyMetrics;  
 IMPORT hpccsystems.covid19.file.public.WeeklyMetrics AS weeklyMetrics;  
 IMPORT hpccsystems.covid19.utils.CatalogUSStates as states;
 IMPORT Std;
+IMPORT hpccsystems.covid19.file.public.CountiesFIPS as fipsClean;
 
 
 latestDate := MAX(dailyMetrics.states, date);
 
-daily := JOIN(dailyMetrics.states (date=latestDate), weeklyMetrics.states (period = 1), 
+allFips := TABLE(fipsClean.ds, {fips});
+
+daily := JOIN(dailyMetrics.counties (date=latestDate), weeklyMetrics.counties (period = 1), 
           LEFT.location=RIGHT.location,
           TRANSFORM ({STRING location,
                       STRING location_code,
@@ -33,7 +36,7 @@ daily := JOIN(dailyMetrics.states (date=latestDate), weeklyMetrics.states (perio
                       },
 
                       SELF.location := LEFT.location,
-                      SELF.location_code := states.toCode(LEFT.location),
+                      SELF.location_code := LEFT.fips,
                       SELF.date := LEFT.date,
                       SELF.date_string := Std.Date.DateToString(LEFT.date , '%B %e, %Y'),
                       SELF.cases := LEFT.cumcases,
@@ -58,17 +61,14 @@ daily := JOIN(dailyMetrics.states (date=latestDate), weeklyMetrics.states (perio
                       SELF.sd_indicator := RIGHT.sdIndicator,
                       SELF.med_indicator := RIGHT.medIndicator,
                       SELF.imort := RIGHT.imort,
-                      SELF.heat_index := RIGHT.heatIndex,
-                      
+                      SELF.heat_index := RIGHT.heatIndex
                       ));
 
+fipsCorrectedDaily := JOIN(allFips, daily, LEFT.FIPS=RIGHT.location_code, TRANSFORM({daily}, SELF.location_code:= LEFT.fips, SELF:= RIGHT), LEFT OUTER);
 
+OUTPUT (fipsCorrectedDaily,ALL,NAMED('latest'));
 
-latest := daily(date=latestDate);
-
-OUTPUT (latest,ALL,NAMED('latest'));
-
-OUTPUT(TABLE(latest, {date, 
+OUTPUT(TABLE(fipsCorrectedDaily, {date, 
                       cases_total:= SUM(GROUP, cases), 
                       new_cases_total:= SUM(GROUP, new_cases), 
                       deaths_total:= SUM(GROUP, deaths), 
