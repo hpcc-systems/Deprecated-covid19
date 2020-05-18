@@ -1,13 +1,13 @@
 import React, {useEffect} from "react";
 import {QueryData} from "../components/QueryData";
-import {Card, Col, Input, Layout, PageHeader, Row, Statistic, Table, Tabs} from "antd";
+import {Card, Col, Descriptions, Input, Layout, PageHeader, Row, Statistic, Table, Tabs} from "antd";
 import {Space} from "antd/es";
 import {Chart} from "../components/Chart";
 import {GroupedColumn, Line} from "@antv/g2plot";
 
 
 const {TabPane} = Tabs;
-const { Search } = Input;
+const {Search} = Input;
 
 
 interface LocationTrendsProps {
@@ -21,7 +21,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
     const [queryTrends] = React.useState<QueryData>(new QueryData('hpccsystems_covid19_query_daily_metrics'));
     const [trends, setTrends] = React.useState<any>([]);
     const [latest, setLatest] = React.useState<any>([]);
-    const [tableFilterValue, setTableFilterValue]=  React.useState<string>('');
+    const [tableFilterValue, setTableFilterValue] = React.useState<string>('');
     const [locationsFilter, setLocationsFilter] = React.useState<Array<string>>([]);
 
     const [totalCases, setTotalCases] = React.useState<string>('');
@@ -65,8 +65,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
             });
 
 
-
-       }
+        }
     }, [refreshData]);
 
     function setSummary(data: any) {
@@ -123,7 +122,6 @@ export default function LocationTrends(props: LocationTrendsProps) {
             updateLocationsFilter(selectedRowKeys);
         },
         selectedRowKeys: locationsFilter,
-
     };
 
     const filterTable = [
@@ -206,8 +204,11 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
-        data:[],
-        xField: 'date',
+        xAxis: {
+          title: {visible:false}
+        },
+        data: [],
+        xField: 'date_string',
         yField: 'active',
         groupField: 'location',
         barSize: 10
@@ -218,13 +219,17 @@ export default function LocationTrends(props: LocationTrendsProps) {
             visible: true,
             text: 'Recovered Cases',
         },
+        xAxis: {
+            title: {visible:false}
+        },
         label: {
             visible: true
         },
-        data:[],
-        xField: 'date',
+        data: [],
+        xField: 'date_string',
         yField: 'recovered',
-        seriesField: 'location',
+        groupField: 'location',
+        barSize: 10
     }
     const chartCases = {
         padding: 'auto',
@@ -235,8 +240,11 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
-        data:[],
-        xField: 'date',
+        xAxis: {
+            title: {visible:false}
+        },
+        data: [],
+        xField: 'date_string',
         yField: 'cases',
         groupField: 'location',
         barSize: 10
@@ -250,8 +258,11 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
-        data:[],
-        xField: 'date',
+        xAxis: {
+            title: {visible:false}
+        },
+        data: [],
+        xField: 'date_string',
         yField: 'deaths',
         groupField: 'location',
         barSize: 10
@@ -266,10 +277,11 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
-        data:[],
-        xField: 'date',
+        data: [],
+        xField: 'date_string',
         yField: 'new_cases',
-        seriesField: 'location',
+        groupField: 'location',
+        barSize: 10
     }
 
     const chartDeathsIncrease = {
@@ -281,25 +293,48 @@ export default function LocationTrends(props: LocationTrendsProps) {
         label: {
             visible: true
         },
-        data:[],
-        xField: 'date',
+        data: [],
+        xField: 'date_string',
         yField: 'new_deaths',
-        seriesField: 'location',
+        groupField: 'location',
+        barSize: 10
     }
     return (
-        <Layout style={{padding: '20px'}} >
+        <Layout style={{padding: '20px'}}>
 
-            <PageHeader title={props.title} subTitle={props.description}
-
-            />
+            <PageHeader title={props.title} subTitle={props.description}>
+                <Descriptions size="small" column={1}>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
+                    <Descriptions.Item label="Filters">Default filters select the top 5 locations by active cases. Use
+                        the Data & Filters tab to customize filters.</Descriptions.Item>
+                </Descriptions>
+            </PageHeader>
 
             <Row gutter={16}>
                 <Col span={4}>
                     <Card>
                         <Statistic
+                            title="New Cases"
+                            value={casesIncrease}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+                <Col span={4}>
+                    <Card>
+                        <Statistic
+                            title="New Deaths"
+                            value={deathsIncrease}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+                <Col span={4}>
+                    <Card>
+                        <Statistic
                             title="Active Cases"
                             value={casesActive}
-                            valueStyle={{ color: '#cf1322' }}
+                            valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                 </Col>
@@ -308,7 +343,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
                         <Statistic
                             title="Recovered Cases"
                             value={casesRecovered}
-                            valueStyle={{ color: '#cf1322' }}
+                            valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                 </Col>
@@ -317,7 +352,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
                         <Statistic
                             title="Total Cases"
                             value={totalCases}
-                            valueStyle={{ color: '#cf1322' }}
+                            valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                 </Col>
@@ -326,52 +361,39 @@ export default function LocationTrends(props: LocationTrendsProps) {
                         <Statistic
                             title="Total Deaths"
                             value={totalDeaths}
-                            valueStyle={{ color: '#cf1322' }}
+                            valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                 </Col>
-                <Col span={4}>
-                <Card>
-                    <Statistic
-                        title="New Cases"
-                        value={casesIncrease}
-                        valueStyle={{ color: '#cf1322' }}
-                    />
-                </Card>
-            </Col>
-            <Col span={4}>
-                <Card>
-                    <Statistic
-                        title="New Deaths"
-                        value={deathsIncrease}
-                        valueStyle={{ color: '#cf1322' }}
-                    />
-                </Card>
-            </Col>
             </Row>
             <Space direction={'vertical'}>
 
                 <Tabs defaultActiveKey="1">
-                    <TabPane tab="Active" key="1">
+                    <TabPane tab="New" key="1">
+                        <Chart chart={GroupedColumn} config={chartCasesIncrease} data={trends}/>
+                        <div style={{height: '10px'}}/>
+                        <Chart chart={GroupedColumn} config={chartDeathsIncrease} data={trends}/>
+                    </TabPane>
+                    <TabPane tab="Cumulative" key="2">
                         <Chart chart={GroupedColumn} config={chartActive} data={trends}/>
-                        <div style={{height:'10px'}}/>
-                        <Chart chart={Line} config={chartRecovered} data={trends}/>
-                    </TabPane>
-                    <TabPane tab="Cases" key="2">
+                        <div style={{height: '10px'}}/>
                         <Chart chart={GroupedColumn} config={chartCases} data={trends}/>
-                        <div style={{height:'10px'}}/>
-                        <Chart chart={Line} config={chartCasesIncrease} data={trends}/>
-                    </TabPane>
-                    <TabPane tab="Deaths" key="3">
+                        <div style={{height: '10px'}}/>
+                        <Chart chart={GroupedColumn} config={chartRecovered} data={trends}/>
+                        <div style={{height: '10px'}}/>
                         <Chart chart={GroupedColumn} config={chartDeaths} data={trends}/>
-                        <div style={{height:'10px'}}/>
-                        <Chart chart={Line} config={chartDeathsIncrease} data={trends}/>
                     </TabPane>
+                    {/*<TabPane tab="Deaths" key="3">*/}
+                    {/*    <div style={{height:'10px'}}/>*/}
+                    {/*    */}
+                    {/*</TabPane>*/}
                     <TabPane tab="Data & Filters   " key="4">
                         <Space direction={'vertical'}>
-                            <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton />
+                            <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)}
+                                    enterButton/>
 
-                            <Table size={'small'} rowKey={'location'} scroll={{y: 500}}  pagination={false} columns={filterTable} dataSource={latest} rowSelection={rowSelection}/>
+                            <Table size={'small'} rowKey={'location'} scroll={{y: 500}} pagination={false}
+                                   columns={filterTable} dataSource={latest} rowSelection={rowSelection}/>
                         </Space>
                     </TabPane>
 

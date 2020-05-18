@@ -13,10 +13,10 @@ EXPORT JohnHopkins := MODULE
         Std.Date.Date_t update_date;
         DECIMAL9_6 geo_lat;
         DECIMAL9_6 geo_long;
-        UNSIGNED4 confirmed;
-        UNSIGNED4 deaths;
-        UNSIGNED4 recovered;
-        UNSIGNED4 active;
+        REAL8 confirmed;
+        REAL8 deaths;
+        REAL8 recovered;
+        REAL8 active;
         STRING50 combined_key;
     END;
 

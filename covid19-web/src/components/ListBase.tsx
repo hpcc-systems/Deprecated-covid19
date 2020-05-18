@@ -5,6 +5,9 @@ import AllMetrics from "../lists/AllMetrics";
 import LocationTrends from "../lists/LocationTrends";
 import AuthService from "../services/AuthService";
 import {AuthForm} from "./AuthForm";
+import StateMetrics from "../lists/StateMetrics";
+import StateMap from "../lists/StateMap";
+import LocationMap from "../lists/LocationMap";
 
 
 const {Content} = Layout;
@@ -67,10 +70,33 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                         return <AllMetrics key={'states-metrics'} locationAlias={'State'} typeFilter={'states'}
                                            title={this.state.listMetadata.title}
                                            description={this.state.listMetadata.description}/>;
-                    case 'us_states/counties_metrics':
+                    case 'us_counties/counties_metrics':
                         return <AllMetrics key={'counties'} locationAlias={'County'} typeFilter={'counties'}
                                            title={this.state.listMetadata.title}
                                            description={this.state.listMetadata.description}/>;
+                    case 'us_counties/trends':
+                        return <LocationTrends key={'states-trends'} title={this.state.listMetadata.title}
+                                               description={this.state.listMetadata.description} locationAlias={'County'}
+                                               typeFilter={'counties'}/>;
+                    case 'us_counties/map':
+                        // return <StateMetrics title={this.state.listMetadata.title} description={this.state.listMetadata.description}/>
+                        // return <StateMap key={'counties-map'} title={this.state.listMetadata.title}
+                        //                  description={this.state.listMetadata.description} type={'counties'}
+                        //                  query={'hpccsystems_covid19_query_counties_map'}
+                        //                  zoomLevel={5}/>
+                        return <LocationMap key={'states-map'} title={this.state.listMetadata.title}
+                                            description={this.state.listMetadata.description}
+                                            query={'hpccsystems_covid19_query_counties_map'} zoom={5} geoLat={38.2}
+                                            geoLong={-98.6} geoFile={'us-counties.geojson'} geoKeyField={'GEOID'}/>
+                    case 'us_states/map':
+                        // return <StateMetrics title={this.state.listMetadata.title} description={this.state.listMetadata.description}/>
+                        // return <StateMap key={'states-map'} title={this.state.listMetadata.title}
+                        //                  description={this.state.listMetadata.description} type={'states'}
+                        //                  query={'hpccsystems_covid19_query_states_map'} zoomLevel={5}/>
+                        return <LocationMap key={'states-map'} title={this.state.listMetadata.title}
+                                            description={this.state.listMetadata.description}
+                                            query={'hpccsystems_covid19_query_states_map'} zoom={4.5} geoLat={38.2}
+                                            geoLong={-98.6} geoFile={'us-states.geojson'} geoKeyField={'name'}/>
                     case 'world_countries/trends':
                         return <LocationTrends key={'countries-trends'} title={this.state.listMetadata.title}
                                                description={this.state.listMetadata.description}
@@ -79,6 +105,11 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                         return <AllMetrics key={'countries-metrics'} locationAlias={'Country'} typeFilter={'countries'}
                                            title={this.state.listMetadata.title}
                                            description={this.state.listMetadata.description}/>
+                    case 'world_countries/countries_map':
+                        return <LocationMap key={'countries-map'} title={this.state.listMetadata.title}
+                                            description={this.state.listMetadata.description}
+                                            query={'hpccsystems_covid19_query_countries_map'} zoom={2} geoLat={0}
+                                            geoLong={0} geoFile={'countries.geojson'} geoKeyField={'name'}/>
                     default:
                         return '';
                 }

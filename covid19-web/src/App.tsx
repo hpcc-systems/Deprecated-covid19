@@ -134,7 +134,7 @@ export class App extends Component<AppProps, AppState> {
                 </Header>
 
                 <Layout>
-                    <Sider width={200}>
+                    <Sider width={240}>
                         <Nav onSelect={(key: string) => this.setState({selectedListId: key})}
                              selectedKey={this.state.selectedListId} module={this.state.selectedModule}/>
                     </Sider>

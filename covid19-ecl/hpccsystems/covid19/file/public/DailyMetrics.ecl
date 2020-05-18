@@ -6,28 +6,29 @@ EXPORT DailyMetrics := MODULE
 
 
     EXPORT statsrec := RECORD
+        string fips;
         string location;
         unsigned4 date;
-        DECIMAL8_2 cumcases;
-        DECIMAL8_2 cumdeaths;
-        DECIMAL8_2 cumhosp;
-        DECIMAL8_2 tested;
-        DECIMAL8_2 positive;
-        DECIMAL8_2 negative;
+        REAL8 cumcases;
+        REAL8 cumdeaths;
+        REAL8 cumhosp;
+        REAL8 tested;
+        REAL8 positive;
+        REAL8 negative;
     END;
 
     EXPORT Layout := RECORD (statsrec)
         unsigned8 id;
         integer8 period;
-        DECIMAL8_2 prevcases;
-        DECIMAL8_2 newcases;
-        DECIMAL8_2 prevdeaths;
-        DECIMAL8_2 newdeaths;
+        REAL8 prevcases;
+        REAL8 newcases;
+        REAL8 prevdeaths;
+        REAL8 newdeaths;
         real8 periodcgrowth;
         real8 periodmgrowth;
-        DECIMAL8_2 active;
-        DECIMAL8_2 prevactive;
-        DECIMAL8_2 recovered;
+        REAL8 active;
+        REAL8 prevactive;
+        REAL8 recovered;
         real8 imort;
     END;
 

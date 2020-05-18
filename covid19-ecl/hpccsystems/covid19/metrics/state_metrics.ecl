@@ -20,10 +20,10 @@ scRecord := RECORD
   unsigned4 update_date;
   decimal9_6 geo_lat;
   decimal9_6 geo_long;
-  unsigned4 confirmed;
-  unsigned4 deaths;
-  unsigned4 recovered;
-  unsigned4 active;
+  REAL8 confirmed;
+  REAL8 deaths;
+  REAL8 recovered;
+  REAL8 active;
   string combined_key;
  END;
 
@@ -33,7 +33,7 @@ OUTPUT(rawDatIn0[..10000], ALL, NAMED('Raw'));
 //OUTPUT(rawDatIn0(update_date = 0), ALL, NAMED('RawBadDate'));
 
 // Roll up the data by state
-rawDatIn1 := TABLE(rawDatIn0, {state, update_date, stConfirmed := SUM(GROUP, confirmed), stDeaths := SUM(GROUP, deaths)}, state, update_date);
+rawDatIn1 := TABLE(rawDatIn0, {fips, state, update_date, stConfirmed := SUM(GROUP, confirmed), stDeaths := SUM(GROUP, deaths)}, state, update_date);
 
 
 _statesFilter := '':STORED('statesFilter');
@@ -44,6 +44,7 @@ statesFilter := Std.Str.SplitWords(_statesFilter, ',');
 rawDatIn := SORT(rawDatIn1(state != '' AND update_date > 0 AND (COUNT(statesFilter) = 0 OR state IN statesFilter)), state, update_date);
 
 statsData := PROJECT(rawDatIn, TRANSFORM(statsRec,
+                                            SELF.fips := LEFT.fips,
                                             SELF.location := LEFT.state,
                                             SELF.date := LEFT.update_date,
                                             SELF.cumCases := LEFT.stConfirmed,

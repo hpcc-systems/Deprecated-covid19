@@ -11,7 +11,8 @@ export default class ModuleService {
 //{id:'home', title: 'Home', defaultListId: '', isDefault: true},
     private modules = [
                        {id:'world_countries', title: 'World', isDefault: true},
-                       {id:'us_states', title: 'US', isDefault: false}];//Inline Data
+                       {id:'us_states', title: 'US', isDefault: false},
+                       {id:'us_counties', title: 'US Counties', isDefault: false}];//Inline Data
 
     getModules () : Promise <Module[]> {
         return new Promise<Module[]>(resolve => {

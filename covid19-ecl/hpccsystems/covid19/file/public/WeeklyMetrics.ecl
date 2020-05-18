@@ -20,8 +20,8 @@ export inputLayout := RECORD
   decimal6_3 heatindex;
   decimal5_3 imort;
   decimal5_2 immunepct;
-  DECIMAL8_2 newcases;
-  DECIMAL8_2 newdeaths;
+  REAl8 newcases;
+  REAl8 newdeaths;
   unsigned8 recovered;
   decimal5_2 cases_per_capita;
   decimal5_2 deaths_per_capita;
@@ -46,7 +46,7 @@ EXPORT GroupedLayout := RECORD
     unsigned4 enddate;
     unsigned8 perioddays;
     STRING50  measure := ''; 
-    DECIMAL8_2     value := 0; 
+    REAl8     value := 0; 
 END;
 
 EXPORT LocationLayout := RECORD

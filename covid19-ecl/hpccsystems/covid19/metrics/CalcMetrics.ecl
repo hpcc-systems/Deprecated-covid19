@@ -5,12 +5,13 @@ metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
 statsExtRec := Types.statsExtRec;
 
-SHARED InfectionPeriod := 10;
-SHARED periodDays := 7;
-SHARED scaleFactor := 5;  // Lower will give more hot spots.
-SHARED minActDefault := 20; // Minimum cases to be considered emerging, by default.
+
 
 EXPORT CalcMetrics := MODULE
+		SHARED InfectionPeriod := 10;
+		SHARED periodDays := 7;
+		SHARED scaleFactor := 5;  // Lower will give more hot spots.
+		SHARED minActDefault := 20; // Minimum cases to be considered emerging, by default.
     EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats) := FUNCTION
         statsS := SORT(stats, location, -date);
         statsE0 := PROJECT(statsS, TRANSFORM(statsExtRec, SELF.id := COUNTER, SELF := LEFT));
@@ -47,6 +48,7 @@ EXPORT CalcMetrics := MODULE
         statsGrpd := GROUP(statsGrpd1, location, period);
         metricsRec doRollup(statsExtRec r, DATASET(statsExtRec) recs) := TRANSFORM
             SELF.location := r.location;
+						SELF.fips := r.fips;
             SELF.period := r.period;
             cRecs := recs(cumCases > 0);
             mRecs := recs(cumDeaths > 0);

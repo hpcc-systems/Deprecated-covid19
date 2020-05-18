@@ -10,6 +10,7 @@ EXPORT Types := MODULE
 		EXPORT count_t := INTEGER8;
     // Daily Covid Record
     EXPORT statsRec := RECORD
+        STRING fips := '';//will be needed to map counties
         STRING Location;
         Date_t date;
         count_t cumCases; // Cumulative confirmed cases
@@ -21,6 +22,7 @@ EXPORT Types := MODULE
     END;
     // Metrics Record
     EXPORT metricsRec := RECORD
+				STRING fips;
         STRING location;
         UNSIGNED period := 1;
         Date_t startDate;

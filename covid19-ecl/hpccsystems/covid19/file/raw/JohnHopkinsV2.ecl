@@ -1,3 +1,5 @@
+IMPORT STD;
+
 EXPORT JohnHopkinsV2 := MODULE 
     EXPORT filePath := '~{hpccsystems::covid19::file::raw::JohnHopkins::V2::03-22-2020.csv,'+
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::03-23-2020.csv,'+
@@ -35,6 +37,9 @@ EXPORT JohnHopkinsV2 := MODULE
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-24-2020.csv,'+
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-25-2020.csv,'+
                         'hpccsystems::covid19::file::raw::JohnHopkins::V2::04-26-2020.csv' + '}'; 
+
+
+                        
                         
 
     EXPORT layout := RECORD

@@ -22,10 +22,10 @@ scRecord := RECORD
   unsigned4 update_date;
   decimal9_6 geo_lat;
   decimal9_6 geo_long;
-  unsigned4 confirmed;
-  unsigned4 deaths;
-  unsigned4 recovered;
-  unsigned4 active;
+  REAL8 confirmed;
+  REAL8 deaths;
+  REAL8 recovered;
+  REAL8 active;
   string combined_key;
  END;
 // Filter county info
@@ -40,6 +40,7 @@ countyDatIn := countyDatIn2(update_date != 0 AND admin2 != '' AND admin2 != 'UNA
 OUTPUT(countyDatIn[.. 10000], ALL, NAMED('Raw'));
 
 statsData := PROJECT(countyDatIn, TRANSFORM(statsRec,
+                                            SELF.fips := LEFT.fips,
                                             SELF.location := LEFT.combined_key,
                                             SELF.date := LEFT.update_date,
                                             SELF.cumCases := LEFT.confirmed,
