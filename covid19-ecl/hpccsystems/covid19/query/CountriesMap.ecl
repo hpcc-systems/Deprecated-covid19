@@ -1,4 +1,4 @@
-#WORKUNIT('name', 'hpccsystems_covid19_query_states_map');
+#WORKUNIT('name', 'hpccsystems_covid19_query_countries_map');
 
 IMPORT hpccsystems.covid19.file.public.DailyMetrics AS dailyMetrics;  
 IMPORT hpccsystems.covid19.file.public.WeeklyMetrics AS weeklyMetrics;  
@@ -8,7 +8,7 @@ IMPORT Std;
 
 latestDate := MAX(dailyMetrics.states, date);
 
-daily := JOIN(dailyMetrics.states (date=latestDate), weeklyMetrics.states (period = 1), 
+daily := JOIN(dailyMetrics.countries (date=latestDate), weeklyMetrics.world (period = 1), 
           LEFT.location=RIGHT.location,
           TRANSFORM ({STRING location,
                       STRING location_code,
@@ -33,7 +33,6 @@ daily := JOIN(dailyMetrics.states (date=latestDate), weeklyMetrics.states (perio
                       },
 
                       SELF.location := LEFT.location,
-                      //SELF.location_code := states.toCode(LEFT.location),
                       SELF.location_code := LEFT.location,
                       SELF.date := LEFT.date,
                       SELF.date_string := Std.Date.DateToString(LEFT.date , '%B %e, %Y'),
@@ -42,7 +41,7 @@ daily := JOIN(dailyMetrics.states (date=latestDate), weeklyMetrics.states (perio
                       SELF.deaths := LEFT.cumdeaths,
                       SELF.new_deaths := LEFT.newdeaths,
                       SELF.active := LEFT.active,
-                      SELF.recovered := LEFT.recovered, 
+                      SELF.recovered := LEFT.recovered,
                       SELF.status := RIGHT.istate,
                       SELF.status_numb := CASE(RIGHT.istate, 
                                         'Initial' => 0, 

@@ -60,6 +60,10 @@ td.column-number {
   text-align: right !important;
 }
 
+.bw {
+  background-color: #2b2b2b;
+}
+
 .common_IconBar .icon-bar {
   display: flex;
   opacity: .95;

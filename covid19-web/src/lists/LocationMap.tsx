@@ -1,20 +1,20 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {Button, Card, Col, Descriptions, Layout, Modal, PageHeader, Radio, Row, Space, Statistic, Tabs} from "antd";
-import {USStateMap} from "../components/USStateMap";
 import {QueryData} from "../components/QueryData";
 import {Bar} from "@antv/g2plot";
 import {Chart} from "../components/Chart";
-
 import OlMap from "../components/OlMap";
-import {Vector as VectorLayer} from "ol/layer";
 
 
-interface CountryMapProps {
+interface LocationMapProps {
     title: string;
     description: string;
-    type: 'states' | 'counties';
+    geoFile: string;
+    geoLat: number;
+    geoLong: number;
+    geoKeyField: string;
+    zoom: number;
     query: string;
-    zoomLevel: number;
 }
 
 
@@ -25,14 +25,31 @@ class SummaryData {
     deaths: number = 0;
     recovered: number = 0;
     active: number = 0;
+    casesMax: number = 0;
+    newCasesMax: number = 0;
+    deathsMax: number = 0;
+    newDeathsMax: number = 0;
+    statusMax: number = 0;
 }
 
-export default function CountryMap(props: CountryMapProps) {
+function useStateRef(initialValue: any) {
+    const [value, setValue] = useState(initialValue);
+
+    const ref = useRef(value);
+
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+
+    return [value, setValue, ref];
+}
+
+export default function LocationMap(props: LocationMapProps) {
     const queryStatesMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
     const summaryData = useRef<SummaryData>(new SummaryData());
     const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
     const mapData = useRef <Map<string, any>> (new Map());
-    const [heatMapType, setHeatMapType] = useState<any>('new_cases');
+    const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('status');
     const [mapSelectedLocation, setMapSelectedLocation] = useState<any>([]);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -62,6 +79,7 @@ export default function CountryMap(props: CountryMapProps) {
 
 
 
+
     useEffect(() => {
 
         function initSummary() {
@@ -74,6 +92,11 @@ export default function CountryMap(props: CountryMapProps) {
                     summaryData.current.active = item.active_total;
                     summaryData.current.deaths = item.deaths_total;
                     summaryData.current.recovered = item.recovered_total;
+                    summaryData.current.casesMax = item.cases_max;
+                    summaryData.current.newCasesMax = item.new_cases_max;
+                    summaryData.current.deathsMax = item.deaths_max;
+                    summaryData.current.newDeathsMax = item.new_deaths_max;
+                    summaryData.current.statusMax = item.status_max;
                 })
             } else {
                 return '';
@@ -86,12 +109,14 @@ export default function CountryMap(props: CountryMapProps) {
 
     const heatMapTypeChange = (value: any) => {
         setHeatMapType(value);
+
+        console.log('new heat map value - ' + value);
     }
 
     const olToolTipHandler = (name: string) => {
         let row: any = mapData.current.get(name.toUpperCase());
         if (row) {
-            return `<div style="border-width: 1px; background: antiquewhite; padding: 5px"><b>${name}</b>
+            return `<div style="border-width: 1px; background: antiquewhite; padding: 5px"><b>${row.location} </b>
                      <table>
                         <tr>
                         <td>New Cases</td>
@@ -129,18 +154,26 @@ export default function CountryMap(props: CountryMapProps) {
     }
 
     const olColorHandler = (name: string) => {
+        if (!name) return '#a1a080';
         let row: any = mapData.current.get(name.toUpperCase());
 
         if (row) {
-            console.log('row -' + row.location);
-            let d = row.cases / 100; //FIXME: change to heatmap type variable. Obviously the ratio also changes
-            return d > 10000 ?  '#620001':
-                d > 1000 ? '#651b31' :
-                    d > 500 ? '#9f623f' :
-                        d > 200 ? '#a19f98' :
-                            d > 100 ? '#a19a73' :
-                                d > 50 ? '#a19a73' :
-                                    d > 10 ? '#a09f84' :
+            console.log('row -' + row.location + ' heat map type -' + heatMapTypeRef.current);
+            let d = 0;
+            switch (heatMapTypeRef.current) {
+                case 'cases': d = row.cases / Math.max(1, summaryData.current.casesMax); break;
+                case 'new_cases': d = row.new_cases /Math.max(1, summaryData.current.newCasesMax);  break;
+                case 'deaths': d = row.deaths /Math.max(1, summaryData.current.deathsMax);  break;
+                case 'new_deaths': d = row.new_deaths /Math.max(1, summaryData.current.newDeathsMax);  break;
+                case 'status': d = row.status_numb /Math.max(1, summaryData.current.statusMax); break;
+            }
+            return d >= 1 ?  '#620001':
+                d > 0.8 ? '#651b31' :
+                    d > 0.5 ? '#9f623f' :
+                        d > 0.4? '#a19f98' :
+                            d > 0.3 ? '#a19a73' :
+                                d > 0.2 ? '#a19a73' :
+                                    d > 0.1 ? '#a09f84' :
                                         '#a1a085';
         }  else return '#a1a080';
 
@@ -211,9 +244,7 @@ export default function CountryMap(props: CountryMapProps) {
         data: [],
         xField: 'value',
         yField: 'name',
-        // colorField: 'name',
-        // color: ['#f0a2a4']
-        // color: ['#651b31']
+
     }
 
     const chartSummaryData = [{"name": "New Cases", "value": mapSelectedLocation.new_cases},
@@ -241,8 +272,6 @@ export default function CountryMap(props: CountryMapProps) {
         data: [],
         xField: 'value',
         yField: 'name',
-        // colorField: 'name',
-        // color: ['#f0a2a4']
 
     }
 
@@ -317,31 +346,33 @@ export default function CountryMap(props: CountryMapProps) {
 
             <div style={{height: 20}}/>
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
-                         value={heatMapType}>
+                         value={heatMapType} buttonStyle="solid">
                 <Space direction={'horizontal'}>
+                    <Radio.Button value={'status'}>Spreading Model</Radio.Button>
                     <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
                     <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
                     <Radio.Button value={'cases'}>Total Cases</Radio.Button>
                     <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
-                    <Radio.Button value={'status'}>Stabilized, Spreading...</Radio.Button>
                 </Space>
             </Radio.Group>
             <div style={{height: 20}}/>
 
-            <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)} selectHandler={(name) => olSelectHandler(name)}/>
+            <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
+                   selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
+                   geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}/>
             <Modal
-                title={null}
+                title={getMapToolTipHeader()}
                 visible={modalVisible}
                 onOk={(e)=>handleOk()}
                 onCancel={(e)=>handleOk()}
                 width={1000}
 
-                bodyStyle={{backgroundColor: 'antiquewhite'}}
+                bodyStyle={{backgroundColor: '#f0f2f5'}}
                 footer={null}
             >
-                
-            <h4>{getMapToolTipHeader()}</h4>
-            <Tabs defaultActiveKey={'summary'} style={{height: 600, background:'antiquewhite'}}>
+
+            {/*<h4>{getMapToolTipHeader()}</h4>*/}
+            <Tabs defaultActiveKey={'summary'} >
                 <Tabs.TabPane key={'summary'} tab={'Summary'}>
                     <div style={{height: 20}}/>
                     <Row>

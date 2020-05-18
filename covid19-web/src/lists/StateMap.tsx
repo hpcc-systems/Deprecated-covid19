@@ -34,6 +34,7 @@ export default function StateMap(props: StateMapProps) {
     const [mapSelectedLocation, setMapSelectedLocation] = useState<string>('');
     const mapSelectedStatus = useRef<boolean>(false);
 
+
     function toMapData(data: any, heatMapType: any) {
         let mapData: any = [];
         if (data) {
@@ -43,7 +44,7 @@ export default function StateMap(props: StateMapProps) {
                 //weights
                 switch (heatMapType) {
                     case 'new_cases':
-                        a.push(item.new_cases > 500? 1000: (item.new_cases > 200? 700: item.new_cases));
+                        a.push(item.new_cases > 900? 2000: (item.new_cases > 500? 1000: item.new_cases));
                         break;
                     case 'new_deaths':
                         a.push(item.new_deaths);
@@ -146,6 +147,10 @@ export default function StateMap(props: StateMapProps) {
                         <td>${row.recovered} </td>
                         </tr>
                         <tr>
+                        <td>Total Cases</td>
+                        <td>${row.cases} </td>
+                        </tr>
+                        <tr>
                         <td>New Deaths</td>
                         <td style="color: red"><b>${row.new_deaths}</b></td>
                         </tr>
@@ -174,6 +179,8 @@ export default function StateMap(props: StateMapProps) {
             setMapSelectedLocation('');
         }
     };
+
+
 
     const mapColumns = ["location_code", "weights", "date_string", "new_cases", "location", "new_deaths",
         "cases", "deaths", "active", "recovered", "status", "period", "cr", "mr",
@@ -334,6 +341,8 @@ export default function StateMap(props: StateMapProps) {
                         data={mapData} toolTipHandler={(row: any) => mapToolTipHandler(row)}
                         clickHandler={(row: any, sel: any) => mapClickHandler(row, sel)}
                         type={props.type} zoomLevel={props.zoomLevel}/>
+
+
 
             <h3>{getMapToolTipHeader()}</h3>
             <Tabs defaultActiveKey={'summary'}>

@@ -122,7 +122,6 @@ export default function LocationTrends(props: LocationTrendsProps) {
             updateLocationsFilter(selectedRowKeys);
         },
         selectedRowKeys: locationsFilter,
-
     };
 
     const filterTable = [
