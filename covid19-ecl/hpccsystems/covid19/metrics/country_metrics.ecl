@@ -12,6 +12,8 @@ metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
 CalcMetrics := COVID19.CalcMetrics;
 
+minActive := 200;  // Minimum cases to consider a location active.
+
 rawFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';
 
 scRecord := RECORD
@@ -73,7 +75,7 @@ OUTPUT(popData, NAMED('PopulationData'));
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_country.flat', Thor, OVERWRITE);
 
-metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData);
+metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData, minActive);
 
 // Filter out some bad country names that only had data for one period
 metrics := metrics0(period != 1 OR endDate > 20200401);
@@ -113,7 +115,3 @@ OUTPUT(sortedBySeverity, ALL, NAMED('ByInfectionState'));
 
 sortedByHeatIndx := COVID19.HotSpotsRpt(metrics);
 OUTPUT(sortedByHeatIndx, ALL, NAMED('HotSpots'));
-
-worldTotals0 := TABLE(metrics, {INTEGER weekEnding := endDate, totCases := SUM(GROUP, cases), totDeaths := SUM(GROUP, deaths), totActive := SUM(GROUP, active), totRecovered := SUM(GROUP, recovered), metric_t Avg_cR := AVE(GROUP, cR, cR > 0), metric_t Avg_mR := AVE(GROUP, mR, mR > 0), metric_t avg_iMort := AVE(GROUP, iMort, iMort > 0)}, endDate);
-worldTotals := SORT(worldTotals0, -weekEnding);
-OUTPUT(worldTotals, NAMED('WorldTotals'));

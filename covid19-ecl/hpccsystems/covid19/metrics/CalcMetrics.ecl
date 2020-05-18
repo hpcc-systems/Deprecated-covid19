@@ -5,10 +5,10 @@ metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
 statsExtRec := Types.statsExtRec;
 
-InfectionPeriod := 10;
-periodDays := 7;
-scaleFactor := 5;  // Lower will give more hot spots.
-minActive := 20; // Minimum cases to be considered emerging
+SHARED InfectionPeriod := 10;
+SHARED periodDays := 7;
+SHARED scaleFactor := 5;  // Lower will give more hot spots.
+SHARED minActDefault := 20; // Minimum cases to be considered emerging, by default.
 
 EXPORT CalcMetrics := MODULE
     EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats) := FUNCTION
@@ -38,14 +38,13 @@ EXPORT CalcMetrics := MODULE
         RETURN statsE2;
     END;
     // Calculate Metrics, given input Stats Data.
-    EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops) := FUNCTION
+    EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault) := FUNCTION
         statsE := DailyStats(stats);
         // Now combine the records for each week.
         // First add a period to records for each state
         statsGrpd0 := GROUP(statsE, location);
         statsGrpd1 := PROJECT(statsGrpd0, TRANSFORM(RECORDOF(LEFT), SELF.period := (COUNTER-1) DIV periodDays + 1, SELF := LEFT));
         statsGrpd := GROUP(statsGrpd1, location, period);
-        //OUTPUT(ctpgrpd[..10000], ALL, NAMED('ctpgrpd'));
         metricsRec doRollup(statsExtRec r, DATASET(statsExtRec) recs) := TRANSFORM
             SELF.location := r.location;
             SELF.period := r.period;
@@ -67,10 +66,9 @@ EXPORT CalcMetrics := MODULE
             SELF.active := lastC.active,
             SELF.recovered := lastC.recovered,
             SELF.iMort := lastC.iMort,
-            //cGrowth := lastC.active / firstC.prevActive;
-            cGrowth := SELF.newCases / firstC.active;
+						cGrowth := SELF.newCases / firstC.active;
             cR := POWER(cGrowth, InfectionPeriod/cCount);
-            SELF.cR := IF(cR > 0 AND SELF.active > minActive, cR, 0);
+            SELF.cR := MIN(cR, 9.99);
         END;
 
         metrics0 := ROLLUP(statsGrpd, GROUP, doRollup(LEFT, ROWS(LEFT)));
@@ -83,9 +81,13 @@ EXPORT CalcMetrics := MODULE
         metricsRec calc1(metricsRec l, metricsRec r) := TRANSFORM
             prevNewDeaths := IF(r.newDeaths > 0, r.newDeaths, 1);
             mGrowth :=  l.newDeaths / prevNewDeaths;
-            mR := POWER(mGrowth, InfectionPEriod/periodDays);
+            mR := MIN(POWER(mGrowth, InfectionPeriod/periodDays), 9.99);
             SELF.mR := mR;
-            R1 := IF(l.mR > 0, (l.cr + mR) / 2, l.cR);
+						SELF.cR := l.cR;
+						// Use Geometric Mean of cR and mR to compute an estimate of R,
+						// since we're working with growth statistics.
+            R1 := IF(SELF.mR > 0 AND SELF.cR > 0, POWER(SELF.cR * SELF.mR, .5), IF(SELF.cR > 0, SELF.cR, SELF.mR));
+						SELF.R := R1;
             SELF.cmRatio := IF(mR > 0, l.cR / mR, 0);
             SELF.dcR := IF(r.cR > 0, l.cR / r.cR - 1, 0);
             SELF.dmR := IF (r.mR > 0, l.mR / r.mR - 1, 0);
@@ -112,12 +114,13 @@ EXPORT CalcMetrics := MODULE
                                                 IF(LEFT.sdIndicator < 0, -LEFT.sdIndicator, 0))  / scaleFactor,
                                         SELF := LEFT)), heatIndex = 0 OR (cR > 0 OR mR > 0 OR medIndicator < 0 OR sdIndicator < 0 ), 'hi: ' + location + ',' + heatIndex + ',' + active + ',' + cR + ',' + mR + ',' + medIndicator + ',' + sdIndicator);
         metricsRec calc2(metricsRec l, metricsRec r) := TRANSFORM
-            R1 := IF(r.mR > 0, (r.cr + r.mR) / 2, r.cR);
             prevState := IF(l.location = r.location, l.iState, 'Initial');
+						R1 := r.R;
             SELF.iState := MAP(
                 prevState in ['Recovered', 'Regressing'] AND r.sdIndicator < 0 AND r.active > minActive => 'Regressing',
-                prevState = 'Initial' AND r.active < minActive => 'Initial',
-                (prevState = 'Initial' AND r.active >= minActive) OR (prevState = 'Emerging' AND R1 >= 4.0) => 'Emerging',
+                prevState = 'Initial' AND r.active = 0 => 'Initial',
+                (prevState = 'Initial' AND r.active >= minActive) OR (prevState = 'Emerging' AND 
+										(R1 >= 4.0 OR r.active < minActive)) => 'Emerging',
                 R1 >= 1.5 => 'Spreading',
                 R1 >= 1.1 AND R1 < 1.5 => 'Stabilizing',
                 R1 >= .9 AND R1 < 1.1 => 'Stabilized',

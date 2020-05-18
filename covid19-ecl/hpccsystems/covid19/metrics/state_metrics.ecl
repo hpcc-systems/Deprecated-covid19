@@ -1,4 +1,4 @@
-#WORKUNIT('name', 'metrics_by_us_states');
+﻿#WORKUNIT('name', 'metrics_by_us_states');
 
 IMPORT Std;
 IMPORT $.USPopulationFiles as pop;
@@ -65,7 +65,7 @@ OUTPUT(popData, NAMED('PopulationData'));
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_state.flat', Thor, OVERWRITE);
 
-metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData);
+metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, 50);
 
 OUTPUT(metrics, ALL, NAMED('MetricsByWeek'));
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_state.flat', Thor, OVERWRITE);
