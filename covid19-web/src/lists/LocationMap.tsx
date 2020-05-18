@@ -158,7 +158,9 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = mapData.current.get(name.toUpperCase());
 
         if (row) {
-            console.log('row -' + row.location + ' heat map type -' + heatMapTypeRef.current);
+            console.log('row -' + row.location + ' heat map type -' +
+                heatMapTypeRef.current + ' max: ' +
+                summaryData.current.casesMax);
             let d = 0;
             switch (heatMapTypeRef.current) {
                 case 'cases': d = row.cases / Math.max(1, summaryData.current.casesMax); break;
@@ -167,15 +169,22 @@ export default function LocationMap(props: LocationMapProps) {
                 case 'new_deaths': d = row.new_deaths /Math.max(1, summaryData.current.newDeathsMax);  break;
                 case 'status': d = row.status_numb /Math.max(1, summaryData.current.statusMax); break;
             }
-            return d >= 1 ?  '#620001':
-                d > 0.8 ? '#651b31' :
-                    d > 0.5 ? '#9f623f' :
-                        d > 0.4? '#a19f98' :
-                            d > 0.3 ? '#a19a73' :
-                                d > 0.2 ? '#a19a73' :
-                                    d > 0.1 ? '#a09f84' :
-                                        '#a1a085';
-        }  else return '#a1a080';
+            // return d >= 1 ?  '#620001':
+            //     d > 0.8 ? '#651b31' :
+            //         d > 0.5 ? '#9f623f' :
+            //             d > 0.4? '#a19f98' :
+            //                 d > 0.3 ? '#a19a73' :
+            //                     d > 0.2 ? '#a19a73' :
+            //                         d > 0.1 ? '#a09f84' :
+            //                             '#a1a085';
+
+            return d >= 0.9 ?  '#67000d':
+                d > 0.5 ? '#a50f15' :
+                    d > 0.3 ? '#de2d26' :
+                        d > 0.2? '#fb6a4a' :
+                            d > 0.1 ? '#fc9272' :
+                                        '#fcbba1';
+        }  else return '#fcbba1';
 
 
     }

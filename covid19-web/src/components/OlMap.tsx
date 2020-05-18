@@ -49,7 +49,7 @@ export default function OlMap(props: Props) {
             text: new Text({
                 font: '11px Calibri,sans-serif',
                 fill: new Fill({
-                    color: '#fff',
+                    color: '#000',
                 }),
                 stroke: new Stroke({
                     color: 'gray',
@@ -100,7 +100,7 @@ export default function OlMap(props: Props) {
                     text: new Text({
                         font: '11px Calibri,sans-serif',
                         fill: new Fill({
-                            color: '#fff',
+                            color: '#000',
                         }),
                         stroke: new Stroke({
                             color: 'gray',

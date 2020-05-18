@@ -75,9 +75,9 @@ OUTPUT(TABLE(fipsCorrectedDaily, {date,
                       new_deaths_total:= SUM(GROUP, new_deaths),
                       active_total:= SUM(GROUP, active),
                       recovered_total := SUM(GROUP, recovered),
-                      cases_max := MAX(GROUP, cases),
+                      cases_max := (SUM(GROUP, cases) - MAX(GROUP,cases))/50,//Compensating for Ney York City which has more that 100k cases
                       new_cases_max := MAX(GROUP, new_cases),
-                      deaths_max := MAX(GROUP, deaths),
+                      deaths_max := (SUM(GROUP, deaths) - MAX(GROUP,deaths))/50,//Compensating for Ney York City which has more that 100k cases
                       new_deaths_max := MAX(GROUP, new_deaths),
                       status_max := 7,
                       }, date),,NAMED('summary'));          
