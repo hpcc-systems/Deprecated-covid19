@@ -42,7 +42,8 @@ jobs:
               OverWrite: true
           - task: CmdLine@2
             inputs:
-              script: 'npm install'    
+              script: 'npm install'
+              workingDirectory: '/home/hpcclabs/covid19/covid19/covid19-web'
           - task: CmdLine@2
             inputs:
               script: 'pm2 start Covid19-Web'
