@@ -179,8 +179,8 @@ export default function LocationMap(props: LocationMapProps) {
             //                             '#a1a085';
 
             return d >= 0.9 ?  '#67000d':
-                d > 0.5 ? '#a50f15' :
-                    d > 0.3 ? '#de2d26' :
+                d > 0.6 ? '#a50f15' :
+                    d > 0.4 ? '#de2d26' :
                         d > 0.2? '#fb6a4a' :
                             d > 0.1 ? '#fc9272' :
                                         '#fcbba1';
