@@ -31,11 +31,11 @@ formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFil
         locationsCatalog := TABLE(DEDUP(SORT(projectedMetrics(period=1), location), location), {STRING50 id:= TRIM(location), STRING50 title:= TRIM(location)}); 
         defaultLocations := TABLE(TOPN(projectedMetrics(period=1),50,-heatindex), {location});
 
-        metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),6,TRANSFORM
+        metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),5,TRANSFORM
                                         (
                                             metrics.groupedLayout,
-                                            SELF.measure := CASE (COUNTER, 1 => 'cR', 2=> 'mR', 3 => 'sdIndicator', 4 => 'medIndicator', 5 => 'imort' ,6 => 'heatindex' ,''),
-                                            SELF.value := CASE (COUNTER, 1 => LEFT.cr, 2 => LEFT.mr, 3 => LEFT.sdIndicator, 4 => LEFT.medIndicator, 5 => LEFT.imort, 6 => LEFT.heatindex,0),
+                                            SELF.measure := CASE (COUNTER, 1 => 'R', 2 => 'sdIndicator', 3 => 'medIndicator', 4 => 'imort' ,5 => 'heatindex' ,''),
+                                            SELF.value := CASE (COUNTER, 1 => LEFT.r, 2 => LEFT.sdIndicator, 3 => LEFT.medIndicator, 4 => LEFT.imort, 5 => LEFT.heatindex,0),
                                             SELF.locationstatus := TRIM(LEFT.location) + ' [' + TRIM(LEFT.istate) + ']',
                                             SELF := LEFT;
                                         )
