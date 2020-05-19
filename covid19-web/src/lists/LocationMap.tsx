@@ -284,8 +284,7 @@ export default function LocationMap(props: LocationMapProps) {
             <PageHeader title={props.title} subTitle={props.description}
             >
                 <Descriptions size="small" column={2}>
-                    <Descriptions.Item label="Data Attribution">John Hopkins University, Covid Tracking
-                        Project</Descriptions.Item>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
                     <Descriptions.Item label="Filters">Please select a state from the chart to view the
                         metrics</Descriptions.Item>
                 </Descriptions>
