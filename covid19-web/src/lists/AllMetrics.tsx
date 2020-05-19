@@ -172,19 +172,12 @@ export default function AllMetrics(props: AllMetricsProps) {
             sorter: (a, b) => a.istate.localeCompare(b.istate)
         },
         {
-            title: 'Heat Index',
+            title: 'HI',
             dataIndex: 'heatindex',
             className: 'column-number',
             // @ts-ignore
             sorter: (a, b) => a.heatindex - b.heatindex
 
-        },
-        {
-            title: 'Weeks To Peak',
-            dataIndex: 'weekstopeak',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.weekstopeak - b.weekstopeak
         },
         {
             title: 'Cases',
@@ -238,6 +231,13 @@ export default function AllMetrics(props: AllMetricsProps) {
             // @ts-ignore
             sorter: (a, b) => a.mr - b.mr
 
+        },
+        {
+            title: 'R',
+            dataIndex: 'r',
+            className: 'column-number',
+            // @ts-ignore
+            sorter: (a, b) => a.r - b.r
         },
         {
             title: 'sdIndicator',
@@ -325,7 +325,7 @@ export default function AllMetrics(props: AllMetricsProps) {
             <PageHeader title={props.title} subTitle={props.description}
             >
                 <Descriptions size="small" column={1}>
-                    <Descriptions.Item label="Data Attribution">John Hopkins University, Covid Tracking Project</Descriptions.Item>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
                     <Descriptions.Item label="Filters">Default filters select the top 10 locations by heat index and the current period. Use
                         the Data & Location Filters tab to customize filters.</Descriptions.Item>
                 </Descriptions>

@@ -141,7 +141,11 @@ export default function LocationMap(props: LocationMapProps) {
                         <tr>
                         <td>Total Deaths</td>
                         <td style="color: red"><b>${row.deaths}</b></td>
-                        </tr>                        
+                        </tr>   
+                         <tr>
+                        <td>R</td>
+                        <td style="color: cornflowerblue">${row.r}</td>
+                        </tr>                       
                         <tr>
                         <td>Overall Status</td>
                         <td style="color: cornflowerblue">${row.status}</td>
@@ -169,22 +173,15 @@ export default function LocationMap(props: LocationMapProps) {
                 case 'new_deaths': d = row.new_deaths /Math.max(1, summaryData.current.newDeathsMax);  break;
                 case 'status': d = row.status_numb /Math.max(1, summaryData.current.statusMax); break;
             }
-            // return d >= 1 ?  '#620001':
-            //     d > 0.8 ? '#651b31' :
-            //         d > 0.5 ? '#9f623f' :
-            //             d > 0.4? '#a19f98' :
-            //                 d > 0.3 ? '#a19a73' :
-            //                     d > 0.2 ? '#a19a73' :
-            //                         d > 0.1 ? '#a09f84' :
-            //                             '#a1a085';
+
 
             return d >= 0.9 ?  '#67000d':
                 d > 0.6 ? '#a50f15' :
-                    d > 0.4 ? '#de2d26' :
-                        d > 0.2? '#fb6a4a' :
-                            d > 0.1 ? '#fc9272' :
-                                        '#fcbba1';
-        }  else return '#fcbba1';
+                    d > 0.4 ? 'gray' :
+                        d > 0.2? '#7fcdbb' :
+                            d > 0.1 ? '#a1d99b' :
+                                        '#41ab5d';
+        }  else return '#c7e9c0';
 
 
     }
@@ -223,16 +220,13 @@ export default function LocationMap(props: LocationMapProps) {
     };
 
 
-    const mapColumns = ["location_code", "weights", "date_string", "new_cases", "location", "new_deaths",
-        "cases", "deaths", "active", "recovered", "status", "period", "cr", "mr",
-        "sd_indicator", "med_indicator", "imort", "heat_index"];
-
     const chartModelData = [{"name": "heatIndex", "value": mapSelectedLocation.heat_index},
         {"name": "iMort", "value": mapSelectedLocation.imort},
         {"name": "sdIndicator", "value": mapSelectedLocation.sd_indicator},
         {"name": "medIndicator", "value": mapSelectedLocation.med_indicator},
         {"name": "mR", "value": mapSelectedLocation.mr},
-        {"name": "cR", "value": mapSelectedLocation.cr}
+        {"name": "cR", "value": mapSelectedLocation.cr},
+        {"name": "R", "value": mapSelectedLocation.r}
     ];
 
     const chartModel = {
@@ -290,8 +284,7 @@ export default function LocationMap(props: LocationMapProps) {
             <PageHeader title={props.title} subTitle={props.description}
             >
                 <Descriptions size="small" column={2}>
-                    <Descriptions.Item label="Data Attribution">John Hopkins University, Covid Tracking
-                        Project</Descriptions.Item>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
                     <Descriptions.Item label="Filters">Please select a state from the chart to view the
                         metrics</Descriptions.Item>
                 </Descriptions>

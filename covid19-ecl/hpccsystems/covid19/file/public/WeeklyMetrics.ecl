@@ -15,6 +15,7 @@ export inputLayout := RECORD
   unsigned8 active;
   decimal5_2 cr;
   decimal5_2 mr;
+  decimal5_2 R;
   decimal5_2 sdindicator;
   decimal5_2 medindicator;
   decimal6_3 heatindex;
