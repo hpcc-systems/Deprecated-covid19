@@ -99,3 +99,6 @@ OUTPUT(sortedBySeverity, ALL, NAMED('ByInfectionState'));
 
 sortedByHeatIndx := COVID19.HotSpotsRpt(metrics);
 OUTPUT(sortedByHeatIndx, ALL, NAMED('HotSpots'));
+
+commentary := SORT(metrics(period = 1), location);
+OUTPUT(commentary, {location, commentary}, ALL, NAMED('Commentary'));

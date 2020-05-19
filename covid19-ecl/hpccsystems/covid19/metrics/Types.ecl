@@ -38,6 +38,7 @@ EXPORT Types := MODULE
         metric_t medIndicator := 0;
         DECIMAL8_3 heatIndex := 0;
         DECIMAL5_3 iMort;
+				count_t infectionCount := 1;
         metric_t immunePct := 0;
         count_t newCases;
         count_t newDeaths;
@@ -49,6 +50,7 @@ EXPORT Types := MODULE
         metric_t dmR := 0;
         metric_t weeksToPeak := 0;
         UNSIGNED periodDays;
+				STRING commentary := '';
         count_t population :=0;
     END;
     // Extended Stats Record
@@ -89,5 +91,6 @@ EXPORT Types := MODULE
 				count_t newDeaths;
         DECIMAL6_3 heatIndex;
         metric_t hiImprove;
+				count_t infectionCount;
     END;
 END;

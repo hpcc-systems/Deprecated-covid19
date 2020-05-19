@@ -20,6 +20,7 @@ EXPORT DATASET(hsFormat) HotSpotsRpt(DATASET(metricsRec) metrics) := FUNCTION
                         SELF.rankImprove := IF(RIGHT.rank > 0, LEFT.rank - RIGHT.rank, 0),
                         SELF.activeCases := LEFT.active,
                         SELF.hiImprove := IF(RIGHT.heatIndex > 0, RIGHT.heatIndex - LEFT.heatIndex, 0),
+												SELF.infectionCount := LEFT.infectionCount;
                         SELF := LEFT), LEFT OUTER);
     hs := SORT(hs0(heatIndex >= minHI), currRank);
     RETURN hs;

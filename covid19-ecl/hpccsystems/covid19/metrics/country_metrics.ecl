@@ -83,7 +83,7 @@ metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData, minActive);
 
 // Filter out some bad country names that only had data for one period
 metrics1 := metrics0(period != 1 OR endDate > 20200401);
-metrics := metrics1(period <= 5);
+metrics := metrics1;
 
 OUTPUT(metrics, ALL, NAMED('MetricsByWeek'));
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat', Thor, OVERWRITE);
@@ -119,3 +119,6 @@ OUTPUT(sortedBySeverity, ALL, NAMED('ByInfectionState'));
 
 sortedByHeatIndx := COVID19.HotSpotsRpt(metrics);
 OUTPUT(sortedByHeatIndx, ALL, NAMED('HotSpots'));
+
+commentary := SORT(metrics(period = 1), location);
+OUTPUT(commentary, {location, commentary}, ALL, NAMED('Commentary'));

@@ -1,4 +1,5 @@
 ﻿IMPORT $.Types;
+IMPORT Python3 AS Python;
 metric_t := Types.metric_t;
 statsRec := Types.statsRec;
 metricsRec := Types.metricsRec;
@@ -40,6 +41,101 @@ EXPORT CalcMetrics := MODULE
     END;
     // Calculate Metrics, given input Stats Data.
     EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault) := FUNCTION
+				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive) := EMBED(Python)
+					outstr = ''
+					for rec in recs:
+						location = rec[1].strip()
+						iState = rec[5].strip()
+						cases = rec[6]
+						deaths = rec[7]
+						active = rec[8]
+						cr = rec[9]
+						mr = rec[10]
+						r = rec[11]
+						sdi = rec[12]
+						mdi = rec[13]
+						hi = rec[14]
+						infCount = rec[16]
+						if r < 1:
+							if r == 0:
+								sev = 1.0
+							else:
+							 sev = 1/r
+						else:
+							sev = r
+						adv = ''
+						if sev > 2:
+							adv = 'very quickly '
+						elif sev > 1.5:
+							adv = 'quickly '
+						elif sev < 1.05:
+							adv = ''
+						elif sev < 1.1:
+							adv = 'very slowly '
+						elif sev < 1.3:
+							adv = 'slowly '
+						if sev < 1.05:
+							dir = 'steady'
+						elif r > 1.0:
+							dir = 'increasing'
+						else:
+							dir = 'decreasing'
+						implstr = '(' + adv + dir + '). '
+						outstr = location + ' is currently ' + iState + '. '
+						if r > 0:
+							rstr = 'The effective growth rate (R) is estimated at ' + str(r) + ' ' + implstr
+						else:
+							rstr = 'It is too early to estimate the growth rate (R). '
+						if iState != 'Recovered':
+							outstr += rstr
+						scaleStr = 'There are currently ' + str(active) + ' active cases. '
+						if iState == 'Emerging':
+							scaleStr = 'This outbreak is based on a small number of detected infections (' + str(active) + ' cases) and may be quickly contained by policy measures. '
+						elif iState == 'Spreading':
+							scaleStr = 'This outbreak is probably beyond containment (' + str(active) + ' active cases) and must be mitigated through policy and behavioral changes. '
+						elif iState == 'Regressing':
+							scaleStr = 'The infection appeared to have been recovering, but has recently begun to grow again (' + str(active) + ' active cases). '
+						elif iState == 'Initial':
+							scaleStr = 'No significant infection has been detected. '
+						elif iState == 'Recovered':
+							scaleStr = 'No significant active infections remain. '
+						outstr += scaleStr
+						infstr = ''
+						if infCount > 1:
+							ord = 'th'
+							if infCount == 2:
+								ord = 'nd'
+							elif infCount == 3:
+								ord = 'rd'
+							infstr = 'This is the ' + str(infCount) + ord + ' round of infection. '
+						outstr += infstr
+						sdString = ''
+						if sdi < -.05:
+							sdString = 'It appears that the level of social distancing is decreasing, which may result in higher levels of infection growth. '
+							outstr += sdString
+						if mdi < -.05:
+							mdString = 'The mortality rate is growing faster than the case rate, implying that there may be a deterioration in medical conditions, probably due to '
+							if r >= 1.5 and active > minActive:
+								mdReason = 'an overload of the local medical capacity. '
+							else:
+								mdReason = 'inadequate testing availability. '
+							mdString += mdReason
+							outstr += mdString
+						hiString = ''
+						if hi >= 1.0:
+							hiReason = ' various factors. '
+							hiString = location + ' is currently on the HotSpot list due to '
+							if r > 1.5:
+								hiReason = ' rapid spread. '
+							elif sdi < 0 or mdi < 0:
+								if sdi < mdi:
+									hiReason = ' apparent decrease in social distancing measures. '
+								else:
+									hiReason = ' apparent deterioration of medical conditions. '
+							hiString += hiReason
+							outstr += hiString
+					return outstr
+				ENDEMBED;
         statsE := DailyStats(stats);
         // Now combine the records for each week.
         // First add a period to records for each state
@@ -117,18 +213,19 @@ EXPORT CalcMetrics := MODULE
                                         SELF := LEFT)), heatIndex = 0 OR (cR > 0 OR mR > 0 OR medIndicator < 0 OR sdIndicator < 0 ), 'hi: ' + location + ',' + heatIndex + ',' + active + ',' + cR + ',' + mR + ',' + medIndicator + ',' + sdIndicator);
         metricsRec calc2(metricsRec l, metricsRec r) := TRANSFORM
             prevState := IF(l.location = r.location, l.iState, 'Initial');
+						prevInfectCount := IF(l.location = r.location, l.infectionCount, 1);
 						R1 := r.R;
             SELF.iState := MAP(
-                prevState in ['Recovered', 'Regressing'] AND r.sdIndicator < 0 AND r.active > minActive => 'Regressing',
+                prevState in ['Recovered', 'Recovering'] AND R1 >= 1.1 => 'Regressing',
                 prevState = 'Initial' AND r.active = 0 => 'Initial',
-                (prevState = 'Initial' AND r.active >= minActive) OR (prevState = 'Emerging' AND 
-										(R1 >= 4.0 OR r.active < minActive)) => 'Emerging',
+                R1 >= 1.5 AND r.active >= 1 AND r.active < minActive => 'Emerging',
                 R1 >= 1.5 => 'Spreading',
                 R1 >= 1.1 AND R1 < 1.5 => 'Stabilizing',
                 R1 >= .9 AND R1 < 1.1 => 'Stabilized',
                 prevState != 'Initial' AND (R1 > .1 OR r.active > minActive) => 'Recovering',
                 prevState != 'Initial' AND R1 <= .1 AND r.active <= minActive => 'Recovered',
                 'Initial');
+						SELF.infectionCount := IF(prevState != 'Regressing' AND self.iState = 'Regressing', prevInfectCount + 1, prevInfectCount);
             cR := IF(r.cR > 1, r.cR - 1, 0);
             mR := IF(r.mR > 1, r.mR - 1, 0);
             mi := IF(r.medIndicator < 0, -r.medIndicator, 0);
@@ -138,7 +235,12 @@ EXPORT CalcMetrics := MODULE
         END;
         metrics5 := SORT(metrics4, location, -period);
         metrics6 := ITERATE(metrics5, calc2(LEFT, RIGHT));
-        metrics := SORT(metrics6, location, period);
+				metricsRec addCommentary(metricsRec rec) := TRANSFORM
+					SELF.commentary := generateCommentary(DATASET([rec], metricsRec), minActive);
+					SELF := rec;
+				END;
+				metrics7 := PROJECT(metrics6, addCommentary(LEFT));
+        metrics := SORT(metrics7, location, period);
         return metrics;
     END;
 END;
