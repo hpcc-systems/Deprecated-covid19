@@ -180,7 +180,7 @@ export default function LocationMap(props: LocationMapProps) {
                     d > 0.4 ? 'gray' :
                         d > 0.2? '#7fcdbb' :
                             d > 0.1 ? '#a1d99b' :
-                                        '#c7e9c0';
+                                        '#41ab5d';
         }  else return '#c7e9c0';
 
 
