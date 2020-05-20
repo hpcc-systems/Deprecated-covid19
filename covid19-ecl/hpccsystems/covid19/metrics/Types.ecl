@@ -49,6 +49,8 @@ EXPORT Types := MODULE
         metric_t dcR := 0;
         metric_t dmR := 0;
         metric_t weeksToPeak := 0;
+				count_t peakCases := 0;
+				count_t peakDeaths := 0;
         UNSIGNED periodDays;
 				STRING commentary := '';
         count_t population :=0;
@@ -92,5 +94,6 @@ EXPORT Types := MODULE
         DECIMAL6_3 heatIndex;
         metric_t hiImprove;
 				count_t infectionCount;
+				STRING commentary;
     END;
 END;

@@ -56,6 +56,10 @@ EXPORT CalcMetrics := MODULE
 						mdi = rec[13]
 						hi = rec[14]
 						infCount = rec[16]
+						newCases = rec[18]
+						newDeaths = rec[19]
+						peakCases = rec[27]
+						peakDeaths = rec[28]
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -80,10 +84,10 @@ EXPORT CalcMetrics := MODULE
 							dir = 'increasing'
 						else:
 							dir = 'decreasing'
-						implstr = '(' + adv + dir + '). '
+						implstr = adv + dir
 						outstr = location + ' is currently ' + iState + '. '
 						if r > 0:
-							rstr = 'The effective growth rate (R) is estimated at ' + str(r) + ' ' + implstr
+							rstr = 'The infection is ' + implstr + ' (R = ' + str(r) + '). '
 						else:
 							rstr = 'It is too early to estimate the growth rate (R). '
 						if iState != 'Recovered':
@@ -97,8 +101,19 @@ EXPORT CalcMetrics := MODULE
 							scaleStr = 'The infection appeared to have been recovering, but has recently begun to grow again (' + str(active) + ' active cases). '
 						elif iState == 'Initial':
 							scaleStr = 'No significant infection has been detected. '
+						elif iState == 'Stabilized':
+							scaleStr += 'This implies approximately ' + str(newCases) + ' new cases and ' + str(newDeaths) + ' deaths per week. '
 						elif iState == 'Recovered':
 							scaleStr = 'No significant active infections remain. '
+						elif iState == 'Recovering':
+							casePct = 0
+							deathsPct = 0
+							if peakCases > 0:
+								casePct = (peakCases - newCases) / float(peakCases) * 100
+							if peakDeaths > 0:
+								deathsPct = (peakDeaths - newDeaths) / float(peakDeaths) * 100
+							scaleStr += 'New Cases are currently ' + str(newCases) + ' per week, down ' + str(round(casePct)) + '% from a peak of ' + str(peakCases) + ' per week. '
+							scaleStr += 'New Deaths are currently ' + str(newDeaths) + ' per week, down ' + str(round(deathsPct)) + '% from a peak of ' + str(peakDeaths) + ' per week. '
 						outstr += scaleStr
 						infstr = ''
 						if infCount > 1:
@@ -226,6 +241,8 @@ EXPORT CalcMetrics := MODULE
                 prevState != 'Initial' AND R1 <= .1 AND r.active <= minActive => 'Recovered',
                 'Initial');
 						SELF.infectionCount := IF(prevState != 'Regressing' AND self.iState = 'Regressing', prevInfectCount + 1, prevInfectCount);
+						SELF.peakCases := IF(l.location = r.location, IF(r.newCases > l.peakCases OR SELF.iState = 'Regressing', r.newCases, l.peakCases), r.newCases);
+						SELF.peakDeaths := IF(l.location = r.location, IF(r.newDeaths > l.peakDeaths OR SELF.iState = 'Regressing', r.newDeaths, l.peakDeaths), r.newDeaths);			
             cR := IF(r.cR > 1, r.cR - 1, 0);
             mR := IF(r.mR > 1, r.mR - 1, 0);
             mi := IF(r.medIndicator < 0, -r.medIndicator, 0);
