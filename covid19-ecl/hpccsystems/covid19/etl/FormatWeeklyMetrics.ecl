@@ -1,12 +1,13 @@
 IMPORT hpccsystems.covid19.file.public.WeeklyMetrics as metrics;
+IMPORT hpccsystems.covid19.metrics.Types as types;
 IMPORT hpccsystems.covid19.utils.CatalogUSStates as states;
 IMPORT Std;
 
 
 metricsScope := '~hpccsystems::covid19::file::public::metrics::';
+  
 
-
-formatAllMetrics(DATASET(metrics.inputLayout) metricsData, STRING destinationFileScope, STRING destinationPrefix) := FUNCTION
+formatAllMetrics(DATASET(Types.metricsRec) metricsData, STRING destinationFileScope, STRING destinationPrefix) := FUNCTION
 
         //Fix Locations
         projectedMetrics := PROJECT(metricsData, TRANSFORM(

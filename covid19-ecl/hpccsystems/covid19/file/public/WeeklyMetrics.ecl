@@ -1,41 +1,43 @@
+IMPORT hpccsystems.covid19.metrics.Types as types;
+
 EXPORT WeeklyMetrics := MODULE
   
 EXPORT statesPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_state.flat';
 EXPORT worldPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat';
 EXPORT countiesPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat';  
 
-export inputLayout := RECORD 
-  string location;
-  unsigned8 period;
-  unsigned4 startdate;
-  unsigned4 enddate;
-  string istate;
-  unsigned8 cases;
-  unsigned8 deaths;
-  unsigned8 active;
-  decimal5_2 cr;
-  decimal5_2 mr;
-  decimal5_2 R;
-  decimal5_2 sdindicator;
-  decimal5_2 medindicator;
-  decimal6_3 heatindex;
-  decimal5_3 imort;
-  decimal5_2 immunepct;
-  REAl8 newcases;
-  REAl8 newdeaths;
-  unsigned8 recovered;
-  decimal5_2 cases_per_capita;
-  decimal5_2 deaths_per_capita;
-  decimal5_2 cmratio;
-  decimal5_2 dcr;
-  decimal5_2 dmr;
-  decimal5_2 weekstopeak;
-  unsigned8 perioddays;
-  unsigned8 population;
-END;
+// export inputLayout := RECORD 
+//   string location;
+//   unsigned8 period;
+//   unsigned4 startdate;
+//   unsigned4 enddate;
+//   string istate;
+//   unsigned8 cases;
+//   unsigned8 deaths;
+//   unsigned8 active;
+//   decimal5_2 cr;
+//   decimal5_2 mr;
+//   decimal5_2 R;
+//   decimal5_2 sdindicator;
+//   decimal5_2 medindicator;
+//   decimal6_3 heatindex;
+//   decimal5_3 imort;
+//   decimal5_2 immunepct;
+//   REAl8 newcases;
+//   REAl8 newdeaths;
+//   unsigned8 recovered;
+//   decimal5_2 cases_per_capita;
+//   decimal5_2 deaths_per_capita;
+//   decimal5_2 cmratio;
+//   decimal5_2 dcr;
+//   decimal5_2 dmr;
+//   decimal5_2 weekstopeak;
+//   unsigned8 perioddays;
+//   unsigned8 population;
+// END;
 
 export layout := RECORD
-    inputLayout;
+    Types.metricsRec;
     string parentLocation := '';//counties
 END;
 
@@ -59,9 +61,9 @@ EXPORT CatalogLayout := RECORD
     STRING50 title;
 end;  
 
-EXPORT states := DATASET(statesPath, inputLayout, THOR);
-EXPORT world := DATASET(worldPath, inputLayout, THOR); 
-EXPORT counties := DATASET(countiesPath, inputLayout, THOR);
+EXPORT states := DATASET(statesPath, Types.metricsRec, THOR);
+EXPORT world := DATASET(worldPath, Types.metricsRec, THOR); 
+EXPORT counties := DATASET(countiesPath, Types.metricsRec, THOR);
 
 
 EXPORT statesGroupedPath := '~hpccsystems::covid19::file::public::metrics::states_grouped.flat';

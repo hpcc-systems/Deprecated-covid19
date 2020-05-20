@@ -175,13 +175,13 @@ export default function LocationMap(props: LocationMapProps) {
             }
 
 
-            return d >= 0.9 ?  '#67000d':
-                d > 0.6 ? '#a50f15' :
-                    d > 0.4 ? 'gray' :
-                        d > 0.2? '#7fcdbb' :
-                            d > 0.1 ? '#a1d99b' :
-                                        '#41ab5d';
-        }  else return '#c7e9c0';
+            return d >= 0.9 ?  '#d73027':
+                d > 0.6 ? '#fc8d59' :
+                    d > 0.4 ? '#fee08b' :
+                        d > 0.2? '#ffffbf' :
+                            d > 0.1 ? '#d9ef8b' :
+                                        '#91cf60';
+        }  else return '#91cf60';
 
 
     }
