@@ -14,7 +14,7 @@ interface LocationMapProps {
     geoLong: number;
     geoKeyField: string;
     zoom: number;
-    query: string;
+    type: string;
 }
 
 
@@ -46,6 +46,7 @@ function useStateRef(initialValue: any) {
 
 export default function LocationMap(props: LocationMapProps) {
     const queryStatesMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
+    const queryLocation = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_location_metrics'));
     const summaryData = useRef<SummaryData>(new SummaryData());
     const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
     const mapData = useRef <Map<string, any>> (new Map());
@@ -53,6 +54,8 @@ export default function LocationMap(props: LocationMapProps) {
     const [mapSelectedLocation, setMapSelectedLocation] = useState<any>([]);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
+    const [locationSummaryQueryData, setLocationSummaryQueryData] = useState<any>([]);
+    const [locationChildrenQueryData, setLocationChildrenQueryData] = useState<any>([]);
 
 
     function toMapData(data: any) {
@@ -68,7 +71,9 @@ export default function LocationMap(props: LocationMapProps) {
 
 
     useEffect(() => {
-        queryStatesMap.current = new QueryData(props.query);
+        let queryName = 'hpccsystems_covid19_query_' + props.type + '_map';
+
+        queryStatesMap.current = new QueryData(queryName);
         queryStatesMap.current.initData(undefined).then(() => {
             mapData.current = toMapData(queryStatesMap.current.getData('latest'));
             setSummaryQueryData(queryStatesMap.current.getData('summary'));
@@ -106,6 +111,15 @@ export default function LocationMap(props: LocationMapProps) {
         initSummary();
 
     }, [summaryQueryData]);
+
+    const locationCommentary: any = () => {
+        if (locationSummaryQueryData.length > 0) {
+            console.log('location data: ' + locationSummaryQueryData[0]);
+            return locationSummaryQueryData[0]['commentary'];
+        } else {
+            return '';
+        }
+    }
 
     const heatMapTypeChange = (value: any) => {
         setHeatMapType(value);
@@ -175,12 +189,12 @@ export default function LocationMap(props: LocationMapProps) {
             }
 
 
-            return d >= 0.9 ?  '#d73027':
-                d > 0.6 ? '#fc8d59' :
+            return d >= 0.9 ?  '#b2182b':
+                d > 0.6 ? '#d73027' :
                     d > 0.4 ? '#fee08b' :
                         d > 0.2? '#ffffbf' :
-                            d > 0.1 ? '#d9ef8b' :
-                                        '#91cf60';
+                            d > 0.1 ? '#999999' :
+                                        '#4d4d4d';
         }  else return '#91cf60';
 
 
@@ -194,7 +208,15 @@ export default function LocationMap(props: LocationMapProps) {
             let row: any = mapData.current.get(name.toUpperCase());
             if (row) {
                 setMapSelectedLocation(row);
-                showModal();
+                let filters: Map<string, string> = new Map();
+                filters.set('location_type', props.type);
+                filters.set('location', row['location_code']);
+                queryLocation.current.initData(filters).then(() => {
+                    setLocationSummaryQueryData(queryLocation.current.getData('summary'));
+                    setLocationChildrenQueryData(queryLocation.current.getData('children'));
+                    showModal();
+                });
+
             } else {
                 setMapSelectedLocation([]);
             }
@@ -372,7 +394,10 @@ export default function LocationMap(props: LocationMapProps) {
                 bodyStyle={{backgroundColor: '#f0f2f5'}}
                 footer={null}
             >
+                <Descriptions size="small" column={1}>
+                    <Descriptions.Item label="Comments">{locationCommentary()}</Descriptions.Item>
 
+                </Descriptions>
             {/*<h4>{getMapToolTipHeader()}</h4>*/}
             <Tabs defaultActiveKey={'summary'} >
                 <Tabs.TabPane key={'summary'} tab={'Summary'}>
