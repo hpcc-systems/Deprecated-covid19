@@ -53,6 +53,8 @@ EXPORT Types := MODULE
 				count_t peakDeaths := 0;
         UNSIGNED periodDays;
 				STRING commentary := '';
+        metric_t cR_old := 0;
+				STRING prevState := '';
         count_t population :=0;
     END;
     // Extended Stats Record
@@ -82,7 +84,7 @@ EXPORT Types := MODULE
         UNSIGNED prevRank;
         INTEGER rankImprove;
         STRING iState;
-        metric_t cR;
+				metric_t cR;
         metric_t mR;
 				metric_t R;
         metric_t sdIndicator;

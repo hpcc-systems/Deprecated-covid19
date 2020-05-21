@@ -60,6 +60,7 @@ EXPORT CalcMetrics := MODULE
 						newDeaths = rec[19]
 						peakCases = rec[27]
 						peakDeaths = rec[28]
+						prevState = rec[32].strip()
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -98,11 +99,17 @@ EXPORT CalcMetrics := MODULE
 						elif iState == 'Spreading':
 							scaleStr = 'This outbreak is probably beyond containment (' + str(active) + ' active cases) and must be mitigated through policy and behavioral changes. '
 						elif iState == 'Regressing':
-							scaleStr = 'The infection appeared to have been recovering, but has recently begun to grow again (' + str(active) + ' active cases). '
+							scaleStr = 'The infection appeared to have been recovering, but has recently begun to grow again (' + str(active) + ' active cases, ' + \
+														str(newCases) + ' new). '
 						elif iState == 'Initial':
 							scaleStr = 'No significant infection has been detected. '
 						elif iState == 'Stabilized':
-							scaleStr += 'This implies approximately ' + str(newCases) + ' new cases and ' + str(newDeaths) + ' deaths per week. '
+							scaleStr += 'At this rate, expect to see approximately ' + str(newCases) + ' new cases and ' + str(newDeaths) + ' deaths per week. '
+							if prevState in ['Recovering', 'Recovered']:
+								scaleStr += 'This represents a relapse from a previous state of ' + prevState + '. '
+						elif iState == 'Stabilizing':
+							if prevState in ['Recovering', 'Recovered', 'Stabilized']:
+								scaleStr += 'This represents a relapse from a previous state of ' + prevState + '. '
 						elif iState == 'Recovered':
 							scaleStr = 'No significant active infections remain. '
 						elif iState == 'Recovering':
@@ -151,6 +158,7 @@ EXPORT CalcMetrics := MODULE
 							outstr += hiString
 					return outstr
 				ENDEMBED;
+
         statsE := DailyStats(stats);
         // Now combine the records for each week.
         // First add a period to records for each state
@@ -180,8 +188,8 @@ EXPORT CalcMetrics := MODULE
             SELF.recovered := lastC.recovered,
             SELF.iMort := lastC.iMort,
 						cGrowth := SELF.newCases / firstC.active;
-            cR := POWER(cGrowth, InfectionPeriod/cCount);
-            SELF.cR := MIN(cR, 9.99);
+            cR_old := POWER(cGrowth, InfectionPeriod/cCount);  // Old CR calc might be useful later
+            SELF.cR_old := MIN(cR_old, 9.99);
         END;
 
         metrics0 := ROLLUP(statsGrpd, GROUP, doRollup(LEFT, ROWS(LEFT)));
@@ -192,18 +200,21 @@ EXPORT CalcMetrics := MODULE
                                     SELF.immunePct := LEFT.recovered / SELF.population;
                                     SELF := LEFT), LEFT OUTER);
         metricsRec calc1(metricsRec l, metricsRec r) := TRANSFORM
+						prevNewCases := IF(r.newCases > 0, r.newCases, 1);
+						cGrowth := l.newCases / prevNewCases;
+						cR := MIN(POWER(cGrowth, InfectionPeriod/periodDays), 9.00);
+						SELF.cR := cR;
             prevNewDeaths := IF(r.newDeaths > 0, r.newDeaths, 1);
             mGrowth :=  l.newDeaths / prevNewDeaths;
             mR := MIN(POWER(mGrowth, InfectionPeriod/periodDays), 9.99);
             SELF.mR := mR;
-						SELF.cR := l.cR;
 						// Use Geometric Mean of cR and mR to compute an estimate of R,
 						// since we're working with growth statistics.
             R1 := IF(SELF.mR > 0 AND SELF.cR > 0, POWER(SELF.cR * SELF.mR, .5), IF(SELF.cR > 0, SELF.cR, SELF.mR));
 						SELF.R := R1;
-            SELF.cmRatio := IF(mR > 0, l.cR / mR, 0);
-            SELF.dcR := IF(r.cR > 0, l.cR / r.cR - 1, 0);
-            SELF.dmR := IF (r.mR > 0, l.mR / r.mR - 1, 0);
+            SELF.cmRatio := IF(mR > 0, cR / mR, 0);
+            SELF.dcR := IF(r.cR > 0, cR / r.cR - 1, 0);  //Needs to move to later.
+            SELF.dmR := IF (r.mR > 0, l.mR / r.mR - 1, 0);  //Needs to move to later.
             SELF.medIndicator := IF(SELF.cmRatio > 0 AND r.cmRatio > 0, l.cmRatio / r.cmRatio - 1, 0);
             SELF.sdIndicator := IF(R1 > 1, -SELF.dcR, 0);
             // Assume that cR decreases with the inverse log of time.  First we calculate the base of the log
@@ -211,7 +222,7 @@ EXPORT CalcMetrics := MODULE
             wtp0 := POWER(b, l.cR - 1);
             // Don't project beyond 10 weeks
             wtp := IF(wtp0 > 10, 999, wtp0);
-            SELF.weeksToPeak := IF(l.cR > 1, IF(l.cR < r.cR, wtp, 999), 0);
+            SELF.weeksToPeak := IF(l.cR > 1, IF(l.cR < r.cR, wtp, 999), 0);  // Needs to move to later.
             SELF := l;
         END;
         metrics2 := JOIN(metrics1, metrics1, LEFT.location = RIGHT.location AND LEFT.period = RIGHT.period - 1,
@@ -228,6 +239,7 @@ EXPORT CalcMetrics := MODULE
                                         SELF := LEFT)), heatIndex = 0 OR (cR > 0 OR mR > 0 OR medIndicator < 0 OR sdIndicator < 0 ), 'hi: ' + location + ',' + heatIndex + ',' + active + ',' + cR + ',' + mR + ',' + medIndicator + ',' + sdIndicator);
         metricsRec calc2(metricsRec l, metricsRec r) := TRANSFORM
             prevState := IF(l.location = r.location, l.iState, 'Initial');
+						SELF.prevState := prevState;
 						prevInfectCount := IF(l.location = r.location, l.infectionCount, 1);
 						R1 := r.R;
             SELF.iState := MAP(
