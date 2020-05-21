@@ -78,12 +78,8 @@ NOTHOR(SEQUENTIAL(
         STD.File.CreateSuperFile(tempSuperFileName),
         STD.File.StartSuperFileTransaction(),
         APPLY(STD.File.LogicalFileList(scopeName + '*'),STD.File.AddSuperFile(tempSuperFileName,'~'+name)),
-        STD.File.FinishSuperFileTransaction())),
-        
+        STD.File.FinishSuperFileTransaction())),        
         processJHClean);
-
-
-
 
 // latestDt := MAX(us, update_date);
 

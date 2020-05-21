@@ -14,7 +14,7 @@ interface LocationMapProps {
     geoLong: number;
     geoKeyField: string;
     zoom: number;
-    query: string;
+    type: string;
 }
 
 
@@ -46,13 +46,17 @@ function useStateRef(initialValue: any) {
 
 export default function LocationMap(props: LocationMapProps) {
     const queryStatesMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
+    const queryLocation = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_location_metrics'));
     const summaryData = useRef<SummaryData>(new SummaryData());
     const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
-    const mapData = useRef <Map<string, any>> (new Map());
+    const mapData = useRef<Map<string, any>>(new Map());
     const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('status');
     const [mapSelectedLocation, setMapSelectedLocation] = useState<any>([]);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
+    const [locationSummaryQueryData, setLocationSummaryQueryData] = useState<any>([]);
+    const [toolTipRow, setToolTipRow] = useState<any>([]);
+    const [locationChildrenQueryData, setLocationChildrenQueryData] = useState<any>([]);
 
 
     function toMapData(data: any) {
@@ -60,7 +64,7 @@ export default function LocationMap(props: LocationMapProps) {
 
         if (data) {
             data.forEach((item: any) => {
-               mapData.set(item.location_code, item);
+                mapData.set(item.location_code, item);
             })
         }
         return mapData;
@@ -68,7 +72,9 @@ export default function LocationMap(props: LocationMapProps) {
 
 
     useEffect(() => {
-        queryStatesMap.current = new QueryData(props.query);
+        let queryName = 'hpccsystems_covid19_query_' + props.type + '_map';
+
+        queryStatesMap.current = new QueryData(queryName);
         queryStatesMap.current.initData(undefined).then(() => {
             mapData.current = toMapData(queryStatesMap.current.getData('latest'));
             setSummaryQueryData(queryStatesMap.current.getData('summary'));
@@ -76,8 +82,6 @@ export default function LocationMap(props: LocationMapProps) {
         })
 
     }, [props]);
-
-
 
 
     useEffect(() => {
@@ -107,6 +111,15 @@ export default function LocationMap(props: LocationMapProps) {
 
     }, [summaryQueryData]);
 
+    const locationCommentary: any = () => {
+        if (locationSummaryQueryData.length > 0) {
+            console.log('location data: ' + locationSummaryQueryData[0]);
+            return locationSummaryQueryData[0]['commentary'];
+        } else {
+            return '';
+        }
+    }
+
     const heatMapTypeChange = (value: any) => {
         setHeatMapType(value);
 
@@ -116,44 +129,87 @@ export default function LocationMap(props: LocationMapProps) {
     const olToolTipHandler = (name: string) => {
         let row: any = mapData.current.get(name.toUpperCase());
         if (row) {
-            return `<div style="border-width: 1px; background: antiquewhite; padding: 5px"><b>${row.location} </b>
-                     <table>
-                        <tr>
-                        <td>New Cases</td>
-                        <td>${row.new_cases} </td>
-                        </tr>
-                        <tr>
-                        <td>Still Active</td>
-                        <td>${row.active} </td>
-                        </tr>
-                        <tr>
-                        <td>Recovered</td>
-                        <td>${row.recovered} </td>
-                        </tr>
-                        <tr>
-                        <td>Total Cases</td>
-                        <td>${row.cases} </td>
-                        </tr>
-                        <tr>
-                        <td>New Deaths</td>
-                        <td style="color: red"><b>${row.new_deaths}</b></td>
-                        </tr>
-                        <tr>
-                        <td>Total Deaths</td>
-                        <td style="color: red"><b>${row.deaths}</b></td>
-                        </tr>   
-                         <tr>
-                        <td>R</td>
-                        <td style="color: cornflowerblue">${row.r}</td>
-                        </tr>                       
-                        <tr>
-                        <td>Overall Status</td>
-                        <td style="color: cornflowerblue">${row.status}</td>
-                        </tr>      
-                    </table>           
-                </div>`
+            setToolTipRow(row);
         } else {
-            return `<div style="border-width: 1px; background: antiquewhite; padding: 5px">No data available for ${name}</div>`
+            setToolTipRow([]);
+        }
+
+        return '';
+    }
+    const formatNumber: any = (value: any) => {
+        if (value) {
+            return value.toLocaleString();
+        } else {
+            return '';
+        }
+    }
+
+    const renderToolTip = () => {
+        let row: any = toolTipRow;
+        if (row) {
+
+            return <div>
+            <Row>
+                <Col span={1}>Location:</Col>
+                <Col span={3}><b>{row.location}</b></Col>
+
+                <Col span={2}>New Cases:</Col>
+                <Col span={1}><b>{formatNumber(row.new_cases)}</b></Col>
+
+                <Col span={2}>Total Cases:</Col>
+                <Col span={2}><b>{formatNumber(row.cases)}</b></Col>
+
+                <Col span={2}>Still Active:</Col>
+                <Col span={2}><b>{formatNumber(row.active)}</b></Col>
+
+                <Col span={2}>R</Col>
+                <Col span={1}><b>{row.r}</b></Col>
+
+            </Row>
+            <Row>
+                <Col span={1}>Status:</Col>
+                <Col span={3}><b>{row.status}</b></Col>
+
+                <Col span={2}>New Deaths:</Col>
+                <Col span={1}><b>{formatNumber(row.new_deaths)}</b></Col>
+
+                <Col span={2}>Total Deaths:</Col>
+                <Col span={2}><b>{formatNumber(row.deaths)}</b></Col>
+
+                <Col span={2}>Recovered:</Col>
+                <Col span={2}><b>{formatNumber(row.recovered)}</b></Col>
+
+
+            </Row>
+            </div>
+                {/*\<tr>*/}
+                {/*<td>Recovered</td>*/}
+                {/*<td>${row.recovered} </td>*/}
+                {/*</tr>*/}
+                {/*<tr>*/}
+                {/*<td>Total Cases</td>*/}
+                {/*<td>${row.cases} </td>*/}
+                {/*</tr>*/}
+                {/*<tr>*/}
+                {/*<td>New Deaths</td>*/}
+                {/*<td style="color: red"><b>${row.new_deaths}</b></td>*/}
+                {/*</tr>*/}
+                {/*<tr>*/}
+                {/*<td>Total Deaths</td>*/}
+                {/*<td style="color: red"><b>${row.deaths}</b></td>*/}
+                {/*</tr>   */}
+                {/* <tr>*/}
+                {/*<td>R</td>*/}
+                {/*<td style="color: cornflowerblue">${row.r}</td>*/}
+                {/*</tr>                       */}
+                {/*<tr>*/}
+                {/*<td>Overall Status</td>*/}
+                {/*<td style="color: cornflowerblue">${row.status}</td>*/}
+                {/*</tr>*/}
+
+        } else {
+            //return <div style="border-width: 1px; background: antiquewhite; padding: 5px"/>
+
         }
     }
 
@@ -167,21 +223,31 @@ export default function LocationMap(props: LocationMapProps) {
                 summaryData.current.casesMax);
             let d = 0;
             switch (heatMapTypeRef.current) {
-                case 'cases': d = row.cases / Math.max(1, summaryData.current.casesMax); break;
-                case 'new_cases': d = row.new_cases /Math.max(1, summaryData.current.newCasesMax);  break;
-                case 'deaths': d = row.deaths /Math.max(1, summaryData.current.deathsMax);  break;
-                case 'new_deaths': d = row.new_deaths /Math.max(1, summaryData.current.newDeathsMax);  break;
-                case 'status': d = row.status_numb /Math.max(1, summaryData.current.statusMax); break;
+                case 'cases':
+                    d = row.cases / Math.max(1, summaryData.current.casesMax);
+                    break;
+                case 'new_cases':
+                    d = row.new_cases / Math.max(1, summaryData.current.newCasesMax);
+                    break;
+                case 'deaths':
+                    d = row.deaths / Math.max(1, summaryData.current.deathsMax);
+                    break;
+                case 'new_deaths':
+                    d = row.new_deaths / Math.max(1, summaryData.current.newDeathsMax);
+                    break;
+                case 'status':
+                    d = row.status_numb / Math.max(1, summaryData.current.statusMax);
+                    break;
             }
 
 
-            return d >= 0.9 ?  '#67000d':
-                d > 0.6 ? '#a50f15' :
-                    d > 0.4 ? 'gray' :
-                        d > 0.2? '#7fcdbb' :
-                            d > 0.1 ? '#a1d99b' :
-                                        '#41ab5d';
-        }  else return '#c7e9c0';
+            return d >= 0.9 ? '#b2182b' :
+                d > 0.6 ? '#d73027' :
+                    d > 0.4 ? '#fee08b' :
+                        d > 0.2 ? '#ffffbf' :
+                            d > 0.1 ? '#999999' :
+                                '#4d4d4d';
+        } else return '#91cf60';
 
 
     }
@@ -194,7 +260,15 @@ export default function LocationMap(props: LocationMapProps) {
             let row: any = mapData.current.get(name.toUpperCase());
             if (row) {
                 setMapSelectedLocation(row);
-                showModal();
+                let filters: Map<string, string> = new Map();
+                filters.set('location_type', props.type);
+                filters.set('location', row['location_code']);
+                queryLocation.current.initData(filters).then(() => {
+                    setLocationSummaryQueryData(queryLocation.current.getData('summary'));
+                    setLocationChildrenQueryData(queryLocation.current.getData('children'));
+                    showModal();
+                });
+
             } else {
                 setMapSelectedLocation([]);
             }
@@ -347,6 +421,8 @@ export default function LocationMap(props: LocationMapProps) {
             </Row>
 
             <div style={{height: 20}}/>
+
+
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                          value={heatMapType} buttonStyle="solid">
                 <Space direction={'horizontal'}>
@@ -357,6 +433,11 @@ export default function LocationMap(props: LocationMapProps) {
                     <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
                 </Space>
             </Radio.Group>
+
+            <div style={{height: 20}}/>
+
+            {renderToolTip()}
+
             <div style={{height: 20}}/>
 
             <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
@@ -365,39 +446,41 @@ export default function LocationMap(props: LocationMapProps) {
             <Modal
                 title={getMapToolTipHeader()}
                 visible={modalVisible}
-                onOk={(e)=>handleOk()}
-                onCancel={(e)=>handleOk()}
+                onOk={(e) => handleOk()}
+                onCancel={(e) => handleOk()}
                 width={1000}
-
                 bodyStyle={{backgroundColor: '#f0f2f5'}}
                 footer={null}
             >
+                <Descriptions size="small" column={1}>
+                    <Descriptions.Item label="Comments">{locationCommentary()}</Descriptions.Item>
 
-            {/*<h4>{getMapToolTipHeader()}</h4>*/}
-            <Tabs defaultActiveKey={'summary'} >
-                <Tabs.TabPane key={'summary'} tab={'Summary'}>
-                    <div style={{height: 20}}/>
-                    <Row>
-                        <Col span={12}>
-                            <h3>Daily Stats - {mapSelectedLocation.date_string}</h3>
-                            <Chart chart={Bar} config={chartSummary} data={chartSummaryData} height={'400px'}/>
+                </Descriptions>
+                {/*<h4>{getMapToolTipHeader()}</h4>*/}
+                <Tabs defaultActiveKey={'summary'}>
+                    <Tabs.TabPane key={'summary'} tab={'Summary'}>
+                        <div style={{height: 20}}/>
+                        <Row>
+                            <Col span={12}>
+                                <h3>Daily Stats - {mapSelectedLocation.date_string}</h3>
+                                <Chart chart={Bar} config={chartSummary} data={chartSummaryData} height={'400px'}/>
 
-                        </Col>
-                        <Col span={12}>
-                            <h3>SIR Model - {mapSelectedLocation.period_string}</h3>
-                            <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
-                        </Col>
-                    </Row>
+                            </Col>
+                            <Col span={12}>
+                                <h3>SIR Model - {mapSelectedLocation.period_string}</h3>
+                                <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
+                            </Col>
+                        </Row>
 
-                </Tabs.TabPane>
-                <Tabs.TabPane key={'daily_trends'} tab={'Daily Trends'}>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane key={'daily_trends'} tab={'Daily Trends'}>
 
-                </Tabs.TabPane>
-                <Tabs.TabPane key={'model_trends'} tab={'Model Trends'}>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane key={'model_trends'} tab={'Model Trends'}>
 
-                </Tabs.TabPane>
-            </Tabs>
-            <Button type="primary" onClick={() => handleOk()}>Close</Button>
+                    </Tabs.TabPane>
+                </Tabs>
+                <Button type="primary" onClick={() => handleOk()}>Close</Button>
             </Modal>
 
         </Layout>);
