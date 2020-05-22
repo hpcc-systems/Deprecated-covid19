@@ -227,8 +227,21 @@ export default function LocationMap(props: LocationMapProps) {
                     d = row.new_deaths / Math.max(1, summaryData.current.newDeathsMax);
                     break;
                 case 'status':
-                    d = row.status_numb / Math.max(1, summaryData.current.statusMax);
-                    break;
+                    d = row.status_numb;
+                    if (d >= 6) {
+                        return '#a50026'
+                    } else if (d === 5) {
+                        return '#d73027'
+                    } else if (d === 4) {
+                        return '#fdae61'
+                    } else if (d === 3) {
+                        return '#fee08b'
+                    } else if (d === 2) {
+                        return '#66bd63'
+                    } else {
+                        return '#1a9850'
+                    }
+
             }
 
 
