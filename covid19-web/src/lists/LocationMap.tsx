@@ -1,7 +1,21 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {Button, Card, Col, Descriptions, Layout, Modal, PageHeader, Radio, Row, Space, Statistic, Tabs} from "antd";
+import {
+    Button,
+    Card,
+    Col,
+    Descriptions,
+    Layout,
+    Modal,
+    PageHeader,
+    Radio,
+    Row,
+    Space,
+    Statistic,
+    Table,
+    Tabs
+} from "antd";
 import {QueryData} from "../components/QueryData";
-import {Bar} from "@antv/g2plot";
+import {Bar, Column} from "@antv/g2plot";
 import {Chart} from "../components/Chart";
 import OlMap from "../components/OlMap";
 
@@ -57,7 +71,7 @@ export default function LocationMap(props: LocationMapProps) {
     const [locationSummaryQueryData, setLocationSummaryQueryData] = useState<any>([]);
     const [toolTipRow, setToolTipRow] = useState<any>([]);
     const [locationChildrenQueryData, setLocationChildrenQueryData] = useState<any>([]);
-
+    const [locationPeriodTrendData, setLocationPeriodTrendQueryData] = useState<any>([]);
 
     function toMapData(data: any) {
         let mapData: Map<string, any> = new Map();
@@ -182,33 +196,10 @@ export default function LocationMap(props: LocationMapProps) {
 
             </Row>
             </div>
-                {/*\<tr>*/}
-                {/*<td>Recovered</td>*/}
-                {/*<td>${row.recovered} </td>*/}
-                {/*</tr>*/}
-                {/*<tr>*/}
-                {/*<td>Total Cases</td>*/}
-                {/*<td>${row.cases} </td>*/}
-                {/*</tr>*/}
-                {/*<tr>*/}
-                {/*<td>New Deaths</td>*/}
-                {/*<td style="color: red"><b>${row.new_deaths}</b></td>*/}
-                {/*</tr>*/}
-                {/*<tr>*/}
-                {/*<td>Total Deaths</td>*/}
-                {/*<td style="color: red"><b>${row.deaths}</b></td>*/}
-                {/*</tr>   */}
-                {/* <tr>*/}
-                {/*<td>R</td>*/}
-                {/*<td style="color: cornflowerblue">${row.r}</td>*/}
-                {/*</tr>                       */}
-                {/*<tr>*/}
-                {/*<td>Overall Status</td>*/}
-                {/*<td style="color: cornflowerblue">${row.status}</td>*/}
-                {/*</tr>*/}
+
 
         } else {
-            //return <div style="border-width: 1px; background: antiquewhite; padding: 5px"/>
+
 
         }
     }
@@ -236,18 +227,31 @@ export default function LocationMap(props: LocationMapProps) {
                     d = row.new_deaths / Math.max(1, summaryData.current.newDeathsMax);
                     break;
                 case 'status':
-                    d = row.status_numb / Math.max(1, summaryData.current.statusMax);
-                    break;
+                    d = row.status_numb;
+                    if (d >= 6) {
+                        return '#a50026'
+                    } else if (d === 5) {
+                        return '#d73027'
+                    } else if (d === 4) {
+                        return '#fdae61'
+                    } else if (d === 3) {
+                        return '#fee08b'
+                    } else if (d === 2) {
+                        return '#66bd63'
+                    } else {
+                        return '#1a9850'
+                    }
+
             }
 
 
-            return d >= 0.9 ? '#b2182b' :
+            return d >= 0.9 ? '#a50026' :
                 d > 0.6 ? '#d73027' :
-                    d > 0.4 ? '#fee08b' :
-                        d > 0.2 ? '#ffffbf' :
-                            d > 0.1 ? '#999999' :
-                                '#4d4d4d';
-        } else return '#91cf60';
+                    d > 0.4 ? '#fdae61' :
+                        d > 0.2 ? '#fee08b' :
+                            d > 0.1 ? '#66bd63' :
+                                '#1a9850';
+        } else return '#1a9850';
 
 
     }
@@ -266,6 +270,7 @@ export default function LocationMap(props: LocationMapProps) {
                 queryLocation.current.initData(filters).then(() => {
                     setLocationSummaryQueryData(queryLocation.current.getData('summary'));
                     setLocationChildrenQueryData(queryLocation.current.getData('children'));
+                    setLocationPeriodTrendQueryData(queryLocation.current.getData('period_trend'));
                     showModal();
                 });
 
@@ -352,6 +357,50 @@ export default function LocationMap(props: LocationMapProps) {
 
     }
 
+    const chartPeriodTrend = {
+        padding: 'auto',
+        title: {
+            text: 'Rate of infection (R) Trend',
+            visible: true,
+        },
+        forceFit: true,
+        label: {
+            visible: true,
+            style: {
+                strokeColor: 'black'
+            }
+        },
+
+        data: [],
+        xField: 'period_string',
+        yField: 'r',
+
+    }
+
+    const locationDetailColumns = [
+        {
+            title: 'Location',
+            dataIndex: 'location',
+            width: '200px'
+        },
+        {
+            title: 'Status',
+            dataIndex: 'istate',
+            width: '200px'
+        },
+        {
+            title: 'R',
+            dataIndex: 'r',
+            className: 'column-number',
+            width: '100px'
+        },
+        {
+            title: 'Commentary',
+            dataIndex: 'commentary',
+        }
+
+
+        ];
 
     return (
         <Layout style={{padding: 5}}>
@@ -448,7 +497,7 @@ export default function LocationMap(props: LocationMapProps) {
                 visible={modalVisible}
                 onOk={(e) => handleOk()}
                 onCancel={(e) => handleOk()}
-                width={1000}
+                width={1400}
                 bodyStyle={{backgroundColor: '#f0f2f5'}}
                 footer={null}
             >
@@ -461,6 +510,12 @@ export default function LocationMap(props: LocationMapProps) {
                     <Tabs.TabPane key={'summary'} tab={'Summary'}>
                         <div style={{height: 20}}/>
                         <Row>
+                            <Col span={24}>
+                                <Chart chart={Column} config={chartPeriodTrend} data={locationPeriodTrendData} height={'400px'}/>
+                            </Col>
+                        </Row>
+
+                        <Row>
                             <Col span={12}>
                                 <h3>Daily Stats - {mapSelectedLocation.date_string}</h3>
                                 <Chart chart={Bar} config={chartSummary} data={chartSummaryData} height={'400px'}/>
@@ -471,14 +526,14 @@ export default function LocationMap(props: LocationMapProps) {
                                 <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
                             </Col>
                         </Row>
-
                     </Tabs.TabPane>
-                    <Tabs.TabPane key={'daily_trends'} tab={'Daily Trends'}>
-
-                    </Tabs.TabPane>
-                    <Tabs.TabPane key={'model_trends'} tab={'Model Trends'}>
-
-                    </Tabs.TabPane>
+                    {/* Show the tab conditionally for a state. Does not apply to country or county*/}
+                    {props.type==='states' &&
+                        <Tabs.TabPane key={'county_metrics'} tab={'Counties Metrics'}>
+                            <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
+                                   pagination={false} scroll={{y: 600}}/>
+                        </Tabs.TabPane>
+                    }
                 </Tabs>
                 <Button type="primary" onClick={() => handleOk()}>Close</Button>
             </Modal>
