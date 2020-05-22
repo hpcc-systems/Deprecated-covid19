@@ -245,13 +245,13 @@ export default function LocationMap(props: LocationMapProps) {
             }
 
 
-            return d >= 0.9 ? '#b2182b' :
+            return d >= 0.9 ? '#a50026' :
                 d > 0.6 ? '#d73027' :
-                    d > 0.4 ? '#fee08b' :
-                        d > 0.2 ? '#ffffbf' :
-                            d > 0.1 ? '#999999' :
-                                '#4d4d4d';
-        } else return '#91cf60';
+                    d > 0.4 ? '#fdae61' :
+                        d > 0.2 ? '#fee08b' :
+                            d > 0.1 ? '#66bd63' :
+                                '#1a9850';
+        } else return '#1a9850';
 
 
     }
