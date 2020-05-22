@@ -176,7 +176,7 @@ export default function OlMap(props: Props) {
 
     return (
         <div>
-        <div style={{ height: `74vh`, margin: `1em 0`, borderRadius: `0.5em`, background: '#2b2b2b' }} ref={(e) => (container.current= e)}/>
+        <div style={{ height: `65vh`, margin: `1em 0`, borderRadius: `0.5em`, background: '#2b2b2b' }} ref={(e) => (container.current= e)}/>
         <div ref={(e) => (popup.current= e)}/>
         </div>
 
