@@ -33,7 +33,7 @@ EXPORT CalcMetrics := MODULE
                             SELF.active := IF (LEFT.cumCases < RIGHT.cumCases, LEFT.cumCases, LEFT.cumCases - RIGHT.cumCases),
                             SELF.recovered := IF(RIGHT.cumCases < LEFT.cumDeaths, 0, RIGHT.cumCases - LEFT.cumDeaths),
                             SELF.prevActive := LEFT.prevCases - RIGHT.prevCases,
-                            SELF.iMort := (LEFT.cumDeaths - RIGHT.cumDeaths) / RIGHT.cumCases,
+                            SELF.iMort := LEFT.cumDeaths / RIGHT.cumCases,
                             SELF := LEFT), LEFT OUTER);
 
         statsE := statsE2;
@@ -42,6 +42,9 @@ EXPORT CalcMetrics := MODULE
     // Calculate Metrics, given input Stats Data.
     EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault) := FUNCTION
 				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive) := EMBED(Python)
+					def numFormat(num):
+						number_with_commas = "{:,}".format(num)
+						return number_with_commas
 					outstr = ''
 					for rec in recs:
 						location = rec[1].strip()
@@ -55,6 +58,7 @@ EXPORT CalcMetrics := MODULE
 						sdi = rec[12]
 						mdi = rec[13]
 						hi = rec[14]
+						cfr = rec[15]
 						infCount = rec[16]
 						newCases = rec[18]
 						newDeaths = rec[19]
@@ -91,25 +95,31 @@ EXPORT CalcMetrics := MODULE
 							rstr = 'The infection is ' + implstr + ' (R = ' + str(r) + '). '
 						else:
 							rstr = 'It is too early to estimate the growth rate (R). '
+						relapsestr = 'This represents a regression from a previous state of ' + prevState + '. '
+
 						if iState != 'Recovered':
 							outstr += rstr
-						scaleStr = 'There are currently ' + str(active) + ' active cases. '
+						scaleStr = 'There are currently ' + numFormat(active) + ' active cases. '
 						if iState == 'Emerging':
-							scaleStr = 'This outbreak is based on a small number of detected infections (' + str(active) + ' cases) and may be quickly contained by policy measures. '
+							scaleStr = 'This outbreak is based on a small number of detected infections (' + numFormat(active) + ' cases) and may be quickly contained by appropriate measures. '
+							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
+								scaleStr += relapsestr
 						elif iState == 'Spreading':
-							scaleStr = 'This outbreak is probably beyond containment (' + str(active) + ' active cases) and must be mitigated through policy and behavioral changes. '
+							scaleStr = 'This outbreak is probably beyond containment (' + numFormat(active) + ' active cases) and requires mitigation. '
+							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
+								scaleStr += relapsestr
 						elif iState == 'Regressing':
-							scaleStr = 'The infection appeared to have been recovering, but has recently begun to grow again (' + str(active) + ' active cases, ' + \
-														str(newCases) + ' new). '
+							scaleStr = 'The infection was previously recovering, but has recently begun to grow again (' + numFormat(active) + ' active cases, ' + \
+														numFormat(newCases) + ' new). '
 						elif iState == 'Initial':
 							scaleStr = 'No significant infection has been detected. '
 						elif iState == 'Stabilized':
-							scaleStr += 'At this rate, expect to see approximately ' + str(newCases) + ' new cases and ' + str(newDeaths) + ' deaths per week. '
+							scaleStr += 'At this rate, expect to see approximately ' + numFormat(newCases) + ' new cases and ' + numFormat(newDeaths) + ' deaths per week. '
 							if prevState in ['Recovering', 'Recovered']:
-								scaleStr += 'This represents a relapse from a previous state of ' + prevState + '. '
+								scaleStr += relapsestr
 						elif iState == 'Stabilizing':
 							if prevState in ['Recovering', 'Recovered', 'Stabilized']:
-								scaleStr += 'This represents a relapse from a previous state of ' + prevState + '. '
+								scaleStr += relapsestr
 						elif iState == 'Recovered':
 							scaleStr = 'No significant active infections remain. '
 						elif iState == 'Recovering':
@@ -119,8 +129,8 @@ EXPORT CalcMetrics := MODULE
 								casePct = (peakCases - newCases) / float(peakCases) * 100
 							if peakDeaths > 0:
 								deathsPct = (peakDeaths - newDeaths) / float(peakDeaths) * 100
-							scaleStr += 'New Cases are currently ' + str(newCases) + ' per week, down ' + str(round(casePct)) + '% from a peak of ' + str(peakCases) + ' per week. '
-							scaleStr += 'New Deaths are currently ' + str(newDeaths) + ' per week, down ' + str(round(deathsPct)) + '% from a peak of ' + str(peakDeaths) + ' per week. '
+							scaleStr += 'New Cases are currently ' + numFormat(newCases) + ' per week, down ' + str(round(casePct)) + '% from a peak of ' + numFormat(peakCases) + ' per week. '
+							scaleStr += 'New Deaths are currently ' + numFormat(newDeaths) + ' per week, down ' + str(round(deathsPct)) + '% from a peak of ' + numFormat(peakDeaths) + ' per week. '
 						outstr += scaleStr
 						infstr = ''
 						if infCount > 1:
@@ -129,14 +139,14 @@ EXPORT CalcMetrics := MODULE
 								ord = 'nd'
 							elif infCount == 3:
 								ord = 'rd'
-							infstr = 'This is the ' + str(infCount) + ord + ' round of infection. '
+							infstr = 'This is the ' + str(infCount) + ord + ' surge in infections. '
 						outstr += infstr
 						sdString = ''
-						if sdi < -.05:
+						if sdi < -.1 and iState not in ['Recovered', 'Recovering']:
 							sdString = 'It appears that the level of social distancing is decreasing, which may result in higher levels of infection growth. '
 							outstr += sdString
-						if mdi < -.05:
-							mdString = 'The mortality rate is growing faster than the case rate, implying that there may be a deterioration in medical conditions, probably due to '
+						if mdi < -.1:
+							mdString = 'The mortality rate is growing faster than the case rate, implying that there may be a deterioration in medical conditions, probably indicating '
 							if r >= 1.5 and active > minActive:
 								mdReason = 'an overload of the local medical capacity. '
 							else:
@@ -156,6 +166,9 @@ EXPORT CalcMetrics := MODULE
 									hiReason = ' apparent deterioration of medical conditions. '
 							hiString += hiReason
 							outstr += hiString
+						if cfr > 0:
+							cfrstr = 'The Case Fatality Rate (CFR) is estimated as ' + str(round(cfr * 100.0, 2)) + '%. '
+							outstr += cfrstr
 					return outstr
 				ENDEMBED;
 
@@ -215,7 +228,7 @@ EXPORT CalcMetrics := MODULE
             SELF.cmRatio := IF(mR > 0, cR / mR, 0);
             SELF.dcR := IF(r.cR > 0, cR / r.cR - 1, 0);  //Needs to move to later.
             SELF.dmR := IF (r.mR > 0, l.mR / r.mR - 1, 0);  //Needs to move to later.
-            SELF.medIndicator := IF(SELF.cmRatio > 0 AND r.cmRatio > 0, l.cmRatio / r.cmRatio - 1, 0);
+            SELF.medIndicator := IF(R1 > 1 AND SELF.cmRatio > 0 AND r.cmRatio > 0, l.cmRatio / r.cmRatio - 1, 0);
             SELF.sdIndicator := IF(R1 > 1, -SELF.dcR, 0);
             // Assume that cR decreases with the inverse log of time.  First we calculate the base of the log
             b := POWER(10, (l.cR/r.cR * LOG(periodDays)));
@@ -243,7 +256,7 @@ EXPORT CalcMetrics := MODULE
 						prevInfectCount := IF(l.location = r.location, l.infectionCount, 1);
 						R1 := r.R;
             SELF.iState := MAP(
-                prevState in ['Recovered', 'Recovering'] AND R1 >= 1.1 => 'Regressing',
+                //prevState in ['Recovered', 'Recovering'] AND R1 >= 1.1 => 'Regressing',
                 prevState = 'Initial' AND r.active = 0 => 'Initial',
                 R1 >= 1.5 AND r.active >= 1 AND r.active < minActive => 'Emerging',
                 R1 >= 1.5 => 'Spreading',
@@ -252,9 +265,11 @@ EXPORT CalcMetrics := MODULE
                 prevState != 'Initial' AND (R1 > .1 OR r.active > minActive) => 'Recovering',
                 prevState != 'Initial' AND R1 <= .1 AND r.active <= minActive => 'Recovered',
                 'Initial');
-						SELF.infectionCount := IF(prevState != 'Regressing' AND self.iState = 'Regressing', prevInfectCount + 1, prevInfectCount);
-						SELF.peakCases := IF(l.location = r.location, IF(r.newCases > l.peakCases OR SELF.iState = 'Regressing', r.newCases, l.peakCases), r.newCases);
-						SELF.peakDeaths := IF(l.location = r.location, IF(r.newDeaths > l.peakDeaths OR SELF.iState = 'Regressing', r.newDeaths, l.peakDeaths), r.newDeaths);			
+						wasRecovering := IF(l.location = r.location, IF(SELF.iState IN ['Recovered', 'Recovering'], TRUE, l.wasRecovering), FALSE);
+						SELF.infectionCount := IF(wasRecovering AND self.iState IN ['Stabilizing', 'Emerging', 'Spreading'], prevInfectCount + 1, prevInfectCount);
+						SELF.wasRecovering := IF(SELF.infectionCount > prevInfectCount, FALSE, wasRecovering);
+						SELF.peakCases := IF(l.location = r.location, IF(r.newCases > l.peakCases OR SELF.infectionCount > prevInfectCount, r.newCases, l.peakCases), r.newCases);
+						SELF.peakDeaths := IF(l.location = r.location, IF(r.newDeaths > l.peakDeaths OR SELF.infectionCount > prevInfectCount, r.newDeaths, l.peakDeaths), r.newDeaths);			
             cR := IF(r.cR > 1, r.cR - 1, 0);
             mR := IF(r.mR > 1, r.mR - 1, 0);
             mi := IF(r.medIndicator < 0, -r.medIndicator, 0);

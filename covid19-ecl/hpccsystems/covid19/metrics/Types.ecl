@@ -55,6 +55,7 @@ EXPORT Types := MODULE
 				STRING commentary := '';
         metric_t cR_old := 0;
 				STRING prevState := '';
+				BOOLEAN wasRecovering := FALSE;
         count_t population :=0;
     END;
     // Extended Stats Record
@@ -70,7 +71,7 @@ EXPORT Types := MODULE
         count_t active := 0;
         count_t prevActive := 0;
         count_t recovered := 0;
-        metric_t iMort := 0;
+        DECIMAL5_3 iMort := 0;
     END;
     // Population Record
     EXPORT populationRec := RECORD

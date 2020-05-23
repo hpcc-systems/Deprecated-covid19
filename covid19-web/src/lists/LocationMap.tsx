@@ -227,18 +227,31 @@ export default function LocationMap(props: LocationMapProps) {
                     d = row.new_deaths / Math.max(1, summaryData.current.newDeathsMax);
                     break;
                 case 'status':
-                    d = row.status_numb / Math.max(1, summaryData.current.statusMax);
-                    break;
+                    d = row.status_numb;
+                    if (d >= 6) {
+                        return '#a50026'
+                    } else if (d === 5) {
+                        return '#d73027'
+                    } else if (d === 4) {
+                        return '#fdae61'
+                    } else if (d === 3) {
+                        return '#fee08b'
+                    } else if (d === 2) {
+                        return '#66bd63'
+                    } else {
+                        return '#1a9850'
+                    }
+
             }
 
 
-            return d >= 0.9 ? '#b2182b' :
+            return d >= 0.9 ? '#a50026' :
                 d > 0.6 ? '#d73027' :
-                    d > 0.4 ? '#fee08b' :
-                        d > 0.2 ? '#ffffbf' :
-                            d > 0.1 ? '#999999' :
-                                '#4d4d4d';
-        } else return '#91cf60';
+                    d > 0.4 ? '#fdae61' :
+                        d > 0.2 ? '#fee08b' :
+                            d > 0.1 ? '#66bd63' :
+                                '#1a9850';
+        } else return '#1a9850';
 
 
     }

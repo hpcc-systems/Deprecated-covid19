@@ -66,39 +66,39 @@ metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, 10);
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat', Thor, OVERWRITE);
 
 metricsRed := metrics[ .. 20000 ]; // Reduced set for wu output
-OUTPUT(metricsRed, ALL, NAMED('MetricsByWeek'));
+//OUTPUT(metricsRed, ALL, NAMED('MetricsByWeek'));
 
 sortedByCases := SORT(metricsRed, period, -cases);
-OUTPUT(sortedByCases, ALL, NAMED('metricsByCases'));
+//OUTPUT(sortedByCases, ALL, NAMED('metricsByCases'));
 sortedByCR := SORT(metricsRed, period, -cR, location);
-OUTPUT(sortedByCR, ALL, NAMED('metricsByCR'));
+//OUTPUT(sortedByCR, ALL, NAMED('metricsByCR'));
 sortedByMR := SORT(metricsRed, period, -mR, location);
-OUTPUT(sortedByMR, ALL, NAMED('metricsByMR'));
+//OUTPUT(sortedByMR, ALL, NAMED('metricsByMR'));
 sortedByCMRatio := SORT(metricsRed, period, -cmRatio, location);
-OUTPUT(sortedByCMRatio, ALL, NAMED('metricsByCMRatio'));
+//OUTPUT(sortedByCMRatio, ALL, NAMED('metricsByCMRatio'));
 
 sortedByPerCapita := SORT(metricsRed, period, -cases_per_capita, location);
-OUTPUT(sortedByPerCapita, ALL, NAMED('metricsByPerCapitaCases'));
+//OUTPUT(sortedByPerCapita, ALL, NAMED('metricsByPerCapitaCases'));
 
 sortedByDCR := SORT(metricsRed, period, dcR, location);
-OUTPUT(sortedByDCR, ALL, NAMED('metricsByDCR'));
+//OUTPUT(sortedByDCR, ALL, NAMED('metricsByDCR'));
 
 sortedByDMR := SORT(metricsRed, period, dmR, location);
-OUTPUT(sortedByDMR, ALL, NAMED('metricsByDMR'));
+//OUTPUT(sortedByDMR, ALL, NAMED('metricsByDMR'));
 
 sortedByMedInd := SORT(metrics(medIndicator != 0), period, medIndicator, location);
-OUTPUT(sortedByMedInd, ALL, NAMED('metricsByMedicalIndicator'));
+//OUTPUT(sortedByMedInd, ALL, NAMED('metricsByMedicalIndicator'));
 
 sortedBySdInd := SORT(metrics(sdIndicator != 0), period, sdIndicator, location);
-OUTPUT(sortedBySdInd, ALL, NAMED('metricsBySocialDistanceIndicator'));
+//OUTPUT(sortedBySdInd, ALL, NAMED('metricsBySocialDistanceIndicator'));
 
 withSeverity := JOIN(metrics(period = 1 AND iState != 'Initial'), COVID19.iStateSeverity, LEFT.iState = RIGHT.stateName, TRANSFORM({metricsRec, UNSIGNED severity},
                           SELF.severity := RIGHT.severity, SELF := LEFT), LOOKUP);
 sortedBySeverity := SORT(withSeverity, -severity, location);
-OUTPUT(sortedBySeverity, ALL, NAMED('ByInfectionState'));
+//OUTPUT(sortedBySeverity, ALL, NAMED('ByInfectionState'));
 
 sortedByHeatIndx := COVID19.HotSpotsRpt(metrics);
-OUTPUT(sortedByHeatIndx, ALL, NAMED('HotSpots'));
+//OUTPUT(sortedByHeatIndx, ALL, NAMED('HotSpots'));
 
 commentary := SORT(metrics(period = 1), location);
-OUTPUT(commentary, {location, commentary}, ALL, NAMED('Commentary'));
+//OUTPUT(commentary, {location, commentary}, ALL, NAMED('Commentary'));

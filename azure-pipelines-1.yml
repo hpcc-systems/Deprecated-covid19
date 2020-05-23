@@ -6,8 +6,8 @@
 trigger:
 - master
 
-pool: Default
-  
+pool:
+  vmImage: 'ubuntu-latest'
 
 jobs:
   - job: Publish
@@ -47,5 +47,3 @@ jobs:
           - task: CmdLine@2
             inputs:
               script: 'pm2 start Covid19-Web'
-
-
