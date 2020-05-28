@@ -59,7 +59,7 @@ function useStateRef(initialValue: any) {
 }
 
 export default function LocationMap(props: LocationMapProps) {
-    const queryStatesMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
+    const queryLocationsMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
     const queryLocation = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_location_metrics'));
     const summaryData = useRef<SummaryData>(new SummaryData());
     const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
@@ -88,10 +88,10 @@ export default function LocationMap(props: LocationMapProps) {
     useEffect(() => {
         let queryName = 'hpccsystems_covid19_query_' + props.type + '_map';
 
-        queryStatesMap.current = new QueryData(queryName);
-        queryStatesMap.current.initData(undefined).then(() => {
-            mapData.current = toMapData(queryStatesMap.current.getData('latest'));
-            setSummaryQueryData(queryStatesMap.current.getData('summary'));
+        queryLocationsMap.current = new QueryData(queryName);
+        queryLocationsMap.current.initData(undefined).then(() => {
+            mapData.current = toMapData(queryLocationsMap.current.getData('latest'));
+            setSummaryQueryData(queryLocationsMap.current.getData('summary'));
             setMapSelectedLocation([]);
         })
 
@@ -127,7 +127,7 @@ export default function LocationMap(props: LocationMapProps) {
 
     const locationCommentary: any = () => {
         if (locationSummaryQueryData.length > 0) {
-            console.log('location data: ' + locationSummaryQueryData[0]);
+            //console.log('location data: ' + locationSummaryQueryData[0]);
             return locationSummaryQueryData[0]['commentary'];
         } else {
             return '';
@@ -137,7 +137,7 @@ export default function LocationMap(props: LocationMapProps) {
     const heatMapTypeChange = (value: any) => {
         setHeatMapType(value);
 
-        console.log('new heat map value - ' + value);
+        //console.log('new heat map value - ' + value);
     }
 
     const olToolTipHandler = (name: string) => {
@@ -299,13 +299,13 @@ export default function LocationMap(props: LocationMapProps) {
     };
 
 
-    const chartModelData = [{"name": "heatIndex", "value": mapSelectedLocation.heat_index},
-        {"name": "iMort", "value": mapSelectedLocation.imort},
-        {"name": "sdIndicator", "value": mapSelectedLocation.sd_indicator},
-        {"name": "medIndicator", "value": mapSelectedLocation.med_indicator},
-        {"name": "mR", "value": mapSelectedLocation.mr},
-        {"name": "cR", "value": mapSelectedLocation.cr},
-        {"name": "R", "value": mapSelectedLocation.r}
+    const chartModelData = [{"name": "Heat Index", "value": mapSelectedLocation.heat_index},
+        {"name": "Case Fatality Rate", "value": mapSelectedLocation.imort},
+        {"name": "Medical Indicator", "value": mapSelectedLocation.med_indicator},
+        {"name": "Social Distance Indicator", "value": mapSelectedLocation.sd_indicator},
+        {"name": "Mortality Rate (mR)", "value": mapSelectedLocation.mr},
+        {"name": "Cases Rate (cR)", "value": mapSelectedLocation.cr},
+        {"name": "Infection Rate (R)", "value": mapSelectedLocation.r}
     ];
 
     const chartModel = {
@@ -323,6 +323,16 @@ export default function LocationMap(props: LocationMapProps) {
         xAxis: {
             title: {visible: false}
         },
+        color:(d:any)=>{
+            return d === 'Infection Rate (R)'? '#6394f8':
+                d === 'Case Rate (cR)' ? '#61d9aa':
+                d === 'Mortality Rate (mR)'? '#657797' :
+                d === 'Social Distance Indicator'? '#f6c02c' :
+                d === 'Medical Indicator'? '#7a4e48' :
+                d === 'Case Fatality Rate'? '#6dc8ec' :
+                    '#9867bc'
+        },
+        colorField: 'name',
         data: [],
         xField: 'value',
         yField: 'name',
@@ -361,7 +371,7 @@ export default function LocationMap(props: LocationMapProps) {
         padding: 'auto',
         title: {
             text: 'Rate of infection (R) Trend',
-            visible: true,
+            visible: false,
         },
         forceFit: true,
         label: {
@@ -370,7 +380,12 @@ export default function LocationMap(props: LocationMapProps) {
                 strokeColor: 'black'
             }
         },
-
+        color:(d:any)=>{
+            return d > 1.1? '#d73027':
+                  d > 0.9? '#fee08b':
+                  '#1a9850'
+        },
+        colorField: 'r',
         data: [],
         xField: 'period_string',
         yField: 'r',
@@ -491,39 +506,131 @@ export default function LocationMap(props: LocationMapProps) {
 
             <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                    selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
-                   geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}/>
+                   geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
+                   height={'700px'}/>
             <Modal
                 title={getMapToolTipHeader()}
                 visible={modalVisible}
                 onOk={(e) => handleOk()}
                 onCancel={(e) => handleOk()}
                 width={1400}
-                bodyStyle={{backgroundColor: '#f0f2f5'}}
+
                 footer={null}
             >
                 <Descriptions size="small" column={1}>
-                    <Descriptions.Item label="Comments">{locationCommentary()}</Descriptions.Item>
+                    <Descriptions.Item label="Commentary">{locationCommentary()}</Descriptions.Item>
 
                 </Descriptions>
                 {/*<h4>{getMapToolTipHeader()}</h4>*/}
-                <Tabs defaultActiveKey={'summary'}>
-                    <Tabs.TabPane key={'summary'} tab={'Summary'}>
+                <Tabs defaultActiveKey={'r'}>
+                    <Tabs.TabPane key={'r'} tab={'Rate of Infection (R)'}>
                         <div style={{height: 20}}/>
                         <Row>
                             <Col span={24}>
-                                <Chart chart={Column} config={chartPeriodTrend} data={locationPeriodTrendData} height={'400px'}/>
+                                <Chart chart={Column} config={chartPeriodTrend} data={locationPeriodTrendData} height={'600px'}/>
                             </Col>
                         </Row>
 
+                    </Tabs.TabPane>
+                    <Tabs.TabPane key={'metrics'} tab={'Stats & Metrics'}>
+
                         <Row>
                             <Col span={12}>
-                                <h3>Daily Stats - {mapSelectedLocation.date_string}</h3>
-                                <Chart chart={Bar} config={chartSummary} data={chartSummaryData} height={'400px'}/>
+                                <h3>Stats</h3>
+                                <Row>
+                                    <Col span={12}>
+                                        Daily Stats - {mapSelectedLocation.date_string}
+                                    </Col>
+                                    <Col span={12}>
+                                        Weekly Stats - {mapSelectedLocation.period_string}
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="New Cases"
+                                                value={mapSelectedLocation.new_cases}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="New Cases"
+                                                value={mapSelectedLocation.period_new_cases}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="New Deaths"
+                                                value={mapSelectedLocation.new_deaths}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="New Deaths"
+                                                value={mapSelectedLocation.period_new_deaths}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="Active Cases"
+                                                value={mapSelectedLocation.active}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="Active Cases"
+                                                value={mapSelectedLocation.period_active}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="Recovered Cases"
+                                                value={mapSelectedLocation.recovered}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Card>
+                                            <Statistic
+                                                title="Recovered Cases"
+                                                value={mapSelectedLocation.period_recovered}
+                                                valueStyle={{color: '#cf1322'}}
+                                            />
+                                        </Card>
+                                    </Col>
+                                </Row>
 
                             </Col>
-                            <Col span={12}>
-                                <h3>SIR Model - {mapSelectedLocation.period_string}</h3>
-                                <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
+                            <Col span={12} style={{paddingLeft: 10}}>
+                                <h3>Metrics</h3>
+                                <div>Week of {mapSelectedLocation.period_string}</div>
+                                <Chart chart={Bar} config={chartModel} data={chartModelData} height={'600px'}/>
                             </Col>
                         </Row>
                     </Tabs.TabPane>

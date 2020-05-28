@@ -21,6 +21,7 @@ interface Props {
     geoLong: number;
     geoKeyField: string;
     zoom: number;
+    height: string;
 }
 
 export default function OlMap(props: Props) {
@@ -153,8 +154,8 @@ export default function OlMap(props: Props) {
                 }
             });
 
+            map.current.updateSize();
             map.current.render();
-
 
         }
 
@@ -169,14 +170,16 @@ export default function OlMap(props: Props) {
     useEffect((mount),[]);
 
     useEffect(() => {
+
         map.current.getLayers().forEach((layer) => {
             (layer as VectorLayer).getSource().changed();
         })
+
     })
 
     return (
         <div>
-        <div style={{ height: `65vh`, margin: `1em 0`, borderRadius: `0.5em`, background: '#2b2b2b' }} ref={(e) => (container.current= e)}/>
+        <div style={{margin: `1em 0`, borderRadius: `0.5em`, background: '#2b2b2b', height:props.height}} ref={(e) => (container.current= e)} />
         <div ref={(e) => (popup.current= e)}/>
         </div>
 

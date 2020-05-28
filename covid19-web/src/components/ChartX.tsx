@@ -17,10 +17,7 @@ export function ChartX(props: Props) {
 
     useEffect(() => {
       if (plot) {
-          // console.log('Height render ' + props.height);
-          // plot.changeConfig({height: props.height});
           plot.changeData(props.data);
-
           plot.render();
       }
     })
