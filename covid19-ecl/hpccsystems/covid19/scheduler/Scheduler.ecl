@@ -49,7 +49,10 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_metrics_catalog');
         RunOrPublishByName('hpccsystems_covid19_query_metrics_grouped');
         RunOrPublishByName('hpccsystems_covid19_query_metrics_period');
-        RunOrPublishByName('hpccsystems_covid19_query_states_map');      
+        RunOrPublishByName('hpccsystems_covid19_query_states_map');
+        RunOrPublishByName('hpccsystems_covid19_query_location_metrics'); 
+             
     );
 
-thingsToDo : WHEN(CRON('0 0-23/6 * * *'));
+// thingsToDo : WHEN(CRON('0 0-23/6 * * *'));
+thingsToDo;
