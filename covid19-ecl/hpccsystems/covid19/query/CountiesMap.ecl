@@ -23,6 +23,10 @@ daily := JOIN(dailyMetrics.counties (date=latestDate), weeklyMetrics.counties (p
                       REAL8 new_deaths,
                       REAL8 active,
                       REAL8 recovered,
+                      REAL8 period_new_cases,
+                      REAL8 period_new_deaths,
+                      REAL8 period_active,
+                      REAL8 period_recovered,
 
                       STRING status,
                       STRING period_string,
@@ -33,7 +37,8 @@ daily := JOIN(dailyMetrics.counties (date=latestDate), weeklyMetrics.counties (p
                       REAL8 med_indicator,
                       REAL8 imort,
                       REAL8 heat_index,
-                      REAL8 status_numb
+                      REAL8 status_numb,
+                      REAL8 infection_count,
                       },
 
                       SELF.location := LEFT.location,
@@ -63,7 +68,12 @@ daily := JOIN(dailyMetrics.counties (date=latestDate), weeklyMetrics.counties (p
                       SELF.sd_indicator := RIGHT.sdIndicator,
                       SELF.med_indicator := RIGHT.medIndicator,
                       SELF.imort := RIGHT.imort,
-                      SELF.heat_index := RIGHT.heatIndex
+                      SELF.heat_index := RIGHT.heatIndex,
+                      SELF.infection_count := RIGHT.infectionCount,
+                      SELF.period_new_cases := RIGHT.newCases;
+                      SELF.period_new_deaths := RIGHT.newDeaths;
+                      SELF.period_recovered := RIGHT.recovered;
+                      SELF.period_active := RIGHT.active;
                       ));
 
 fipsCorrectedDaily := JOIN(allFips, daily, LEFT.FIPS=RIGHT.location_code, TRANSFORM({daily}, SELF.location_code:= LEFT.fips, SELF:= RIGHT), LEFT OUTER);

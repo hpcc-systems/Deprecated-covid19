@@ -12,8 +12,7 @@ export function Chart(props: Props) {
     const [plot, setPlot] = React.useState<any>(undefined);
     const [container, setContainer] = React.useState<HTMLElement|null>(null);
     useEffect(() => {
-      // @ts-ignore
-        //console.log('Use effect ' + props.config.title.text + ' plot - ' + plot);
+
       if (plot) {
           plot.updateConfig(props.config);
           plot.changeData(props.data);

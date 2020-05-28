@@ -20,6 +20,10 @@ daily := JOIN(dailyMetrics.countries (date=latestDate), weeklyMetrics.world (per
                       REAL8 new_deaths,
                       REAL8 active,
                       REAL8 recovered,
+                      REAL8 period_new_cases,
+                      REAL8 period_new_deaths,
+                      REAL8 period_active,
+                      REAL8 period_recovered,
 
                       STRING status,
                       STRING period_string,
@@ -30,7 +34,8 @@ daily := JOIN(dailyMetrics.countries (date=latestDate), weeklyMetrics.world (per
                       REAL8 med_indicator,
                       REAL8 imort,
                       REAL8 heat_index,
-                      REAL8 status_numb
+                      REAL8 status_numb,
+                      REAL8 infection_count
                       },
 
                       SELF.location := LEFT.location,
@@ -61,7 +66,11 @@ daily := JOIN(dailyMetrics.countries (date=latestDate), weeklyMetrics.world (per
                       SELF.med_indicator := RIGHT.medIndicator,
                       SELF.imort := RIGHT.imort,
                       SELF.heat_index := RIGHT.heatIndex,
-                      
+                      SELF.infection_count := RIGHT.infectionCount,
+                      SELF.period_new_cases := RIGHT.newCases;
+                      SELF.period_new_deaths := RIGHT.newDeaths;
+                      SELF.period_recovered := RIGHT.recovered;
+                      SELF.period_active := RIGHT.active;
                       ));
 
 

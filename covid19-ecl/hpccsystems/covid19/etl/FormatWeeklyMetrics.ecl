@@ -32,11 +32,11 @@ formatAllMetrics(DATASET(Types.metricsRec) metricsData, STRING destinationFileSc
         locationsCatalog := TABLE(DEDUP(SORT(projectedMetrics(period=1), location), location), {STRING50 id:= TRIM(location), STRING50 title:= TRIM(location)}); 
         defaultLocations := TABLE(TOPN(projectedMetrics(period=1),50,-heatindex), {location});
 
-        metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),5,TRANSFORM
+        metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),7,TRANSFORM
                                         (
                                             metrics.groupedLayout,
-                                            SELF.measure := CASE (COUNTER, 1 => 'R', 2 => 'sdIndicator', 3 => 'medIndicator', 4 => 'imort' ,5 => 'heatindex' ,''),
-                                            SELF.value := CASE (COUNTER, 1 => LEFT.r, 2 => LEFT.sdIndicator, 3 => LEFT.medIndicator, 4 => LEFT.imort, 5 => LEFT.heatindex,0),
+                                            SELF.measure := CASE (COUNTER, 1 => 'Infection Rate(R)', 2 => 'Cases Rate (cR)', 3 => 'Mortality Rate(mR)', 4 => 'Social Distance Indicator', 5 => 'Medical Indicator', 6 => 'Case Fatality Rate' ,7 => 'Heat Index' ,''),
+                                            SELF.value := CASE (COUNTER, 1 => LEFT.r, 2 => LEFT.cr, 3 => LEFT.mr, 4 => LEFT.sdIndicator, 5 => LEFT.medIndicator, 6 => LEFT.imort, 7 => LEFT.heatindex,0),
                                             SELF.locationstatus := TRIM(LEFT.location) + ' [' + TRIM(LEFT.istate) + ']',
                                             SELF := LEFT;
                                         )
