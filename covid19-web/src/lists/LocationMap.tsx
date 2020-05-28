@@ -514,12 +514,10 @@ export default function LocationMap(props: LocationMapProps) {
                 onOk={(e) => handleOk()}
                 onCancel={(e) => handleOk()}
                 width={1400}
-
                 footer={null}
             >
                 <Descriptions size="small" column={1}>
-                    <Descriptions.Item label="Commentary">{locationCommentary()}</Descriptions.Item>
-
+                    <Descriptions.Item label={<b>Commentary</b>}>{locationCommentary()}</Descriptions.Item>
                 </Descriptions>
 
                 <Tabs defaultActiveKey={'r'} activeKey={modalTab} onChange={(key) => {setModalTab(key)}}>
@@ -536,16 +534,16 @@ export default function LocationMap(props: LocationMapProps) {
                     <Tabs.TabPane key={'metrics'} tab={'Stats & Metrics'}>
 
                         <Row>
-                            <Col span={6}>
-                                Daily Stats - {mapSelectedLocation.date_string}
+                            <Col span={12}>
+                                <b>Daily Stats - {mapSelectedLocation.date_string}</b>
                             </Col>
-                            <Col span={18} style={{paddingLeft: 25}}>
-                                Weekly Stats and Metrics - {mapSelectedLocation.period_string}
+                            <Col span={12} style={{paddingLeft: 25}}>
+                                <b>Weekly Stats and Metrics - {mapSelectedLocation.period_string}</b>
                             </Col>
                         </Row>
 
                         <Row>
-                            <Col span={6}>
+                            <Col span={12}>
                                 <Card>
                                     <Statistic
                                         title="New Cases"
@@ -574,10 +572,24 @@ export default function LocationMap(props: LocationMapProps) {
                                         valueStyle={{color: '#cf1322'}}
                                     />
                                 </Card>
+                                <Card>
+                                    <Statistic
+                                        title="Total Cases"
+                                        value={mapSelectedLocation.cases}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
+                                <Card>
+                                    <Statistic
+                                        title="Total Deaths"
+                                        value={mapSelectedLocation.deaths}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
                             </Col>
-                            <Col span={18} style={{paddingLeft: 25}}>
+                            <Col span={12} style={{paddingLeft: 25}}>
                                 <Row>
-                                    <Col span={6}>
+                                    <Col span={24}>
 
                                         <Card>
                                             <Statistic
@@ -593,23 +605,12 @@ export default function LocationMap(props: LocationMapProps) {
                                                 valueStyle={{color: '#cf1322'}}
                                             />
                                         </Card>
-                                        <Card>
-                                            <Statistic
-                                                title="Active Cases"
-                                                value={mapSelectedLocation.period_active}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                        <Card>
-                                            <Statistic
-                                                title="Recovered Cases"
-                                                value={mapSelectedLocation.period_recovered}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
                                     </Col>
-                                    <Col span={18}>
-                                        <Chart chart={Bar} config={chartModel} data={chartModelData} height={'600px'}/>
+
+                                </Row>
+                                <Row>
+                                    <Col span={24}>
+                                        <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
                                     </Col>
                                 </Row>
 
