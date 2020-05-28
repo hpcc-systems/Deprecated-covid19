@@ -139,6 +139,7 @@ export default function OlMap(props: Props) {
                         overlay.setPosition(e.mapBrowserEvent.coordinate);
                     }
                 } else {
+                    props.toolTipHandler('');
                     if (popup.current) {
                         popup.current.innerHTML = '';
                     }
@@ -179,7 +180,7 @@ export default function OlMap(props: Props) {
 
     return (
         <div>
-        <div style={{margin: `1em 0`, borderRadius: `0.5em`, background: '#2b2b2b', height:props.height}} ref={(e) => (container.current= e)} />
+        <div style={{background: '#2b2b2b', height:props.height}} ref={(e) => (container.current= e)} />
         <div ref={(e) => (popup.current= e)}/>
         </div>
 

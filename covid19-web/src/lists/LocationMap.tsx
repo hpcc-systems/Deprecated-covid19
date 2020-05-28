@@ -7,7 +7,7 @@ import {
     Descriptions,
     Layout,
     Modal,
-    PageHeader,
+    PageHeader, Popover,
     Radio,
     Row,
     Space,
@@ -74,6 +74,7 @@ export default function LocationMap(props: LocationMapProps) {
     const [locationChildrenQueryData, setLocationChildrenQueryData] = useState<any>([]);
     const [locationPeriodTrendData, setLocationPeriodTrendQueryData] = useState<any>([]);
     const [modalTab, setModalTab] = useState<string>('r');
+    const [tooltipVisible, setTooltipVisible] =  useState<boolean>(false);
 
     function toMapData(data: any) {
         let mapData: Map<string, any> = new Map();
@@ -143,8 +144,10 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = mapData.current.get(name.toUpperCase());
         if (row) {
             setToolTipRow(row);
+            setTooltipVisible(true);
         } else {
             setToolTipRow([]);
+            setTooltipVisible(false);
         }
 
         return '';
@@ -157,42 +160,73 @@ export default function LocationMap(props: LocationMapProps) {
         }
     }
 
-    const renderToolTip = () => {
+    const renderToolTipHeader = () => {
+        let row: any = toolTipRow;
+        if (row) {
+           return row.location
+        } else {
+            return ''
+        }
+    }
+        const renderToolTip = () => {
         let row: any = toolTipRow;
         if (row) {
 
-            return <div>
+            return <div style={{width:300, paddingLeft: 10, background: '#fee08b'}}>
                 <Row>
-                    <Col span={1}>Location:</Col>
-                    <Col span={3}><b>{row.location}</b></Col>
-
-                    <Col span={2}>New Cases:</Col>
-                    <Col span={1}><b>{formatNumber(row.new_cases)}</b></Col>
-
-                    <Col span={2}>Total Cases:</Col>
-                    <Col span={2}><b>{formatNumber(row.cases)}</b></Col>
-
-                    <Col span={2}>Still Active:</Col>
-                    <Col span={2}><b>{formatNumber(row.active)}</b></Col>
-
-                    <Col span={2}>R</Col>
-                    <Col span={1}><b>{row.r}</b></Col>
-
+                    <Col span={24}><b>Daily Stats</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={24}><b>{row.date_string}</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={12}>New Cases</Col>
+                    <Col span={4}><b>{formatNumber(row.new_cases)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={1}>Status:</Col>
-                    <Col span={3}><b>{row.status}</b></Col>
+                    <Col span={12}>New Deaths</Col>
+                    <Col ><b>{formatNumber(row.new_deaths)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Active</Col>
+                    <Col ><b>{formatNumber(row.active)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Recovered</Col>
+                    <Col ><b>{formatNumber(row.recovered)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Total Cases</Col>
+                    <Col ><b>{formatNumber(row.cases)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Total Deaths</Col>
+                    <Col ><b>{formatNumber(row.deaths)}</b></Col>
+                </Row>
 
-                    <Col span={2}>New Deaths:</Col>
-                    <Col span={1}><b>{formatNumber(row.new_deaths)}</b></Col>
+                <div style={{height: 20}}/>
 
-                    <Col span={2}>Total Deaths:</Col>
-                    <Col span={2}><b>{formatNumber(row.deaths)}</b></Col>
-
-                    <Col span={2}>Recovered:</Col>
-                    <Col span={2}><b>{formatNumber(row.recovered)}</b></Col>
-
-
+                <Row>
+                    <Col span={24}><b>Weekly Stats</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={24}><b>{row.period_string}</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={12}>New Cases</Col>
+                    <Col span={4}><b>{formatNumber(row.period_new_cases)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>New Deaths</Col>
+                    <Col ><b>{formatNumber(row.period_new_deaths)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Infection Rate (R)</Col>
+                    <Col ><b>{row.r}</b></Col>
                 </Row>
             </div>
 
@@ -243,7 +277,6 @@ export default function LocationMap(props: LocationMapProps) {
 
             }
 
-
             return d >= 0.9 ? '#a50026' :
                 d > 0.6 ? '#d73027' :
                     d > 0.4 ? '#fdae61' :
@@ -251,11 +284,10 @@ export default function LocationMap(props: LocationMapProps) {
                             d > 0.1 ? '#66bd63' :
                                 '#1a9850';
         } else return '#1a9850';
-
-
     }
 
     const olSelectHandler = (name: string) => {
+        setTooltipVisible(false);
 
         if (name === '') {
             setMapSelectedLocation([]);
@@ -277,8 +309,6 @@ export default function LocationMap(props: LocationMapProps) {
                 setMapSelectedLocation([]);
             }
         }
-
-
     }
 
     function getMapToolTipHeader() {
@@ -290,6 +320,7 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const showModal = () => {
+
         setModalVisible(true);
     };
 
@@ -339,33 +370,7 @@ export default function LocationMap(props: LocationMapProps) {
 
     }
 
-    // const chartSummaryData = [{"name": "New Cases", "value": mapSelectedLocation.new_cases},
-    //     {"name": "Total Cases", "value": mapSelectedLocation.cases},
-    //     {"name": "New Deaths", "value": mapSelectedLocation.new_deaths},
-    //     {"name": "Total Deaths", "value": mapSelectedLocation.deaths},
-    //     {"name": "Total Active", "value": mapSelectedLocation.active},
-    //     {"name": "Total Recovered", "value": mapSelectedLocation.recovered}];
-    //
-    // const chartSummary = {
-    //     padding: 'auto',
-    //     title: {
-    //         visible: false,
-    //     },
-    //     forceFit: true,
-    //     label: {
-    //         visible: true,
-    //         style: {
-    //             strokeColor: 'black'
-    //         }
-    //     },
-    //     xAxis: {
-    //         title: {visible: false}
-    //     },
-    //     data: [],
-    //     xField: 'value',
-    //     yField: 'name',
-    //
-    // }
+
 
     const chartPeriodTrend = {
         padding: 'auto',
@@ -490,7 +495,10 @@ export default function LocationMap(props: LocationMapProps) {
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                          value={heatMapType} buttonStyle="solid">
                 <Space direction={'horizontal'}>
+
                     <Radio.Button value={'status'}>Spreading Model</Radio.Button>
+
+
                     <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
                     <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
                     <Radio.Button value={'cases'}>Total Cases</Radio.Button>
@@ -498,16 +506,28 @@ export default function LocationMap(props: LocationMapProps) {
                 </Space>
             </Radio.Group>
 
-            <div style={{height: 20}}/>
+            <Popover content={renderToolTip()} title={renderToolTipHeader()}
+                     placement={"topLeft"} visible={tooltipVisible} style={{background: '#fee08b'}}>
+                <div style={{height: 5}}/>
+            </Popover>
 
-            {renderToolTip()}
+            <div style={{height: 5}}/>
 
-            <div style={{height: 20}}/>
+            {/*{renderToolTip()}*/}
 
-            <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
+            {/*<div style={{height: 20}}/>*/}
+            {/*<Layout>*/}
+
+                {/*<Layout.Content>*/}
+                <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                    selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                    geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
                    height={'700px'}/>
+                {/*</Layout.Content>*/}
+                {/*<Layout.Sider width={300} style={{background: 'gray'}}>*/}
+                {/*    {renderToolTip()}*/}
+                {/*</Layout.Sider>*/}
+            {/*</Layout>*/}
             <Modal
                 title={getMapToolTipHeader()}
                 visible={modalVisible}
@@ -520,7 +540,9 @@ export default function LocationMap(props: LocationMapProps) {
                     <Descriptions.Item label={<b>Commentary</b>}>{locationCommentary()}</Descriptions.Item>
                 </Descriptions>
 
-                <Tabs defaultActiveKey={'r'} activeKey={modalTab} onChange={(key) => {setModalTab(key)}}>
+                <Tabs defaultActiveKey={'r'} activeKey={modalTab} onChange={(key) => {
+                    setModalTab(key)
+                }}>
                     <Tabs.TabPane key={'r'} tab={'Rate of Infection (R)'}>
                         <div style={{height: 20}}/>
                         <Row>
@@ -617,7 +639,6 @@ export default function LocationMap(props: LocationMapProps) {
                             </Col>
 
                         </Row>
-
 
 
                     </Tabs.TabPane>
