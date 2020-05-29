@@ -371,19 +371,17 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
 
-
     const chartPeriodTrend = {
         padding: 'auto',
         title: {
-            text: 'Rate of infection (R) Trend',
             visible: false,
         },
         forceFit: true,
         label: {
-            visible: true,
-            style: {
-                strokeColor: 'black'
-            }
+            visible: true
+        },
+        legend: {
+            visible: false
         },
         color: (d: any) => {
             return d > 1.1 ? '#d73027' :
@@ -418,8 +416,6 @@ export default function LocationMap(props: LocationMapProps) {
             title: 'Commentary',
             dataIndex: 'commentary',
         }
-
-
     ];
 
     return (
@@ -428,7 +424,7 @@ export default function LocationMap(props: LocationMapProps) {
             >
                 <Descriptions size="small" column={2}>
                     <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
-                    <Descriptions.Item label="Filters">Please select a state from the chart to view the
+                    <Descriptions.Item label="Filters">Please click and select a location from the chart to view the
                         metrics</Descriptions.Item>
                 </Descriptions>
             </PageHeader>
@@ -513,21 +509,11 @@ export default function LocationMap(props: LocationMapProps) {
 
             <div style={{height: 5}}/>
 
-            {/*{renderToolTip()}*/}
-
-            {/*<div style={{height: 20}}/>*/}
-            {/*<Layout>*/}
-
-                {/*<Layout.Content>*/}
                 <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                    selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                    geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
                    height={'700px'}/>
-                {/*</Layout.Content>*/}
-                {/*<Layout.Sider width={300} style={{background: 'gray'}}>*/}
-                {/*    {renderToolTip()}*/}
-                {/*</Layout.Sider>*/}
-            {/*</Layout>*/}
+
             <Modal
                 title={getMapToolTipHeader()}
                 visible={modalVisible}
@@ -646,7 +632,7 @@ export default function LocationMap(props: LocationMapProps) {
                     {props.type === 'states' &&
                     <Tabs.TabPane key={'county_metrics'} tab={'Counties Metrics'}>
                         <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
-                               pagination={false} scroll={{y: 600}}/>
+                               pagination={false} scroll={{y: 550}}/>
                     </Tabs.TabPane>
                     }
                 </Tabs>
