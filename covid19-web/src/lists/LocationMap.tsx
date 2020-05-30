@@ -228,6 +228,11 @@ export default function LocationMap(props: LocationMapProps) {
                     <Col span={12}>Infection Rate (R)</Col>
                     <Col ><b>{row.r}</b></Col>
                 </Row>
+                <Row>
+                    <Col span={12}>Status</Col>
+                    <Col ><b>{row.status}</b></Col>
+                </Row>
+
             </div>
 
 
