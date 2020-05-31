@@ -146,13 +146,21 @@ export default function OlMap(props: Props) {
                 }
             });
 
-            selectSingleClick.current.on('select', function(e:any) {
-                if (e.selected.length > 0) {
-                    let feature = e.selected[0];
-                    props.selectHandler(feature.get(props.geoKeyField));
-                } else {
-                    props.selectHandler('');
-                }
+            // selectSingleClick.current.on('select', function(e:any) {
+            //     if (e.selected.length > 0) {
+            //         let feature = e.selected[0];
+            //         props.selectHandler(feature.get(props.geoKeyField));
+            //     } else {
+            //         props.selectHandler('');
+            //     }
+            // });
+
+            map.current.on('singleclick', function(evt) {
+                 map.current.forEachFeatureAtPixel(evt.pixel,
+                    function(feature, layer) {
+                        props.selectHandler(feature.get(props.geoKeyField));
+                        return [feature, layer];
+                    });
             });
 
             map.current.updateSize();

@@ -16,9 +16,10 @@ import {
     Tabs
 } from "antd";
 import {QueryData} from "../components/QueryData";
-import {Bar, Column} from "@antv/g2plot";
+import {Bar, Column, StackedColumn} from "@antv/g2plot";
 import {Chart} from "../components/Chart";
 import OlMap from "../components/OlMap";
+import Search from "antd/es/input/Search";
 
 
 interface LocationMapProps {
@@ -73,8 +74,10 @@ export default function LocationMap(props: LocationMapProps) {
     const [toolTipRow, setToolTipRow] = useState<any>([]);
     const [locationChildrenQueryData, setLocationChildrenQueryData] = useState<any>([]);
     const [locationPeriodTrendData, setLocationPeriodTrendQueryData] = useState<any>([]);
+    const [locationPeriodCasesDeathsTrendData, setLocationPeriodCasesDeathsTrendQueryData] = useState<any>([]);
     const [modalTab, setModalTab] = useState<string>('r');
     const [tooltipVisible, setTooltipVisible] =  useState<boolean>(false);
+    const [tableLocationFilterValue, setTableLocationFilterValue] = React.useState<string>('');
 
     function toMapData(data: any) {
         let mapData: Map<string, any> = new Map();
@@ -247,9 +250,10 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = mapData.current.get(name.toUpperCase());
 
         if (row) {
-            console.log('row -' + row.location + ' heat map type -' +
-                heatMapTypeRef.current + ' max: ' +
-                summaryData.current.casesMax);
+            // console.log('row -' + row.location + ' heat map type -' +
+            //     heatMapTypeRef.current + ' max: ' +
+            //     summaryData.current.casesMax);
+            //
             let d = 0;
             switch (heatMapTypeRef.current) {
                 case 'cases':
@@ -307,6 +311,7 @@ export default function LocationMap(props: LocationMapProps) {
                     setLocationSummaryQueryData(queryLocation.current.getData('summary'));
                     setLocationChildrenQueryData(queryLocation.current.getData('children'));
                     setLocationPeriodTrendQueryData(queryLocation.current.getData('period_trend'));
+                    setLocationPeriodCasesDeathsTrendQueryData(queryLocation.current.getData('period_cases_deaths_trend'));
                     showModal();
                 });
 
@@ -332,6 +337,7 @@ export default function LocationMap(props: LocationMapProps) {
     const handleOk = () => {
         setModalVisible(false);
         setModalTab('r');
+        setTableLocationFilterValue('');
     };
 
 
@@ -400,7 +406,38 @@ export default function LocationMap(props: LocationMapProps) {
 
     }
 
+    const chartPeriodCasesDeathsTrend = {
+        padding: 'auto',
+        title: {
+            visible: false,
+        },
+        forceFit: true,
+        label: {
+            visible: true
+        },
+        legend: {
+            visible: true
+        },
+        color: ['#fee08b','#d73027', ],
+        colorField: 'measure',
+        data: [],
+        xField: 'period_string',
+        yField: 'value',
+        stackField: 'measure'
+    }
+
     const locationDetailColumns = [
+        {
+            title: 'Location',
+            dataIndex: 'location',
+            width: '200px',
+            onFilter: (value: any, record: any) =>
+                record['location']
+                    .toString()
+                    .toLowerCase()
+                    .includes(value.toLowerCase()),
+            filteredValue: tableLocationFilterValue.split(',')
+        },
         {
             title: 'Location',
             dataIndex: 'location',
@@ -508,7 +545,7 @@ export default function LocationMap(props: LocationMapProps) {
             </Radio.Group>
 
             <Popover content={renderToolTip()} title={renderToolTipHeader()}
-                     placement={"topLeft"} visible={tooltipVisible} style={{background: '#fee08b'}}>
+                     placement={"right"} visible={tooltipVisible} style={{background: '#fee08b'}}>
                 <div style={{height: 5}}/>
             </Popover>
 
@@ -544,6 +581,17 @@ export default function LocationMap(props: LocationMapProps) {
                         </Row>
 
                     </Tabs.TabPane>
+
+                    <Tabs.TabPane key={'cases_deaths_trends'} tab={'Cases & Deaths Trends'}>
+                        <div style={{height: 20}}/>
+                        <Row>
+                            <Col span={24}>
+                                <Chart chart={StackedColumn} config={chartPeriodCasesDeathsTrend} data={locationPeriodCasesDeathsTrendData}
+                                       height={'600px'}/>
+                            </Col>
+                        </Row>
+                    </Tabs.TabPane>
+
                     <Tabs.TabPane key={'metrics'} tab={'Stats & Metrics'}>
 
                         <Row>
@@ -636,8 +684,10 @@ export default function LocationMap(props: LocationMapProps) {
                     {/* Show the tab conditionally for a state. Does not apply to country or county*/}
                     {props.type === 'states' &&
                     <Tabs.TabPane key={'county_metrics'} tab={'Counties Metrics'}>
+                        <Search placeholder="input search text" onSearch={value => setTableLocationFilterValue(value)}
+                                enterButton/>
                         <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
-                               pagination={false} scroll={{y: 550}}/>
+                               pagination={false} scroll={{y: 550}} style={{minHeight: 600}}/>
                     </Tabs.TabPane>
                     }
                 </Tabs>
