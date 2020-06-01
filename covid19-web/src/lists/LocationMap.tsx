@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
+
 import {
     Button,
     Card,
@@ -6,7 +7,7 @@ import {
     Descriptions,
     Layout,
     Modal,
-    PageHeader,
+    PageHeader, Popover,
     Radio,
     Row,
     Space,
@@ -15,9 +16,10 @@ import {
     Tabs
 } from "antd";
 import {QueryData} from "../components/QueryData";
-import {Bar, Column} from "@antv/g2plot";
+import {Bar, Column, StackedColumn} from "@antv/g2plot";
 import {Chart} from "../components/Chart";
 import OlMap from "../components/OlMap";
+import Search from "antd/es/input/Search";
 
 
 interface LocationMapProps {
@@ -72,6 +74,10 @@ export default function LocationMap(props: LocationMapProps) {
     const [toolTipRow, setToolTipRow] = useState<any>([]);
     const [locationChildrenQueryData, setLocationChildrenQueryData] = useState<any>([]);
     const [locationPeriodTrendData, setLocationPeriodTrendQueryData] = useState<any>([]);
+    const [locationPeriodCasesDeathsTrendData, setLocationPeriodCasesDeathsTrendQueryData] = useState<any>([]);
+    const [modalTab, setModalTab] = useState<string>('r');
+    const [tooltipVisible, setTooltipVisible] =  useState<boolean>(false);
+    const [tableLocationFilterValue, setTableLocationFilterValue] = React.useState<string>('');
 
     function toMapData(data: any) {
         let mapData: Map<string, any> = new Map();
@@ -127,7 +133,6 @@ export default function LocationMap(props: LocationMapProps) {
 
     const locationCommentary: any = () => {
         if (locationSummaryQueryData.length > 0) {
-            //console.log('location data: ' + locationSummaryQueryData[0]);
             return locationSummaryQueryData[0]['commentary'];
         } else {
             return '';
@@ -136,16 +141,16 @@ export default function LocationMap(props: LocationMapProps) {
 
     const heatMapTypeChange = (value: any) => {
         setHeatMapType(value);
-
-        //console.log('new heat map value - ' + value);
     }
 
     const olToolTipHandler = (name: string) => {
         let row: any = mapData.current.get(name.toUpperCase());
         if (row) {
             setToolTipRow(row);
+            setTooltipVisible(true);
         } else {
             setToolTipRow([]);
+            setTooltipVisible(false);
         }
 
         return '';
@@ -158,43 +163,79 @@ export default function LocationMap(props: LocationMapProps) {
         }
     }
 
-    const renderToolTip = () => {
+    const renderToolTipHeader = () => {
+        let row: any = toolTipRow;
+        if (row) {
+           return row.location
+        } else {
+            return ''
+        }
+    }
+        const renderToolTip = () => {
         let row: any = toolTipRow;
         if (row) {
 
-            return <div>
-            <Row>
-                <Col span={1}>Location:</Col>
-                <Col span={3}><b>{row.location}</b></Col>
+            return <div style={{width:300, paddingLeft: 10, background: '#fee08b'}}>
+                <Row>
+                    <Col span={24}><b>Daily Stats</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={24}><b>{row.date_string}</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={12}>New Cases</Col>
+                    <Col span={4}><b>{formatNumber(row.new_cases)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>New Deaths</Col>
+                    <Col ><b>{formatNumber(row.new_deaths)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Active</Col>
+                    <Col ><b>{formatNumber(row.active)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Recovered</Col>
+                    <Col ><b>{formatNumber(row.recovered)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Total Cases</Col>
+                    <Col ><b>{formatNumber(row.cases)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Total Deaths</Col>
+                    <Col ><b>{formatNumber(row.deaths)}</b></Col>
+                </Row>
 
-                <Col span={2}>New Cases:</Col>
-                <Col span={1}><b>{formatNumber(row.new_cases)}</b></Col>
+                <div style={{height: 20}}/>
 
-                <Col span={2}>Total Cases:</Col>
-                <Col span={2}><b>{formatNumber(row.cases)}</b></Col>
+                <Row>
+                    <Col span={24}><b>Weekly Stats</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={24}><b>{row.period_string}</b></Col>
+                </Row>
+                <div style={{height: 20}}/>
+                <Row>
+                    <Col span={12}>New Cases</Col>
+                    <Col span={4}><b>{formatNumber(row.period_new_cases)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>New Deaths</Col>
+                    <Col ><b>{formatNumber(row.period_new_deaths)}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Infection Rate (R)</Col>
+                    <Col ><b>{row.r}</b></Col>
+                </Row>
+                <Row>
+                    <Col span={12}>Status</Col>
+                    <Col ><b>{row.status}</b></Col>
+                </Row>
 
-                <Col span={2}>Still Active:</Col>
-                <Col span={2}><b>{formatNumber(row.active)}</b></Col>
-
-                <Col span={2}>R</Col>
-                <Col span={1}><b>{row.r}</b></Col>
-
-            </Row>
-            <Row>
-                <Col span={1}>Status:</Col>
-                <Col span={3}><b>{row.status}</b></Col>
-
-                <Col span={2}>New Deaths:</Col>
-                <Col span={1}><b>{formatNumber(row.new_deaths)}</b></Col>
-
-                <Col span={2}>Total Deaths:</Col>
-                <Col span={2}><b>{formatNumber(row.deaths)}</b></Col>
-
-                <Col span={2}>Recovered:</Col>
-                <Col span={2}><b>{formatNumber(row.recovered)}</b></Col>
-
-
-            </Row>
             </div>
 
 
@@ -209,9 +250,10 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = mapData.current.get(name.toUpperCase());
 
         if (row) {
-            console.log('row -' + row.location + ' heat map type -' +
-                heatMapTypeRef.current + ' max: ' +
-                summaryData.current.casesMax);
+            // console.log('row -' + row.location + ' heat map type -' +
+            //     heatMapTypeRef.current + ' max: ' +
+            //     summaryData.current.casesMax);
+            //
             let d = 0;
             switch (heatMapTypeRef.current) {
                 case 'cases':
@@ -244,7 +286,6 @@ export default function LocationMap(props: LocationMapProps) {
 
             }
 
-
             return d >= 0.9 ? '#a50026' :
                 d > 0.6 ? '#d73027' :
                     d > 0.4 ? '#fdae61' :
@@ -252,11 +293,10 @@ export default function LocationMap(props: LocationMapProps) {
                             d > 0.1 ? '#66bd63' :
                                 '#1a9850';
         } else return '#1a9850';
-
-
     }
 
     const olSelectHandler = (name: string) => {
+        setTooltipVisible(false);
 
         if (name === '') {
             setMapSelectedLocation([]);
@@ -271,6 +311,7 @@ export default function LocationMap(props: LocationMapProps) {
                     setLocationSummaryQueryData(queryLocation.current.getData('summary'));
                     setLocationChildrenQueryData(queryLocation.current.getData('children'));
                     setLocationPeriodTrendQueryData(queryLocation.current.getData('period_trend'));
+                    setLocationPeriodCasesDeathsTrendQueryData(queryLocation.current.getData('period_cases_deaths_trend'));
                     showModal();
                 });
 
@@ -278,8 +319,6 @@ export default function LocationMap(props: LocationMapProps) {
                 setMapSelectedLocation([]);
             }
         }
-
-
     }
 
     function getMapToolTipHeader() {
@@ -291,11 +330,14 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const showModal = () => {
+
         setModalVisible(true);
     };
 
     const handleOk = () => {
         setModalVisible(false);
+        setModalTab('r');
+        setTableLocationFilterValue('');
     };
 
 
@@ -323,14 +365,14 @@ export default function LocationMap(props: LocationMapProps) {
         xAxis: {
             title: {visible: false}
         },
-        color:(d:any)=>{
-            return d === 'Infection Rate (R)'? '#6394f8':
-                d === 'Case Rate (cR)' ? '#61d9aa':
-                d === 'Mortality Rate (mR)'? '#657797' :
-                d === 'Social Distance Indicator'? '#f6c02c' :
-                d === 'Medical Indicator'? '#7a4e48' :
-                d === 'Case Fatality Rate'? '#6dc8ec' :
-                    '#9867bc'
+        color: (d: any) => {
+            return d === 'Infection Rate (R)' ? '#6394f8' :
+                d === 'Case Rate (cR)' ? '#61d9aa' :
+                    d === 'Mortality Rate (mR)' ? '#657797' :
+                        d === 'Social Distance Indicator' ? '#f6c02c' :
+                            d === 'Medical Indicator' ? '#7a4e48' :
+                                d === 'Case Fatality Rate' ? '#6dc8ec' :
+                                    '#9867bc'
         },
         colorField: 'name',
         data: [],
@@ -339,51 +381,23 @@ export default function LocationMap(props: LocationMapProps) {
 
     }
 
-    const chartSummaryData = [{"name": "New Cases", "value": mapSelectedLocation.new_cases},
-        {"name": "Total Cases", "value": mapSelectedLocation.cases},
-        {"name": "New Deaths", "value": mapSelectedLocation.new_deaths},
-        {"name": "Total Deaths", "value": mapSelectedLocation.deaths},
-        {"name": "Total Active", "value": mapSelectedLocation.active},
-        {"name": "Total Recovered", "value": mapSelectedLocation.recovered}];
-
-    const chartSummary = {
-        padding: 'auto',
-        title: {
-            visible: false,
-        },
-        forceFit: true,
-        label: {
-            visible: true,
-            style: {
-                strokeColor: 'black'
-            }
-        },
-        xAxis: {
-            title: {visible: false}
-        },
-        data: [],
-        xField: 'value',
-        yField: 'name',
-
-    }
 
     const chartPeriodTrend = {
         padding: 'auto',
         title: {
-            text: 'Rate of infection (R) Trend',
             visible: false,
         },
         forceFit: true,
         label: {
-            visible: true,
-            style: {
-                strokeColor: 'black'
-            }
+            visible: true
         },
-        color:(d:any)=>{
-            return d > 1.1? '#d73027':
-                  d > 0.9? '#fee08b':
-                  '#1a9850'
+        legend: {
+            visible: false
+        },
+        color: (d: any) => {
+            return d > 1.1 ? '#d73027' :
+                d > 0.9 ? '#fee08b' :
+                    '#1a9850'
         },
         colorField: 'r',
         data: [],
@@ -392,7 +406,38 @@ export default function LocationMap(props: LocationMapProps) {
 
     }
 
+    const chartPeriodCasesDeathsTrend = {
+        padding: 'auto',
+        title: {
+            visible: false,
+        },
+        forceFit: true,
+        label: {
+            visible: true
+        },
+        legend: {
+            visible: true
+        },
+        color: ['#fee08b','#d73027', ],
+        colorField: 'measure',
+        data: [],
+        xField: 'period_string',
+        yField: 'value',
+        stackField: 'measure'
+    }
+
     const locationDetailColumns = [
+        {
+            title: 'Location',
+            dataIndex: 'location',
+            width: '200px',
+            onFilter: (value: any, record: any) =>
+                record['location']
+                    .toString()
+                    .toLowerCase()
+                    .includes(value.toLowerCase()),
+            filteredValue: tableLocationFilterValue.split(',')
+        },
         {
             title: 'Location',
             dataIndex: 'location',
@@ -413,9 +458,7 @@ export default function LocationMap(props: LocationMapProps) {
             title: 'Commentary',
             dataIndex: 'commentary',
         }
-
-
-        ];
+    ];
 
     return (
         <Layout style={{padding: 5}}>
@@ -423,7 +466,7 @@ export default function LocationMap(props: LocationMapProps) {
             >
                 <Descriptions size="small" column={2}>
                     <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
-                    <Descriptions.Item label="Filters">Please select a state from the chart to view the
+                    <Descriptions.Item label="Filters">Please click and select a location from the chart to view the
                         metrics</Descriptions.Item>
                 </Descriptions>
             </PageHeader>
@@ -490,7 +533,10 @@ export default function LocationMap(props: LocationMapProps) {
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                          value={heatMapType} buttonStyle="solid">
                 <Space direction={'horizontal'}>
+
                     <Radio.Button value={'status'}>Spreading Model</Radio.Button>
+
+
                     <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
                     <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
                     <Radio.Button value={'cases'}>Total Cases</Radio.Button>
@@ -498,64 +544,114 @@ export default function LocationMap(props: LocationMapProps) {
                 </Space>
             </Radio.Group>
 
-            <div style={{height: 20}}/>
+            <Popover content={renderToolTip()} title={renderToolTipHeader()}
+                     placement={"right"} visible={tooltipVisible} style={{background: '#fee08b'}}>
+                <div style={{height: 5}}/>
+            </Popover>
 
-            {renderToolTip()}
+            <div style={{height: 5}}/>
 
-            <div style={{height: 20}}/>
-
-            <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
+                <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                    selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                    geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
                    height={'700px'}/>
+
             <Modal
                 title={getMapToolTipHeader()}
                 visible={modalVisible}
                 onOk={(e) => handleOk()}
                 onCancel={(e) => handleOk()}
                 width={1400}
-
                 footer={null}
             >
                 <Descriptions size="small" column={1}>
-                    <Descriptions.Item label="Commentary">{locationCommentary()}</Descriptions.Item>
-
+                    <Descriptions.Item label={<b>Commentary</b>}>{locationCommentary()}</Descriptions.Item>
                 </Descriptions>
-                {/*<h4>{getMapToolTipHeader()}</h4>*/}
-                <Tabs defaultActiveKey={'r'}>
+
+                <Tabs defaultActiveKey={'r'} activeKey={modalTab} onChange={(key) => {
+                    setModalTab(key)
+                }}>
                     <Tabs.TabPane key={'r'} tab={'Rate of Infection (R)'}>
                         <div style={{height: 20}}/>
                         <Row>
                             <Col span={24}>
-                                <Chart chart={Column} config={chartPeriodTrend} data={locationPeriodTrendData} height={'600px'}/>
+                                <Chart chart={Column} config={chartPeriodTrend} data={locationPeriodTrendData}
+                                       height={'600px'}/>
                             </Col>
                         </Row>
 
                     </Tabs.TabPane>
+
+                    <Tabs.TabPane key={'cases_deaths_trends'} tab={'Cases & Deaths Trends'}>
+                        <div style={{height: 20}}/>
+                        <Row>
+                            <Col span={24}>
+                                <Chart chart={StackedColumn} config={chartPeriodCasesDeathsTrend} data={locationPeriodCasesDeathsTrendData}
+                                       height={'600px'}/>
+                            </Col>
+                        </Row>
+                    </Tabs.TabPane>
+
                     <Tabs.TabPane key={'metrics'} tab={'Stats & Metrics'}>
 
                         <Row>
                             <Col span={12}>
-                                <h3>Stats</h3>
+                                <b>Daily Stats - {mapSelectedLocation.date_string}</b>
+                            </Col>
+                            <Col span={12} style={{paddingLeft: 25}}>
+                                <b>Weekly Stats and Metrics - {mapSelectedLocation.period_string}</b>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col span={12}>
+                                <Card>
+                                    <Statistic
+                                        title="New Cases"
+                                        value={mapSelectedLocation.new_cases}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
+                                <Card>
+                                    <Statistic
+                                        title="New Deaths"
+                                        value={mapSelectedLocation.new_deaths}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
+                                <Card>
+                                    <Statistic
+                                        title="Active Cases"
+                                        value={mapSelectedLocation.active}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
+                                <Card>
+                                    <Statistic
+                                        title="Recovered Cases"
+                                        value={mapSelectedLocation.recovered}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
+                                <Card>
+                                    <Statistic
+                                        title="Total Cases"
+                                        value={mapSelectedLocation.cases}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
+                                <Card>
+                                    <Statistic
+                                        title="Total Deaths"
+                                        value={mapSelectedLocation.deaths}
+                                        valueStyle={{color: '#cf1322'}}
+                                    />
+                                </Card>
+                            </Col>
+                            <Col span={12} style={{paddingLeft: 25}}>
                                 <Row>
-                                    <Col span={12}>
-                                        Daily Stats - {mapSelectedLocation.date_string}
-                                    </Col>
-                                    <Col span={12}>
-                                        Weekly Stats - {mapSelectedLocation.period_string}
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col span={12}>
-                                        <Card>
-                                            <Statistic
-                                                title="New Cases"
-                                                value={mapSelectedLocation.new_cases}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                    </Col>
-                                    <Col span={12}>
+                                    <Col span={24}>
+
                                         <Card>
                                             <Statistic
                                                 title="New Cases"
@@ -563,19 +659,6 @@ export default function LocationMap(props: LocationMapProps) {
                                                 valueStyle={{color: '#cf1322'}}
                                             />
                                         </Card>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col span={12}>
-                                        <Card>
-                                            <Statistic
-                                                title="New Deaths"
-                                                value={mapSelectedLocation.new_deaths}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                    </Col>
-                                    <Col span={12}>
                                         <Card>
                                             <Statistic
                                                 title="New Deaths"
@@ -584,62 +667,28 @@ export default function LocationMap(props: LocationMapProps) {
                                             />
                                         </Card>
                                     </Col>
+
                                 </Row>
                                 <Row>
-                                    <Col span={12}>
-                                        <Card>
-                                            <Statistic
-                                                title="Active Cases"
-                                                value={mapSelectedLocation.active}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                    </Col>
-                                    <Col span={12}>
-                                        <Card>
-                                            <Statistic
-                                                title="Active Cases"
-                                                value={mapSelectedLocation.period_active}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col span={12}>
-                                        <Card>
-                                            <Statistic
-                                                title="Recovered Cases"
-                                                value={mapSelectedLocation.recovered}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                    </Col>
-                                    <Col span={12}>
-                                        <Card>
-                                            <Statistic
-                                                title="Recovered Cases"
-                                                value={mapSelectedLocation.period_recovered}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
+                                    <Col span={24}>
+                                        <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
                                     </Col>
                                 </Row>
 
                             </Col>
-                            <Col span={12} style={{paddingLeft: 10}}>
-                                <h3>Metrics</h3>
-                                <div>Week of {mapSelectedLocation.period_string}</div>
-                                <Chart chart={Bar} config={chartModel} data={chartModelData} height={'600px'}/>
-                            </Col>
+
                         </Row>
+
+
                     </Tabs.TabPane>
                     {/* Show the tab conditionally for a state. Does not apply to country or county*/}
-                    {props.type==='states' &&
-                        <Tabs.TabPane key={'county_metrics'} tab={'Counties Metrics'}>
-                            <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
-                                   pagination={false} scroll={{y: 600}}/>
-                        </Tabs.TabPane>
+                    {props.type === 'states' &&
+                    <Tabs.TabPane key={'county_metrics'} tab={'Counties Metrics'}>
+                        <Search placeholder="input search text" onSearch={value => setTableLocationFilterValue(value)}
+                                enterButton/>
+                        <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
+                               pagination={false} scroll={{y: 550}} style={{minHeight: 600}}/>
+                    </Tabs.TabPane>
                     }
                 </Tabs>
                 <Button type="primary" onClick={() => handleOk()}>Close</Button>

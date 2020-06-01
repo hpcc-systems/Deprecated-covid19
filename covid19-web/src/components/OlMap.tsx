@@ -139,19 +139,28 @@ export default function OlMap(props: Props) {
                         overlay.setPosition(e.mapBrowserEvent.coordinate);
                     }
                 } else {
+                    props.toolTipHandler('');
                     if (popup.current) {
                         popup.current.innerHTML = '';
                     }
                 }
             });
 
-            selectSingleClick.current.on('select', function(e:any) {
-                if (e.selected.length > 0) {
-                    let feature = e.selected[0];
-                    props.selectHandler(feature.get(props.geoKeyField));
-                } else {
-                    props.selectHandler('');
-                }
+            // selectSingleClick.current.on('select', function(e:any) {
+            //     if (e.selected.length > 0) {
+            //         let feature = e.selected[0];
+            //         props.selectHandler(feature.get(props.geoKeyField));
+            //     } else {
+            //         props.selectHandler('');
+            //     }
+            // });
+
+            map.current.on('singleclick', function(evt) {
+                 map.current.forEachFeatureAtPixel(evt.pixel,
+                    function(feature, layer) {
+                        props.selectHandler(feature.get(props.geoKeyField));
+                        return [feature, layer];
+                    });
             });
 
             map.current.updateSize();
@@ -179,7 +188,7 @@ export default function OlMap(props: Props) {
 
     return (
         <div>
-        <div style={{margin: `1em 0`, borderRadius: `0.5em`, background: '#2b2b2b', height:props.height}} ref={(e) => (container.current= e)} />
+        <div style={{background: '#2b2b2b', height:props.height}} ref={(e) => (container.current= e)} />
         <div ref={(e) => (popup.current= e)}/>
         </div>
 

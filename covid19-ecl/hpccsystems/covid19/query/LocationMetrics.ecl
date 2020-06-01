@@ -15,10 +15,33 @@ ds_filtered_children :=TABLE(ds_children(parentlocation=_location and period=1),
                             {location,istate,r,commentary});
 OUTPUT(SORT(ds_filtered_children,-istate),ALL,NAMED('children'));//FIXME: Will need to fix counties FIPS. Ask Roger to do it in the processing itself?
 
-//TODO: Daily trends
-//TODO: Period trends
+
 ds_period_trend := SORT(ds((location=_location or fips=_location)), -period);
 OUTPUT(TABLE(ds_period_trend, 
       {ds_period_trend, 
-       period_string:= Std.Date.DateToString(startdate , '%B %e') + ' - ' + Std.Date.DateToString(enddate , '%B %e')})
+       period_string:= Std.Date.DateToString(startdate , '%b %e') + ' - ' + Std.Date.DateToString(enddate , '%b %e')})
        ,ALL,NAMED('period_trend'));
+
+ds_cases_deaths_trend := NORMALIZE(ds_period_trend, 2, TRANSFORM (
+      {STRING period_string,
+       STRING measure,
+       REAL value},
+       SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%b %e') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%b %e'),
+       SELF.measure := CASE (COUNTER, 1 => 'New Cases', 2 => 'New Deaths', 'Unknown'),
+       SELF.value := CASE (COUNTER, 1 => LEFT.newCases, 2 => LEFT.newDeaths, 0)
+));
+
+OUTPUT(ds_cases_deaths_trend, ALL, NAMED('period_cases_deaths_trend'));
+
+ds_metrics_trend := NORMALIZE(ds_period_trend, 3, TRANSFORM (
+      {STRING period_string,
+       STRING measure,
+       REAL value},
+       SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%b %e') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%b %e'),
+       SELF.measure := CASE (COUNTER, 1 => 'Infection Rate (R)', 2 => 'Cases Rate (cR)', 3 => 'Mortality Rate (mR)', 'Unknown'),
+       SELF.value := CASE (COUNTER, 1 => LEFT.r, 2 => LEFT.cR, 3 => LEFT.mR, 0)
+));
+
+OUTPUT(ds_metrics_trend, ALL, NAMED('period_metrics_trend'));
+
+   
