@@ -4,6 +4,7 @@ EXPORT WeeklyMetrics := MODULE
   
 EXPORT statesPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_state.flat';
 EXPORT worldPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat';
+EXPORT globalPath := '~hpccsystems::covid19::file::public::metrics::weekly_global.flat';
 EXPORT countiesPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat';  
 
 // export inputLayout := RECORD 
@@ -63,6 +64,7 @@ end;
 
 EXPORT states := DATASET(statesPath, Types.metricsRec, THOR);
 EXPORT world := DATASET(worldPath, Types.metricsRec, THOR); 
+EXPORT global := DATASET(globalPath, Types.metricsRec, THOR); 
 EXPORT counties := DATASET(countiesPath, Types.metricsRec, THOR);
 
 
