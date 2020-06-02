@@ -42,6 +42,8 @@ EXPORT Types := MODULE
         metric_t immunePct := 0;
         count_t newCases;
         count_t newDeaths;
+				count_t newCasesDaily;
+				count_t newDeathsDaily;
         count_t recovered;
         REAL cases_per_capita := 0;
         REAL deaths_per_capita := 0;
@@ -99,4 +101,16 @@ EXPORT Types := MODULE
 				count_t infectionCount;
 				STRING commentary;
     END;
+		EXPORT summaryRec := RECORD(statsRec)
+        metric_t cR := 0;
+        metric_t mR := 0;
+				metric_t R := 0;
+        metric_t sdIndicator := 0;
+        metric_t medIndicator := 0;
+        DECIMAL8_3 heatIndex := 0;
+        DECIMAL5_3 iMort;
+				count_t infectionCount := 1;
+        count_t weeklyNewCases;
+        count_t weeklyNewDeaths;
+		END;
 END;
