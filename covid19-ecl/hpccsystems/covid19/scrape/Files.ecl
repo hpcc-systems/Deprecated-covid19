@@ -6,15 +6,16 @@ IMPORT STD;
 
 
 EXPORT Files := MODULE
+  SHARED today := STD.date.TODAY();
 
   EXPORT dailyGlobal := DATASET('~hpccsystems::covid19::file::public::metrics::daily_global.flat', Types.statsExtRec, FLAT);
   EXPORT dailyCountries := DM.countries;
   EXPORT dailyCounties := DM.counties;
   EXPORT dailyStates := DM.states;
 
-  EXPORT dailyCountries_confirmed := TABLE(dailyCountries, {location, last_update := MAX(GROUP, date), tot_cases := MAX(GROUP, cumcases), tot_death := MAX(GROUP, cumdeaths) }, location);
-  EXPORT dailyStates_confirmed := TABLE(dailyStates, {fips, location, last_update := MAX(GROUP, date), tot_cases := MAX(GROUP, cumcases), tot_death := MAX(GROUP, cumdeaths) }, fips, location);
-  EXPORT dailyCounties_confirmed := TABLE(dailyCounties, {fips, county :=STD.Str.SplitWords(location, ',')[2] , last_update := MAX(GROUP, date), tot_cases := MAX(GROUP, cumcases), tot_death := MAX(GROUP, cumdeaths) }, fips, location);
+  EXPORT dailyCountries_confirmed := GROUP(dailyCountries, location)(date = today - 1) ;
+  EXPORT dailyStates_confirmed := GROUP(dailyStates, location)(date = today - 1) ;
+  EXPORT dailyCounties_confirmed := GROUP(dailyCounties, location)(date = today - 1) ;
 
 
   EXPORT prefix := '~hpccsystems::covid19::file::raw::johnhopkins::scraped::';
