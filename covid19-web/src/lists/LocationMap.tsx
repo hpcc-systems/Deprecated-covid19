@@ -46,6 +46,7 @@ class SummaryData {
     deathsMax: number = 0;
     newDeathsMax: number = 0;
     statusMax: number = 0;
+    commentary: string = '';
 }
 
 function useStateRef(initialValue: any) {
@@ -110,17 +111,18 @@ export default function LocationMap(props: LocationMapProps) {
             if (summaryQueryData.length > 0) {
 
                 summaryQueryData.forEach((item: any) => {
-                    summaryData.current.newCases = item.new_cases_total;
-                    summaryData.current.newDeaths = item.new_deaths_total;
-                    summaryData.current.cases = item.cases_total;
-                    summaryData.current.active = item.active_total;
-                    summaryData.current.deaths = item.deaths_total;
-                    summaryData.current.recovered = item.recovered_total;
-                    summaryData.current.casesMax = item.cases_max;
-                    summaryData.current.newCasesMax = item.new_cases_max;
-                    summaryData.current.deathsMax = item.deaths_max;
-                    summaryData.current.newDeathsMax = item.new_deaths_max;
-                    summaryData.current.statusMax = item.status_max;
+                    // summaryData.current.newCases = item.new_cases_total;
+                    // summaryData.current.newDeaths = item.new_deaths_total;
+                    // summaryData.current.cases = item.cases_total;
+                    // summaryData.current.active = item.active_total;
+                    // summaryData.current.deaths = item.deaths_total;
+                    // summaryData.current.recovered = item.recovered_total;
+                    // summaryData.current.casesMax = item.cases_max;
+                    // summaryData.current.newCasesMax = item.new_cases_max;
+                    // summaryData.current.deathsMax = item.deaths_max;
+                    // summaryData.current.newDeathsMax = item.new_deaths_max;
+                    // summaryData.current.statusMax = item.status_max;
+                    summaryData.current.commentary = item.commentary;
                 })
             } else {
                 return '';
@@ -468,64 +470,66 @@ export default function LocationMap(props: LocationMapProps) {
                     <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
                     <Descriptions.Item label="Filters">Please click and select a location from the chart to view the
                         metrics</Descriptions.Item>
+                    <Descriptions.Item span={2} label="Commentary">{summaryData.current.commentary}<Button>Details</Button></Descriptions.Item>
                 </Descriptions>
             </PageHeader>
-            <Row gutter={16}>
-                <Col span={4}>
-                    <Card>
-                        <Statistic
-                            title="New Cases"
-                            value={summaryData.current.newCases}
-                            valueStyle={{color: '#cf1322'}}
-                        />
-                    </Card>
-                </Col>
-                <Col span={4}>
-                    <Card>
-                        <Statistic
-                            title="New Deaths"
-                            value={summaryData.current.newDeaths}
-                            valueStyle={{color: '#cf1322'}}
-                        />
-                    </Card>
-                </Col>
-                <Col span={4}>
-                    <Card>
-                        <Statistic
-                            title="Active Cases"
-                            value={summaryData.current.active}
-                            valueStyle={{color: '#cf1322'}}
-                        />
-                    </Card>
-                </Col>
-                <Col span={4}>
-                    <Card>
-                        <Statistic
-                            title="Recovered Cases"
-                            value={summaryData.current.recovered}
-                            valueStyle={{color: '#cf1322'}}
-                        />
-                    </Card>
-                </Col>
-                <Col span={4}>
-                    <Card>
-                        <Statistic
-                            title="Total Cases"
-                            value={summaryData.current.cases}
-                            valueStyle={{color: '#cf1322'}}
-                        />
-                    </Card>
-                </Col>
-                <Col span={4}>
-                    <Card>
-                        <Statistic
-                            title="Total Deaths"
-                            value={summaryData.current.deaths}
-                            valueStyle={{color: '#cf1322'}}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+
+            {/*<Row gutter={16}>*/}
+            {/*    <Col span={4}>*/}
+            {/*        <Card>*/}
+            {/*            <Statistic*/}
+            {/*                title="New Cases"*/}
+            {/*                value={summaryData.current.newCases}*/}
+            {/*                valueStyle={{color: '#cf1322'}}*/}
+            {/*            />*/}
+            {/*        </Card>*/}
+            {/*    </Col>*/}
+            {/*    <Col span={4}>*/}
+            {/*        <Card>*/}
+            {/*            <Statistic*/}
+            {/*                title="New Deaths"*/}
+            {/*                value={summaryData.current.newDeaths}*/}
+            {/*                valueStyle={{color: '#cf1322'}}*/}
+            {/*            />*/}
+            {/*        </Card>*/}
+            {/*    </Col>*/}
+            {/*    <Col span={4}>*/}
+            {/*        <Card>*/}
+            {/*            <Statistic*/}
+            {/*                title="Active Cases"*/}
+            {/*                value={summaryData.current.active}*/}
+            {/*                valueStyle={{color: '#cf1322'}}*/}
+            {/*            />*/}
+            {/*        </Card>*/}
+            {/*    </Col>*/}
+            {/*    <Col span={4}>*/}
+            {/*        <Card>*/}
+            {/*            <Statistic*/}
+            {/*                title="Recovered Cases"*/}
+            {/*                value={summaryData.current.recovered}*/}
+            {/*                valueStyle={{color: '#cf1322'}}*/}
+            {/*            />*/}
+            {/*        </Card>*/}
+            {/*    </Col>*/}
+            {/*    <Col span={4}>*/}
+            {/*        <Card>*/}
+            {/*            <Statistic*/}
+            {/*                title="Total Cases"*/}
+            {/*                value={summaryData.current.cases}*/}
+            {/*                valueStyle={{color: '#cf1322'}}*/}
+            {/*            />*/}
+            {/*        </Card>*/}
+            {/*    </Col>*/}
+            {/*    <Col span={4}>*/}
+            {/*        <Card>*/}
+            {/*            <Statistic*/}
+            {/*                title="Total Deaths"*/}
+            {/*                value={summaryData.current.deaths}*/}
+            {/*                valueStyle={{color: '#cf1322'}}*/}
+            {/*            />*/}
+            {/*        </Card>*/}
+            {/*    </Col>*/}
+            {/*</Row>*/}
 
             <div style={{height: 20}}/>
 
