@@ -352,8 +352,8 @@ export default function LocationMap(props: LocationMapProps) {
 
 
     function getMapToolTipHeader() {
-        if (mapSelectedLocation.location) {
-            return mapSelectedLocation.location;
+        if (locationDetail('location') !== '') {
+            return locationDetail('location')
         } else {
             return 'PLEASE: View the metrics my selecting a state or mouse over'
         }
@@ -662,14 +662,14 @@ export default function LocationMap(props: LocationMapProps) {
 
                     </Tabs.TabPane>
                     {/* Show the tab conditionally for a state. Does not apply to country or county*/}
-                    {props.type === 'states' &&
-                    <Tabs.TabPane key={'county_metrics'} tab={'Counties Metrics'}>
+                    {/*{props.type === 'states' &&*/}
+                    <Tabs.TabPane key={'location_children'} tab={'Locations'}>
                         <Search placeholder="input search text" onSearch={value => setTableLocationFilterValue(value)}
                                 enterButton/>
                         <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
                                pagination={false} scroll={{y: 550}} style={{minHeight: 600}}/>
                     </Tabs.TabPane>
-                    }
+                    {/*}*/}
                 </Tabs>
                 <Button type="primary" onClick={() => handleOk()}>Close</Button>
             </Modal>
