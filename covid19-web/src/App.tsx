@@ -101,12 +101,12 @@ export class App extends Component<AppProps, AppState> {
         }
     }
 
-    renderLogoutButton() {
-        if (this.authService.isAuthenticated()) {
-            return <Button style={{float: "right", marginTop: 20}} type="link" onClick={() => this.logout()}>Logout</Button>
-        } else {
+    renderLogoutButton() {//TODO: Placeholder for the logout button
+        // if (this.authService.isAuthenticated()) {
+        //     return <Button style={{float: "right", marginTop: 20}} type="link" onClick={() => this.logout()}>Logout</Button>
+        // } else {
             return '';
-        }
+        // }
     }
 
 
@@ -140,6 +140,7 @@ export class App extends Component<AppProps, AppState> {
                     </Sider>
 
                     {this.renderAuthForm()}
+
                     <ListBase listId={this.state.selectedListId}/>
 
 

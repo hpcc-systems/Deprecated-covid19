@@ -1,10 +1,11 @@
 export default class AuthService {
 
-    isAuthenticated() {
-        let authFlag = localStorage.getItem('hpccsystems.covid19.auth.status');
-        if (authFlag && authFlag === 'true') {
-            return true;
-        }
+    isAuthenticated() {  //TODO: Placeholder to provide authentication
+        // let authFlag = localStorage.getItem('hpccsystems.covid19.auth.status');
+        // if (authFlag && authFlag === 'true') {
+        //     return true;
+        // }
+        return true;
     }
 
     authenticate(user: string, password: string) {

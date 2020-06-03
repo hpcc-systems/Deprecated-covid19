@@ -3,10 +3,6 @@ import ListService, {ListMetadata} from "../services/ListService";
 import {Layout} from "antd";
 import AllMetrics from "../lists/AllMetrics";
 import LocationTrends from "../lists/LocationTrends";
-import AuthService from "../services/AuthService";
-import {AuthForm} from "./AuthForm";
-import StateMetrics from "../lists/StateMetrics";
-import StateMap from "../lists/StateMap";
 import LocationMap from "../lists/LocationMap";
 
 
