@@ -3,14 +3,14 @@ IMPORT hpccsystems.covid19.file.raw.JohnHopkinsV1 as jhv1;
 IMPORT hpccsystems.covid19.file.raw.JohnHopkinsV2 as jhv2;
 IMPORT hpccsystems.covid19.file.public.JohnHopkins as jh; 
 
-#WORKUNIT('name', 'hpccsystems_covid19_spray');
-#WORKUNIT('protect', TRUE);
+#WORKUNIT('name', 'hpccsystems_covid19_scraped_spray');
+// #WORKUNIT('protect', TRUE);
 
 // Define attributes for spray
 today := STD.Date.Today();
 tempSuperFileName := '~hpccsystems::covid19::file::raw::JohnHopkins::V2::temp';
-lzip:= '10.0.0.6';
-srcPath := '/var/lib/HPCCSystems/mydropzone/hpccsystems/covid19/file/raw/JohnHopkins/Scraped/';
+lzip:= '172.31.42.168';
+srcPath := '/var/lib/HPCCSystems/mydropzone/hpccsystems/covid19/file/raw/Scraped/';
 scopeName := '~hpccsystems::covid19::file::raw::JohnHopkins::Scraped::';
 l_incoming := RECORD
     STRING name;

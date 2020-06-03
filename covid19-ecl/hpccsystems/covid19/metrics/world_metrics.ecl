@@ -45,7 +45,7 @@ rollupDat := SORT(TABLE(rawData4, {update_date, cConfirmed := SUM(GROUP, confirm
 
 statsData := PROJECT(rollupDat, TRANSFORM(statsRec,
                                             SELF.date := LEFT.update_date,
-                                            SELF.location := 'World',
+                                            SELF.location := 'The World',
                                             SELF.cumCases := LEFT.cConfirmed,
                                             SELF.cumDeaths := LEFT.cDeaths,
                                             SELF.cumHosp := 0,
@@ -55,7 +55,7 @@ statsData := PROJECT(rollupDat, TRANSFORM(statsRec,
 
 OUTPUT(statsData, ALL, NAMED('InputStats'));
 
-popData := DATASET([{'World', 7783766000}], populationRec);
+popData := DATASET([{'The World', 7783766000}], populationRec);
 
 OUTPUT(popData, NAMED('PopulationData'));
 
