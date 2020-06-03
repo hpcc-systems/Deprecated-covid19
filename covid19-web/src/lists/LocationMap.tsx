@@ -495,17 +495,23 @@ export default function LocationMap(props: LocationMapProps) {
             <PageHeader title={props.title} subTitle={props.description} extra={<Button onClick={() => commentaryDetailHandler()}>Details</Button>}
 
              >
-                <Descriptions size="small" column={2}>
+                <Descriptions size="small" column={1} bordered>
+
+                    <Descriptions.Item label={<b>Commentary</b>}>{summaryData.current.commentary}</Descriptions.Item>
+
+                </Descriptions>
+                <Descriptions size="small" column={2} style={{paddingTop:5}}>
+
                     <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
                     <Descriptions.Item label="Filters">Please click and select a location from the chart to view the
                         metrics</Descriptions.Item>
-                    <Descriptions.Item span={2} label="Commentary">{summaryData.current.commentary}</Descriptions.Item>
 
                 </Descriptions>
+
             </PageHeader>
 
 
-            <div style={{height: 20}}/>
+
 
 
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
