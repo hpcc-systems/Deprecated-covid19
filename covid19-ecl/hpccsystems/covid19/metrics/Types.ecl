@@ -57,6 +57,7 @@ EXPORT Types := MODULE
 				STRING commentary := '';
         metric_t cR_old := 0;
 				STRING prevState := '';
+				metric_t sti := 0; // Short term indicator
 				BOOLEAN wasRecovering := FALSE;
         count_t population :=0;
     END;

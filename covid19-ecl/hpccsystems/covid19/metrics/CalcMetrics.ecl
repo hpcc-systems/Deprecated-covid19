@@ -41,7 +41,7 @@ EXPORT CalcMetrics := MODULE
     END;
     // Calculate Metrics, given input Stats Data.
     EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault) := FUNCTION
-				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive) := EMBED(Python)
+				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, parentCFR = 0) := EMBED(Python)
 					def numFormat(num):
 						number_with_commas = "{:,}".format(num)
 						return number_with_commas
@@ -62,9 +62,13 @@ EXPORT CalcMetrics := MODULE
 						infCount = rec[16]
 						newCases = rec[18]
 						newDeaths = rec[19]
-						peakCases = rec[27]
-						peakDeaths = rec[28]
-						prevState = rec[32].strip()
+						newCasesDaily = rec[20]
+						newDeathsDaily = rec[21]
+						peakCases = rec[29]
+						peakDeaths = rec[30]
+						periodDays = rec[33]
+						prevState = rec[34].strip()
+						sti = rec[35]
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -168,7 +172,15 @@ EXPORT CalcMetrics := MODULE
 							outstr += hiString
 						if cfr > 0:
 							cfrstr = 'The Case Fatality Rate (CFR) is estimated as ' + str(round(cfr * 100.0, 2)) + '%. '
-							outstr += cfrstr
+							if parentCFR > 0:
+								if cfr > 1.2 * parentCFR:
+									cmp = 'higher than '
+								elif cfr < .8 * parentCFR:
+									cmp = 'lower than '
+								else:
+									cmp = 'on par with '
+								cfstr += 'This is ' + cmp + 'the average CFR of ' + str(rouond(parentCFR * 100.0, 2)) + '%. '
+								outstr += cfrstr						
 					return outstr
 				ENDEMBED;
 
@@ -238,8 +250,16 @@ EXPORT CalcMetrics := MODULE
             // Don't project beyond 10 weeks
             wtp := IF(wtp0 > 10, 999, wtp0);
             SELF.weeksToPeak := IF(l.cR > 1, IF(l.cR < r.cR, wtp, 999), 0);  // Needs to move to later.
+						cSTI := IF(l.newCases > 0, l.newCasesDaily / (l.newCases / l.periodDays), 1);
+						mSTI := IF(l.newDeaths > 0,  l.newDeathsDaily / (l.newDeaths / l.periodDays), 1);
+						// Average case and death indicators and bound to range (.1, 10)
+						STI0 := MIN(MAX((cSTI + mSTI) / 2.0, .1), 10);
+						// Convert from ratio to indicator  (Negative is bad -- more than average cases on last day)
+						STI := IF(STI0 <= 1.0, (1 / STI0) - 1, -(STI0 - 1));
+						SELF.sti := STI;
             SELF := l;
         END;
+				// Join twice to force all of the dependent calculations to be there.
         metrics2 := JOIN(metrics1, metrics1, LEFT.location = RIGHT.location AND LEFT.period = RIGHT.period - 1,
                             calc1(LEFT, RIGHT), LEFT OUTER);
         metrics3 := JOIN(metrics2, metrics2, LEFT.location = RIGHT.location AND LEFT.period = RIGHT.period - 1,
