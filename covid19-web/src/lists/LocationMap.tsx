@@ -538,7 +538,7 @@ export default function LocationMap(props: LocationMapProps) {
             <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                    selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                    geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
-                   height={'700px'}/>
+                   height={'730px'}/>
             </div>
 
             <Modal
