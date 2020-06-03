@@ -111,17 +111,17 @@ export default function LocationMap(props: LocationMapProps) {
             if (summaryQueryData.length > 0) {
 
                 summaryQueryData.forEach((item: any) => {
-                    // summaryData.current.newCases = item.new_cases_total;
-                    // summaryData.current.newDeaths = item.new_deaths_total;
-                    // summaryData.current.cases = item.cases_total;
-                    // summaryData.current.active = item.active_total;
-                    // summaryData.current.deaths = item.deaths_total;
-                    // summaryData.current.recovered = item.recovered_total;
-                    // summaryData.current.casesMax = item.cases_max;
-                    // summaryData.current.newCasesMax = item.new_cases_max;
-                    // summaryData.current.deathsMax = item.deaths_max;
-                    // summaryData.current.newDeathsMax = item.new_deaths_max;
-                    // summaryData.current.statusMax = item.status_max;
+                    summaryData.current.newCases = item.new_cases_total;
+                    summaryData.current.newDeaths = item.new_deaths_total;
+                    summaryData.current.cases = item.cases_total;
+                    summaryData.current.active = item.active_total;
+                    summaryData.current.deaths = item.deaths_total;
+                    summaryData.current.recovered = item.recovered_total;
+                    summaryData.current.casesMax = item.cases_max;
+                    summaryData.current.newCasesMax = item.new_cases_max;
+                    summaryData.current.deathsMax = item.deaths_max;
+                    summaryData.current.newDeathsMax = item.new_deaths_max;
+                    summaryData.current.statusMax = item.status_max;
                     summaryData.current.commentary = item.commentary;
                 })
             } else {
