@@ -77,6 +77,20 @@ daily := JOIN(dailyMetrics.countries (date=latestDate), weeklyMetrics.world (per
 
 OUTPUT (daily,ALL,NAMED('latest'));
 
+OUTPUT(TABLE(weeklyMetrics.global (period = 1), {cases_total:= cases,
+                                                 new_cases_total := newCases,
+                                                 new_deaths_total := newDeaths,
+                                                 deaths_total := deaths,
+                                                 active_total := active,
+                                                 recovered_total := recovered,
+                                                 cases_max := cases/10,   
+                                                 deaths_max := deaths/10,
+                                                 new_cases_max := newCases/10,
+                                                 new_deaths_max := newDeaths/10,
+                                                 commentary}),,NAMED('summary'));          
+
+/*
+
 OUTPUT(TABLE(daily, {date, 
                       cases_total:= SUM(GROUP, cases), 
                       new_cases_total:= SUM(GROUP, new_cases), 
@@ -89,4 +103,6 @@ OUTPUT(TABLE(daily, {date,
                       deaths_max := MAX(GROUP, deaths),
                       new_deaths_max := MAX(GROUP, new_deaths),
                       status_max := 7,
-                      }, date),,NAMED('summary'));          
+                      }, date),,NAMED('summary'));   
+
+                      */

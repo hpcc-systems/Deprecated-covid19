@@ -6,10 +6,15 @@ IMPORT STD;
 _location := 'GEORGIA':STORED('location');
 _locationType :=  'states':STORED('location_type');
 
-ds := CASE(_locationType, 'states' => metrics.states, 'countries' => metrics.world, 'counties' => metrics.counties, metrics.states);
+ds := CASE(_locationType, 'states' => metrics.states, 'countries' => metrics.world, 'counties' => metrics.counties, metrics.global);
 ds_children := CASE (_locationType, 'states' => metrics.countiesAll, 'countries' => metrics.statesAll, DATASET([], RECORDOF(metrics.countiesAll)));
 
-OUTPUT(ds((location=_location or fips=_location) and period=1),ALL,NAMED('summary'));
+OUTPUT(
+      TABLE(ds((location=_location or fips=_location) and period=1), 
+      {ds, 
+      STRING date_string := Std.Date.DateToString(enddate , '%B %e, %Y'),
+      STRING period_string := Std.Date.DateToString(startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(enddate , '%B %e, %Y')}),
+      ALL,NAMED('summary'));
 
 ds_filtered_children :=TABLE(ds_children(parentlocation=_location and period=1),
                             {location,istate,r,commentary});
