@@ -47,7 +47,7 @@ function useStateRef(initialValue: any) {
 
 export default function LocationMap(props: LocationMapProps) {
     const queryLocationsMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
-    const summaryData = useRef<SummaryData>(new SummaryData());
+    const [summaryDataState, setSummaryData, summaryData] = useStateRef(new SummaryData());
     const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
     const mapData = useRef<Map<string, any>>(new Map());
     const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('status');
@@ -89,18 +89,20 @@ export default function LocationMap(props: LocationMapProps) {
             if (summaryQueryData.length > 0) {
 
                 summaryQueryData.forEach((item: any) => {
-                    summaryData.current.newCases = item.new_cases_total;
-                    summaryData.current.newDeaths = item.new_deaths_total;
-                    summaryData.current.cases = item.cases_total;
-                    summaryData.current.active = item.active_total;
-                    summaryData.current.deaths = item.deaths_total;
-                    summaryData.current.recovered = item.recovered_total;
-                    summaryData.current.casesMax = item.cases_max;
-                    summaryData.current.newCasesMax = item.new_cases_max;
-                    summaryData.current.deathsMax = item.deaths_max;
-                    summaryData.current.newDeathsMax = item.new_deaths_max;
-                    summaryData.current.statusMax = item.status_max;
-                    summaryData.current.commentary = item.commentary;
+                    let summaryData = new SummaryData();
+                    summaryData.newCases = item.new_cases_total;
+                    summaryData.newDeaths = item.new_deaths_total;
+                    summaryData.cases = item.cases_total;
+                    summaryData.active = item.active_total;
+                    summaryData.deaths = item.deaths_total;
+                    summaryData.recovered = item.recovered_total;
+                    summaryData.casesMax = item.cases_max;
+                    summaryData.newCasesMax = item.new_cases_max;
+                    summaryData.deathsMax = item.deaths_max;
+                    summaryData.newDeathsMax = item.new_deaths_max;
+                    summaryData.statusMax = item.status_max;
+                    summaryData.commentary = item.commentary;
+                    setSummaryData(summaryData);
                 })
             } else {
                 return '';
@@ -220,7 +222,6 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = mapData.current.get(name.toUpperCase());
 
         if (row) {
-
             let d = 0;
             switch (heatMapTypeRef.current) {
                 case 'cases':
@@ -250,7 +251,6 @@ export default function LocationMap(props: LocationMapProps) {
                     } else {
                         return '#1a9850'
                     }
-
             }
 
             return d >= 0.9 ? '#a50026' :
@@ -294,17 +294,14 @@ export default function LocationMap(props: LocationMapProps) {
 
             >
                 <Descriptions size="small" column={1} bordered>
-
-                    <Descriptions.Item label={<b>Commentary</b>}>{summaryData.current.commentary}</Descriptions.Item>
-
+                    <Descriptions.Item label={<b>Commentary</b>}>{summaryDataState.commentary}</Descriptions.Item>
                 </Descriptions>
-                <Descriptions size="small" column={2} style={{paddingTop: 5}}>
 
+                <Descriptions size="small" column={2} style={{paddingTop: 5}}>
                     <Descriptions.Item><h5>Data Attribution: John Hopkins University</h5></Descriptions.Item>
                     <Descriptions.Item><h5>Filters: Please click and select a location from the chart to view the
                         metrics</h5>
                     </Descriptions.Item>
-
                 </Descriptions>
 
             </PageHeader>
@@ -312,10 +309,7 @@ export default function LocationMap(props: LocationMapProps) {
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                          value={heatMapType} buttonStyle="solid">
                 <Space direction={'horizontal'}>
-
                     <Radio.Button value={'status'}>Spreading Model</Radio.Button>
-
-
                     <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
                     <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
                     <Radio.Button value={'cases'}>Total Cases</Radio.Button>
