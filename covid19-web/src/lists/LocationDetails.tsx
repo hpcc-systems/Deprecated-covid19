@@ -2,11 +2,11 @@ import {Button, Card, Col, Descriptions, Modal, Row, Statistic, Table, Tabs} fro
 import {Chart} from "../components/Chart";
 import {Bar, Column, StackedColumn} from "@antv/g2plot";
 import Search from "antd/es/input/Search";
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {QueryData} from "../components/QueryData";
 
 interface LocationDetailsProps {
-
+   show: any;
 }
 
 export default function LocationDetails(props: LocationDetailsProps) {
@@ -20,20 +20,27 @@ export default function LocationDetails(props: LocationDetailsProps) {
     const [tableLocationFilterValue, setTableLocationFilterValue] = React.useState<string>('');
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-
-    function showDetails(location: string, locationType: string) {
-        let filters: Map<string, string> = new Map();
+    useEffect(() => {
+        function showDetails(location: string, locationType: string) {
+            let filters: Map<string, string> = new Map();
             filters.set('location_type', locationType);
             filters.set('location', location);
 
-        queryLocation.current.initData(filters).then(() => {
-            setLocationSummaryQueryData(queryLocation.current.getData('summary'));
-            setLocationChildrenQueryData(queryLocation.current.getData('children'));
-            setLocationPeriodTrendQueryData(queryLocation.current.getData('period_trend'));
-            setLocationPeriodCasesDeathsTrendQueryData(queryLocation.current.getData('period_cases_deaths_trend'));
-            showModal();
-        });
-    }
+            queryLocation.current.initData(filters).then(() => {
+                setLocationSummaryQueryData(queryLocation.current.getData('summary'));
+                setLocationChildrenQueryData(queryLocation.current.getData('children'));
+                setLocationPeriodTrendQueryData(queryLocation.current.getData('period_trend'));
+                setLocationPeriodCasesDeathsTrendQueryData(queryLocation.current.getData('period_cases_deaths_trend'));
+                showModal();
+            });
+        }
+        if (props.show.visible) {
+            showDetails(props.show.location, props.show.locationType);
+        }
+
+    }, [props.show])
+
+
 
     const locationCommentary: any = () => {
         if (locationSummaryQueryData.length > 0) {

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 import {Button, Descriptions, Layout, PageHeader, Popover, Table, Tabs} from "antd";
 
@@ -6,6 +6,7 @@ import {QueryData} from "../components/QueryData";
 import {FilterRenderer} from "../components/FilterRenderer";
 import {ChartX} from "../components/ChartX";
 import Search from "antd/es/input/Search";
+import LocationDetails from "./LocationDetails";
 
 
 const {TabPane} = Tabs;
@@ -36,6 +37,9 @@ export default function AllMetrics(props: AllMetricsProps) {
     const [dataLoadingStatus, setDataLoadingStatus] = React.useState<boolean>(false);
     const [tableFilterValue, setTableFilterValue] = React.useState<string>('');
     const [filterLength, setFilterLength] = React.useState<number>(2);
+
+    const [showLocationDetails, setShowLocationDetails] =
+        useState<any>({visible: false, location: '', locationType: ''});
 
     function toLocationsFilter(data: any) {
         let a: string[] = [];
@@ -149,11 +153,22 @@ export default function AllMetrics(props: AllMetricsProps) {
         return rslt;
     }
 
+    function showDetail(record: any) {
+        if (props.typeFilter !== 'counties') {
+            setShowLocationDetails({visible: true, location: record.location, locationType: props.typeFilter})
+        } else {
+            setShowLocationDetails({visible: true, location: record.fips, locationType: props.typeFilter})
+        }
+    }
+
     const layout = [
         {
             title: props.locationAlias,
             dataIndex: 'location',
-            minWidth: '50px',
+            width: '100px',
+            render: (text:any, record: any) => {
+                return <Button onClick={()=> showDetail(record)}>{text}</Button>
+            },
             // @ts-ignore
             sorter: (a, b) => a.location.localeCompare(b.location),
             onFilter: (value: any, record: any) =>
@@ -167,100 +182,96 @@ export default function AllMetrics(props: AllMetricsProps) {
         {
             title: 'Status',
             dataIndex: 'istate',
-            minWidth: '30px',
+            width: '100px',
             // @ts-ignore
             sorter: (a, b) => a.istate.localeCompare(b.istate)
         },
         {
-            title: 'HI',
-            dataIndex: 'heatindex',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.heatindex - b.heatindex
-
+            title: 'Commentary',
+            dataIndex: 'commentary',
         },
-        {
-            title: 'Cases',
-            dataIndex: 'cases',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.cases - b.cases
-        },
-        {
-            title: 'Deaths',
-            dataIndex: 'deaths',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.deaths - b.deaths
-
-        },
-
-        {
-            title: 'New Cases',
-            dataIndex: 'newcases',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.newcases - b.newcases
-
-        },
-        {
-            title: 'New Deaths',
-            dataIndex: 'newdeaths',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.newdeaths - b.newdeaths
-        },
-        {
-            title: 'Recovered',
-            dataIndex: 'recovered',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.recovered - b.recovered
-        },
-        {
-            title: 'cR',
-            dataIndex: 'cr',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.cr - b.cr
-        },
-        {
-            title: 'mR',
-            dataIndex: 'mr',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.mr - b.mr
-
-        },
-        {
-            title: 'R',
-            dataIndex: 'r',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.r - b.r
-        },
-        {
-            title: 'sdIndicator',
-            dataIndex: 'sdindicator',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.sdindicator - b.sdindicator
-        },
-        {
-            title: 'medIndicator',
-            dataIndex: 'medindicator',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.dmr - b.dmr
-        },
-        {
-            title: 'iMort',
-            dataIndex: 'imort',
-            className: 'column-number',
-            // @ts-ignore
-            sorter: (a, b) => a.imort - b.imort
-
-        },
+        // {
+        //     title: 'Cases',
+        //     dataIndex: 'cases',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.cases - b.cases
+        // },
+        // {
+        //     title: 'Deaths',
+        //     dataIndex: 'deaths',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.deaths - b.deaths
+        //
+        // },
+        //
+        // {
+        //     title: 'New Cases',
+        //     dataIndex: 'newcases',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.newcases - b.newcases
+        //
+        // },
+        // {
+        //     title: 'New Deaths',
+        //     dataIndex: 'newdeaths',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.newdeaths - b.newdeaths
+        // },
+        // {
+        //     title: 'Recovered',
+        //     dataIndex: 'recovered',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.recovered - b.recovered
+        // },
+        // {
+        //     title: 'cR',
+        //     dataIndex: 'cr',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.cr - b.cr
+        // },
+        // {
+        //     title: 'mR',
+        //     dataIndex: 'mr',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.mr - b.mr
+        //
+        // },
+        // {
+        //     title: 'R',
+        //     dataIndex: 'r',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.r - b.r
+        // },
+        // {
+        //     title: 'sdIndicator',
+        //     dataIndex: 'sdindicator',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.sdindicator - b.sdindicator
+        // },
+        // {
+        //     title: 'medIndicator',
+        //     dataIndex: 'medindicator',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.dmr - b.dmr
+        // },
+        // {
+        //     title: 'iMort',
+        //     dataIndex: 'imort',
+        //     className: 'column-number',
+        //     // @ts-ignore
+        //     sorter: (a, b) => a.imort - b.imort
+        //
+        // },
     ];
 
     const rowSelection = {
@@ -330,6 +341,8 @@ export default function AllMetrics(props: AllMetricsProps) {
                         the Data & Location Filters tab to customize filters.</Descriptions.Item>
                 </Descriptions>
             </PageHeader>
+
+            <LocationDetails show={showLocationDetails}/>
 
             <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}
                             mode={undefined}
