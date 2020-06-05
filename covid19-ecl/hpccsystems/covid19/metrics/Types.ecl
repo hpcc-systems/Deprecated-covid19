@@ -59,6 +59,7 @@ EXPORT Types := MODULE
 				STRING prevState := '';
 				metric_t sti := 0; // Short term indicator
 				BOOLEAN wasRecovering := FALSE;
+				date_t surgeStart := '';
         count_t population :=0;
     END;
     // Extended Stats Record

@@ -40,14 +40,17 @@ EXPORT CalcMetrics := MODULE
         RETURN statsE2;
     END;
     // Calculate Metrics, given input Stats Data.
-    EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault) := FUNCTION
-				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, parentCFR = 0) := EMBED(Python)
+    EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault, DECIMAL5_3 parentCFR = 0) := FUNCTION
+				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, REAL parent_cfr) := EMBED(Python)
+					import time
 					def numFormat(num):
 						number_with_commas = "{:,}".format(num)
 						return number_with_commas
 					outstr = ''
 					for rec in recs:
 						location = rec[1].strip()
+						startDate = rec[3]
+						endDate = rec[4]
 						iState = rec[5].strip()
 						cases = rec[6]
 						deaths = rec[7]
@@ -69,6 +72,7 @@ EXPORT CalcMetrics := MODULE
 						periodDays = rec[33]
 						prevState = rec[34].strip()
 						sti = rec[35]
+						surgeStart = rec[37]
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -109,7 +113,10 @@ EXPORT CalcMetrics := MODULE
 							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
 								scaleStr += relapsestr
 						elif iState == 'Spreading':
-							scaleStr = 'This outbreak is probably beyond containment (' + numFormat(active) + ' active cases) and requires mitigation. '
+							probStr = 'probably '
+							if cases > 10 * minActive:
+								probStr = ''
+							scaleStr = 'This outbreak is ' + probStr + 'beyond containment, with ' + numFormat(active) + ' active cases, and requires mitigation. '
 							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
 								scaleStr += relapsestr
 						elif iState == 'Regressing':
@@ -143,8 +150,25 @@ EXPORT CalcMetrics := MODULE
 								ord = 'nd'
 							elif infCount == 3:
 								ord = 'rd'
-							infstr = 'This is the ' + str(infCount) + ord + ' surge in infections. '
+							surgedat = time.strptime(str(surgeStart), '%Y%m%d')
+							surgedatstr = time.strftime('%b %d, %Y', surgedat)
+							infstr = 'This is the ' + str(infCount) + ord + ' surge in infections, which started on the week of ' + surgedatstr + '. '
 						outstr += infstr
+						peakstr = ''
+						if infCount == 1:
+							surgestr = ''
+						else:
+							surgestr = ' during this surge'
+						if newCases >= peakCases and newDeaths >= peakDeaths and peakDeaths > 0:
+							peakstr += 'With ' + numFormat(newCases) + ' new cases and ' + numFormat(newDeaths) + ' new deaths, this is the worst week yet for cases and deaths' + surgestr + '. '
+						else:
+							if newCases >= peakCases and peakCases > 0:
+								peakstr += 'With ' + numFormat(newCases) + ' new cases, this is the worst week so far for cases' + surgestr + '. '
+							if newDeaths >= peakDeaths and peakDeaths > 0:
+								peakstr += 'With ' + numFormat(newDeaths) + ' new deaths, this is the worst week so far for deaths' + surgestr + '. '
+						if surgeStart != startDate:
+							# Suppress if this is the first week of the new surge
+							outstr += peakstr
 						sdString = ''
 						if sdi < -.1 and iState not in ['Recovered', 'Recovering']:
 							sdString = 'It appears that the level of social distancing is decreasing, which may result in higher levels of infection growth. '
@@ -156,13 +180,18 @@ EXPORT CalcMetrics := MODULE
 							else:
 								mdReason = 'inadequate testing availability. '
 							mdString += mdReason
-							outstr += mdString
+							caveatStr = ''
+							if newDeaths < 100:
+								caveatStr = 'With only ' + str(newDeaths) + ' deaths, this could easily be caused by a statistical or reporting anomaly. '
+							outstr += mdString + caveatStr
 						hiString = ''
 						if hi >= 1.0:
 							hiReason = ' various factors. '
 							hiString = location + ' is currently on the HotSpot list due to '
-							if r > 1.5:
+							if r > 1.5 or cr > 1.5:
 								hiReason = ' rapid spread. '
+							elif mr > 1.5:
+								hiReason = ' a high increase in deaths. '
 							elif sdi < 0 or mdi < 0:
 								if sdi < mdi:
 									hiReason = ' apparent decrease in social distancing measures. '
@@ -172,15 +201,25 @@ EXPORT CalcMetrics := MODULE
 							outstr += hiString
 						if cfr > 0:
 							cfrstr = 'The Case Fatality Rate (CFR) is estimated as ' + str(round(cfr * 100.0, 2)) + '%. '
-							if parentCFR > 0:
-								if cfr > 1.2 * parentCFR:
-									cmp = 'higher than '
-								elif cfr < .8 * parentCFR:
-									cmp = 'lower than '
+							if parent_cfr > 0:
+								if cfr > 1.8 * parent_cfr:
+									cmp = 'much higher than '
+								elif cfr > 1.2 * parent_cfr:
+									cmp = 'significantly higher than '
+								elif cfr < .55 * parent_cfr:
+									cmp = 'much lower than '
+								elif cfr < .8 * parent_cfr:
+									cmp = 'significantly lower than '
 								else:
-									cmp = 'on par with '
-								cfstr += 'This is ' + cmp + 'the average CFR of ' + str(rouond(parentCFR * 100.0, 2)) + '%. '
-								outstr += cfrstr						
+									cmp = 'consistent with '
+								cfrstr += 'This is ' + cmp + 'the average CFR of ' + str(round(parent_cfr * 100.0, 2)) + '%. '
+							outstr += cfrstr
+						sdistr = ''
+						if sdi < -.1:
+							sdistr = 'The Short-Term Indicator(STI) suggests that the infection is likely to worsen over the course of the next few days.'
+						elif sdi > .1:
+							sdistr = 'The Short-Term Indicator(STI) suggests that the infection is likely to slow somewhat over the next few days.'
+						outstr += sdistr
 					return outstr
 				ENDEMBED;
 
@@ -237,13 +276,16 @@ EXPORT CalcMetrics := MODULE
             SELF.mR := mR;
 						// Use Geometric Mean of cR and mR to compute an estimate of R,
 						// since we're working with growth statistics.
-            R1 := IF(SELF.mR > 0 AND SELF.cR > 0, POWER(SELF.cR * SELF.mR, .5), IF(SELF.cR > 0, SELF.cR, SELF.mR));
+            R1 := IF(SELF.mR > 0 AND SELF.cR > 0, POWER(MIN(SELF.cR, SELF.mR + 1) * MIN(SELF.mR, SELF.cR + 1), .5), IF(SELF.cR > 0, SELF.cR, SELF.mR));
 						SELF.R := R1;
             SELF.cmRatio := IF(mR > 0, cR / mR, 0);
-            SELF.dcR := IF(r.cR > 0, cR / r.cR - 1, 0);  //Needs to move to later.
-            SELF.dmR := IF (r.mR > 0, l.mR / r.mR - 1, 0);  //Needs to move to later.
-            SELF.medIndicator := IF(R1 > 1 AND SELF.cmRatio > 0 AND r.cmRatio > 0, l.cmRatio / r.cmRatio - 1, 0);
-            SELF.sdIndicator := IF(R1 > 1, -SELF.dcR, 0);
+            SELF.dcR := IF(r.cR > 0, cR / r.cR, 0);
+            SELF.dmR := IF (r.mR > 0, l.mR / r.mR, 0);
+            //SELF.medIndicator := IF(R1 > 1 AND SELF.cmRatio > 0 AND r.cmRatio > 0, l.cmRatio / r.cmRatio - 1, 0);
+						medIndicator := IF(cR > 1.1 AND SELF.cmRatio < 1 AND SELF.cmRatio > 0, -(1/SELF.cmRatio - 1), IF(SELF.cmRatio > 1, SELF.cmRatio - 1, 0));
+						SELF.medIndicator := MAX(MIN(medIndicator, 5), -5); 
+            //SELF.sdIndicator := IF(R1 > 1, -SELF.dcR, 0);
+						SELF.sdIndicator := MAX(MIN(IF(SELF.dcR >= 1, -(SELF.dcR - 1), 1/SELF.dcR - 1), 5), -5);
             // Assume that cR decreases with the inverse log of time.  First we calculate the base of the log
             b := POWER(10, (l.cR/r.cR * LOG(periodDays)));
             wtp0 := POWER(b, l.cR - 1);
@@ -290,6 +332,7 @@ EXPORT CalcMetrics := MODULE
 						wasRecovering := IF(l.location = r.location, IF(SELF.iState IN ['Recovered', 'Recovering'], TRUE, l.wasRecovering), FALSE);
 						SELF.infectionCount := IF(wasRecovering AND self.iState IN ['Stabilizing', 'Emerging', 'Spreading'], prevInfectCount + 1, prevInfectCount);
 						SELF.wasRecovering := IF(SELF.infectionCount > prevInfectCount, FALSE, wasRecovering);
+						SELF.surgeStart := IF(SELF.prevState = 'Initial' OR SELF.infectionCount > prevInfectCount, r.startDate, l.surgeStart);
 						SELF.peakCases := IF(l.location = r.location, IF(r.newCases > l.peakCases OR SELF.infectionCount > prevInfectCount, r.newCases, l.peakCases), r.newCases);
 						SELF.peakDeaths := IF(l.location = r.location, IF(r.newDeaths > l.peakDeaths OR SELF.infectionCount > prevInfectCount, r.newDeaths, l.peakDeaths), r.newDeaths);			
             cR := IF(r.cR > 1, r.cR - 1, 0);
@@ -302,7 +345,7 @@ EXPORT CalcMetrics := MODULE
         metrics5 := SORT(metrics4, location, -period);
         metrics6 := ITERATE(metrics5, calc2(LEFT, RIGHT));
 				metricsRec addCommentary(metricsRec rec) := TRANSFORM
-					SELF.commentary := generateCommentary(DATASET([rec], metricsRec), minActive);
+					SELF.commentary := generateCommentary(DATASET([rec], metricsRec), minActive, parentCFR);
 					SELF := rec;
 				END;
 				metrics7 := PROJECT(metrics6, addCommentary(LEFT));

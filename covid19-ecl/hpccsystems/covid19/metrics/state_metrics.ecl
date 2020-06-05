@@ -12,6 +12,8 @@ CalcMetrics := COVID19.CalcMetrics;
 
 rawFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
 
+parentMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat';
+
 scRecord := RECORD
   string50 fips;
   string admin2;
@@ -62,11 +64,15 @@ popData := PROJECT(popDatIn, TRANSFORM(populationRec,
 
 OUTPUT(popData, NAMED('PopulationData'));
 
+parentMetrics := DATASET(parentMetricsPath, metricsRec, THOR);
+parentCFR := parentMetrics(location = 'US' AND period=1)[1].iMort;
+OUTPUT(parentCFR, NAMED('US_CFR'));
+
 // Extended Statistics
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_state.flat', Thor, OVERWRITE);
 
-metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, 50);
+metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, 50, parentCFR);
 
 OUTPUT(metrics, ALL, NAMED('MetricsByWeek'));
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_state.flat', Thor, OVERWRITE);

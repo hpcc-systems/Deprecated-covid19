@@ -16,6 +16,8 @@ minActive := 200;  // Minimum cases to consider a location active.
 
 rawFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';
 
+worldMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_global.flat';
+
 scRecord := RECORD
   string50 fips;
   string admin2;
@@ -54,10 +56,6 @@ rollupDat := SORT(TABLE(rawData4, {fips, country, update_date, cConfirmed := SUM
 
 OUTPUT(rollupDat, ALL, NAMED('RollupStats'));
 
-// Temp for China fixup
-chinaDat := rollupDat(country = 'CHINA');
-//OUTPUT(chinaDat, ALL,  NAMED('ChinaDataFixed'));
-
 statsData := PROJECT(rollupDat, TRANSFORM(statsRec,
 																						SELF.fips := LEFT.fips,
                                             SELF.date := LEFT.update_date,
@@ -75,11 +73,15 @@ popData := DATASET([], populationRec);
 
 OUTPUT(popData, NAMED('PopulationData'));
 
+worldMetrics := DATASET(worldMetricsPath, metricsRec, THOR);
+worldCFR := worldMetrics(period=1)[1].iMort;
+OUTPUT(worldCFR, NAMED('WorldCFR'));
+
 // Extended Statistics
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_country.flat', Thor, OVERWRITE);
 
-metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData, minActive);
+metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData, minActive, worldCFR);
 
 // Filter out some bad country names that only had data for one period
 metrics1 := metrics0(period != 1 OR endDate > 20200401);

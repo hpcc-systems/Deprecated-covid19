@@ -80,6 +80,12 @@ fipsCorrectedDaily := JOIN(allFips, daily, LEFT.FIPS=RIGHT.location_code, TRANSF
 
 OUTPUT (fipsCorrectedDaily,ALL,NAMED('latest'));
 
+maxDs := TABLE(daily, {date, 
+                      cases_max := (SUM(GROUP, cases) - MAX(GROUP,cases))/50,//Compensating for Ney York City which has more that 100k cases
+                      new_cases_max := MAX(GROUP, new_cases),
+                      deaths_max := (SUM(GROUP, deaths) - MAX(GROUP,deaths))/50,//Compensating for Ney York City which has more that 100k deaths
+                      new_deaths_max := MAX(GROUP, new_deaths)
+                      }, date);
 
 OUTPUT(TABLE(weeklyMetrics.world (period = 1 and location='US'), {cases_total:= cases,
                                                  new_cases_total := newCases,
@@ -87,22 +93,10 @@ OUTPUT(TABLE(weeklyMetrics.world (period = 1 and location='US'), {cases_total:= 
                                                  deaths_total := deaths,
                                                  active_total := active,
                                                  recovered_total := recovered,
-                                                 cases_max := cases/10,   
-                                                 deaths_max := deaths/10,
-                                                 new_cases_max := newCases/10,
-                                                 new_deaths_max := newDeaths/10,
+                                                 cases_max := maxDs[1].cases_max,   
+                                                 deaths_max := maxDs[1].deaths_max,
+                                                 new_cases_max := maxDs[1].new_cases_max,
+                                                 new_deaths_max := maxDs[1].new_deaths_max,
                                                  commentary}),,NAMED('summary'));  
 
-// OUTPUT(TABLE(fipsCorrectedDaily, {date, 
-//                       cases_total:= SUM(GROUP, cases), 
-//                       new_cases_total:= SUM(GROUP, new_cases), 
-//                       deaths_total:= SUM(GROUP, deaths), 
-//                       new_deaths_total:= SUM(GROUP, new_deaths),
-//                       active_total:= SUM(GROUP, active),
-//                       recovered_total := SUM(GROUP, recovered),
-//                       cases_max := (SUM(GROUP, cases) - MAX(GROUP,cases))/50,//Compensating for Ney York City which has more that 100k cases
-//                       new_cases_max := MAX(GROUP, new_cases),
-//                       deaths_max := (SUM(GROUP, deaths) - MAX(GROUP,deaths))/50,//Compensating for Ney York City which has more that 100k cases
-//                       new_deaths_max := MAX(GROUP, new_deaths),
-//                       status_max := 7,
-//                       }, date),,NAMED('summary'));          
+  

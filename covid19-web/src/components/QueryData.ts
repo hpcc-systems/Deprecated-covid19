@@ -1,7 +1,7 @@
 
 export  class QueryData {
 
-    private queryName: string;
+    private readonly queryName: string;
     private data: any;
 
     constructor(queryName: string) {
@@ -27,7 +27,7 @@ export  class QueryData {
     }
 
     getAPIData(filterStr: string): Promise<any> {
-        let url = `http://40.71.7.106:8002/WsEcl/submit/query/roxie/`+ this.queryName +`/json?`+ filterStr +`&submit_type=json`;
+        let url = process.env.REACT_APP_HPCCSYSTEMS_API_CLUSTER + this.queryName +`/json?`+ filterStr +`&submit_type=json`;
         let headers = new Headers();
         let username = localStorage.getItem('hpccsystems.covid19.auth.username');
         let password = localStorage.getItem('hpccsystems.covid19.auth.password');

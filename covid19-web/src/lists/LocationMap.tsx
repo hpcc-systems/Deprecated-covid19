@@ -111,17 +111,17 @@ export default function LocationMap(props: LocationMapProps) {
             if (summaryQueryData.length > 0) {
 
                 summaryQueryData.forEach((item: any) => {
-                    // summaryData.current.newCases = item.new_cases_total;
-                    // summaryData.current.newDeaths = item.new_deaths_total;
-                    // summaryData.current.cases = item.cases_total;
-                    // summaryData.current.active = item.active_total;
-                    // summaryData.current.deaths = item.deaths_total;
-                    // summaryData.current.recovered = item.recovered_total;
-                    // summaryData.current.casesMax = item.cases_max;
-                    // summaryData.current.newCasesMax = item.new_cases_max;
-                    // summaryData.current.deathsMax = item.deaths_max;
-                    // summaryData.current.newDeathsMax = item.new_deaths_max;
-                    // summaryData.current.statusMax = item.status_max;
+                    summaryData.current.newCases = item.new_cases_total;
+                    summaryData.current.newDeaths = item.new_deaths_total;
+                    summaryData.current.cases = item.cases_total;
+                    summaryData.current.active = item.active_total;
+                    summaryData.current.deaths = item.deaths_total;
+                    summaryData.current.recovered = item.recovered_total;
+                    summaryData.current.casesMax = item.cases_max;
+                    summaryData.current.newCasesMax = item.new_cases_max;
+                    summaryData.current.deathsMax = item.deaths_max;
+                    summaryData.current.newDeathsMax = item.new_deaths_max;
+                    summaryData.current.statusMax = item.status_max;
                     summaryData.current.commentary = item.commentary;
                 })
             } else {
@@ -495,17 +495,23 @@ export default function LocationMap(props: LocationMapProps) {
             <PageHeader title={props.title} subTitle={props.description} extra={<Button onClick={() => commentaryDetailHandler()}>Details</Button>}
 
              >
-                <Descriptions size="small" column={2}>
-                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
-                    <Descriptions.Item label="Filters">Please click and select a location from the chart to view the
-                        metrics</Descriptions.Item>
-                    <Descriptions.Item span={2} label="Commentary">{summaryData.current.commentary}</Descriptions.Item>
+                <Descriptions size="small" column={1} bordered>
+
+                    <Descriptions.Item label={<b>Commentary</b>}>{summaryData.current.commentary}</Descriptions.Item>
 
                 </Descriptions>
+                <Descriptions size="small" column={2} style={{paddingTop:5}}>
+
+                    <Descriptions.Item ><h5>Data Attribution: John Hopkins University</h5></Descriptions.Item>
+                    <Descriptions.Item ><h5>Filters: Please click and select a location from the chart to view the metrics</h5>
+                        </Descriptions.Item>
+
+                </Descriptions>
+
             </PageHeader>
 
 
-            <div style={{height: 20}}/>
+
 
 
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
@@ -532,7 +538,7 @@ export default function LocationMap(props: LocationMapProps) {
             <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                    selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                    geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
-                   height={'700px'}/>
+                   height={'730px'}/>
             </div>
 
             <Modal
