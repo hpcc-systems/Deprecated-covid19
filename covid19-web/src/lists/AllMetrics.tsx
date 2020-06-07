@@ -191,6 +191,8 @@ export default function AllMetrics(props: AllMetricsProps) {
             title: 'Heat Index',
             width: '50px',
             dataIndex: 'heatindex',
+            // @ts-ignore
+            sorter: (a, b) => a.heatindex.localeCompare(b.heatindex)
         },
         {
             title: 'Commentary',
