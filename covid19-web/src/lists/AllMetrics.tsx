@@ -167,7 +167,7 @@ export default function AllMetrics(props: AllMetricsProps) {
             dataIndex: 'location',
             width: '100px',
             render: (text:any, record: any) => {
-                return <Button onClick={()=> showDetail(record)}>{text}</Button>
+                return <Button type={"link"} onClick={()=> showDetail(record)}>{text}</Button>
             },
             // @ts-ignore
             sorter: (a, b) => a.location.localeCompare(b.location),
@@ -185,6 +185,12 @@ export default function AllMetrics(props: AllMetricsProps) {
             width: '100px',
             // @ts-ignore
             sorter: (a, b) => a.istate.localeCompare(b.istate)
+        },
+
+        {
+            title: 'Heat Index',
+            width: '50px',
+            dataIndex: 'heatindex',
         },
         {
             title: 'Commentary',
