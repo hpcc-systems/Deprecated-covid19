@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 
-import {Button, Descriptions, Layout, PageHeader, Popover, Table, Tabs} from "antd";
+import {Button, Col, Descriptions, Layout, PageHeader, Popover, Row, Table, Tabs} from "antd";
 
 import {QueryData} from "../components/QueryData";
 import {FilterRenderer} from "../components/FilterRenderer";
@@ -344,53 +344,50 @@ export default function AllMetrics(props: AllMetricsProps) {
 
             <LocationDetails show={showLocationDetails}/>
 
+
+
+            {/*<Tabs defaultActiveKey="1" onChange={(key) => {*/}
+            {/*    applyLocationFilter()*/}
+            {/*}}>*/}
+
+            {/*    /!*<div style={{height:20}}/>*!/*/}
+            {/*    <TabPane tab="Analysis" key="1">*/}
+
+
+            {/*        <div style={{height: 20}}/>*/}
+
+            {/*        <Popover placement="rightTop" title={'Metrics Definitions'} content={definitions} trigger="click"*/}
+            {/*                 style={{width: 300}}>*/}
+            {/*            <Button>Metrics Definitions</Button>*/}
+            {/*        </Popover>*/}
+
+            {/*        <div style={{height: 20}}/>*/}
+
+
+            {/*        <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'}*/}
+            {/*                valueFiled={'value'} height={filterLength * 200}/>*/}
+            {/*    </TabPane>*/}
+
+
+            {/*    <TabPane tab="Data & Locations Filter" key="2">*/}
+
+            {/*        <div style={{height: 20}}/>*/}
+
+
             <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}
                             mode={undefined}
                             onFilterChange={(value) => applyPeriodFilter(value)}/>
 
-            <Tabs defaultActiveKey="1" onChange={(key) => {
-                applyLocationFilter()
-            }}>
+            <div style={{height: 20}}/>
+            <Search placeholder="Type location to search" onSearch={value => setTableFilterValue(value)} enterButton/>
 
-                {/*<div style={{height:20}}/>*/}
-                <TabPane tab="Analysis" key="1">
-
-
-                    <div style={{height: 20}}/>
-
-                    <Popover placement="rightTop" title={'Metrics Definitions'} content={definitions} trigger="click"
-                             style={{width: 300}}>
-                        <Button>Metrics Definitions</Button>
-                    </Popover>
-
-                    <div style={{height: 20}}/>
-
-
-                    <ChartX data={locationsMeasuresData} groupFiled={'measure'} labelField={'locationstatus'}
-                            valueFiled={'value'} height={filterLength * 200}/>
-                </TabPane>
-
-
-                <TabPane tab="Data & Locations Filter" key="2">
-
-                    <div style={{height: 20}}/>
-
-
-                    <Search placeholder="input search text" onSearch={value => setTableFilterValue(value)} enterButton/>
-                    <div style={{height: 20}}/>
-                    <Button onClick={() => {
-                        updateLocationsFilter('')
-                    }}>Clear Table Selections</Button>
                     <div style={{height: 20}}/>
                     <Table size={'small'} rowKey={'location'} bordered columns={layout} dataSource={allMeasuresData}
                            pagination={{pageSize: 50}} loading={{spinning: dataLoadingStatus}}
-                           rowSelection={{
-                               type: "checkbox" as "checkbox",
-                               ...rowSelection
-                           }}/>
+                           />
 
-                </TabPane>
-            </Tabs>
+            {/*    </TabPane>*/}
+            {/*</Tabs>*/}
 
 
         </Layout>
