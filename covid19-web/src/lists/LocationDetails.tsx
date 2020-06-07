@@ -215,6 +215,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
             onCancel={(e) => handleOk()}
             width={1600}
             footer={null}
+            style={{ top: 10 }}
         >
             <Descriptions size="small" column={1}>
                 <Descriptions.Item label={<b>Commentary</b>}>{locationCommentary()}</Descriptions.Item>
