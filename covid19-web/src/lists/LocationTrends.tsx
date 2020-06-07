@@ -201,7 +201,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'Active Cases',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         xAxis:{
             title: {text:'Date'}
@@ -228,7 +229,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
             title: {text:'Recovered'}
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
@@ -243,7 +245,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'Cases',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         xAxis:{
             title: {text:'Date'}
@@ -257,6 +260,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
         seriesField: 'location',
         barSize: 10
     }
+
     const chartDeaths = {
         padding: 'auto',
         title: {
@@ -264,7 +268,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'Deaths',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
@@ -286,13 +291,15 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'New Cases',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
         yField: 'new_cases',
         xAxis:{
-            title: {text:'Date'}
+            title: {text:'Date'},
+            label: {visible: true}
         },
         yAxis:{
             title: {text:'New Cases'}
@@ -308,7 +315,8 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'New Deaths',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
