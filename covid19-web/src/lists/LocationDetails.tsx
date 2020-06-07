@@ -213,7 +213,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
             visible={modalVisible}
             onOk={(e) => handleOk()}
             onCancel={(e) => handleOk()}
-            width={1400}
+            width={1600}
             footer={null}
         >
             <Descriptions size="small" column={1}>
