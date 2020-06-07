@@ -114,6 +114,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
         xField: 'value',
         yField: 'name',
 
+
     }
 
 
@@ -138,7 +139,12 @@ export default function LocationDetails(props: LocationDetailsProps) {
         data: [],
         xField: 'period_string',
         yField: 'r',
-
+        xAxis:{
+            title: {text:'Period'}
+        },
+        yAxis:{
+            title: {text:'R'}
+        }
     }
 
     const chartPeriodCasesDeathsTrend = {
@@ -158,6 +164,12 @@ export default function LocationDetails(props: LocationDetailsProps) {
         data: [],
         xField: 'period_string',
         yField: 'value',
+        xAxis:{
+            title: {text:'Period'}
+        },
+        yAxis:{
+            title: {text:'Value'}
+        },
         stackField: 'measure'
     }
 

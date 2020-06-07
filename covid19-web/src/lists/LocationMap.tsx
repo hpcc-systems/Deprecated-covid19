@@ -150,7 +150,7 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = toolTipRow;
         if (row) {
 
-            return <div style={{width: 300, paddingLeft: 10, background: '#fee08b'}}>
+            return <div style={{width: 300, paddingLeft: 10}}>
                 <Row>
                     <Col span={24}><b>Daily Stats</b></Col>
                 </Row>
@@ -318,7 +318,7 @@ export default function LocationMap(props: LocationMapProps) {
             </Radio.Group>
 
             <Popover content={renderToolTip()} title={renderToolTipHeader()}
-                     placement={"right"} visible={tooltipVisible} style={{background: '#fee08b'}}>
+                     placement={"right"} visible={tooltipVisible} >
                 <div style={{height: 5}}/>
             </Popover>
 
