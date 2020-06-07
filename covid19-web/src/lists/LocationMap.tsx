@@ -290,7 +290,7 @@ export default function LocationMap(props: LocationMapProps) {
     return (
         <Layout style={{padding: 5}}>
             <PageHeader title={props.title} subTitle={props.description}
-                        extra={<Button onClick={() => commentaryDetailHandler()}>Details</Button>}
+                        extra={<Button type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>}
 
             >
                 <Descriptions size="small" column={1} bordered>
@@ -307,7 +307,7 @@ export default function LocationMap(props: LocationMapProps) {
             </PageHeader>
 
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
-                         value={heatMapType} buttonStyle="solid">
+                         value={heatMapType} >
                 <Space direction={'horizontal'}>
                     <Radio.Button value={'status'}>Spreading Model</Radio.Button>
                     <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
