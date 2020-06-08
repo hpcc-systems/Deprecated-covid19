@@ -318,7 +318,7 @@ export default function LocationMap(props: LocationMapProps) {
             </Radio.Group>
 
             <Popover content={renderToolTip()} title={renderToolTipHeader()}
-                     placement={"right"} visible={tooltipVisible} >
+                     placement={"rightBottom"} visible={tooltipVisible} >
                 <div style={{height: 5}}/>
             </Popover>
 
