@@ -6,7 +6,7 @@ IMPORT Std;
 _typeFilter := 'states':STORED('typeFilter');
 
 latestDate := MAX(metrics.states, date);
-leastDate := Std.Date.AdjustDate(latestDate,0,0,-6);
+leastDate := Std.Date.AdjustDate(latestDate,0,0,-7);
 
 locationsFilter := '':STORED('locationsFilter'); 
 _locationsFilter := Std.Str.SplitWords(locationsFilter, ',') ;

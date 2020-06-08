@@ -4,7 +4,7 @@ world_cumConfirmed_cpr := ASSERT(JOIN(Files.dailyGlobal, Files.world_cumconfirme
                               LEFT.date = RIGHT.date, 
                               TRANSFORM({RECORDOF(RIGHT), UNSIGNED cumcases, INTEGER diff},
                               SELF := LEFT, SELF := RIGHT ,
-                              SELF.diff := LEFT.cumcases - RIGHT.confirmed)),
+                              SELF.diff := ABS(LEFT.cumcases - RIGHT.confirmed))),
                               diff <= 1000,
                               'Warning: Diff of World Cumulative Cases > 1,000 on '+ date) ;
 OUTPUT(SORT(world_cumconfirmed_cpr, -date) , NAMED('world_cumconfirmed_cpr'));
@@ -14,7 +14,7 @@ world_newCases_cpr := ASSERT(JOIN(Files.dailyGlobal, Files.world_newCases_ds ,
                                   TRANSFORM({RECORDOF(RIGHT), UNSIGNED lnnewcases, INTEGER diff},
                                   SELF.lnnewcases := LEFT.newcases,
                                   SELF.newCases := RIGHT.newcases ,
-                                  SELF.diff := LEFT.newcases - RIGHT.newCases,
+                                  SELF.diff := ABS(LEFT.newcases - RIGHT.newCases),
                                   SELF := LEFT)),
                                   diff <= 1000,
                                   'Warning: Diff of World New Cases > 1,000 on '+ date) ;
@@ -25,7 +25,7 @@ country_cumdeaths_cpr      := ASSERT(JOIN(Files.dailyCountries_confirmed, Files.
                                     TRANSFORM({RECORDOF(RIGHT), UNSIGNED lncases, INTEGER diff},
                                     SELF.deaths := RIGHT.deaths,
                                     SELF.lncases := LEFT.cumdeaths,
-                                    SELF.diff := LEFT.cumdeaths - RIGHT.deaths,
+                                    SELF.diff := ABS(LEFT.cumdeaths - RIGHT.deaths),
                                     SELF := RIGHT)),
                                     diff <= 1000,
                                     'Warning: Diff of ' + country +'\'s Cumulative Deaths > 1,000') ;
@@ -36,7 +36,7 @@ country_cumconfirmed_cpr   := ASSERT(JOIN(Files.dailyCountries_confirmed, Files.
                                     TRANSFORM({RECORDOF(RIGHT), UNSIGNED lncases, INTEGER diff},
                                     SELF.confirmed := RIGHT.confirmed,
                                     SELF.lncases := LEFT.cumcases,
-                                    SELF.diff := LEFT.cumcases - RIGHT.confirmed,
+                                    SELF.diff := ABS(LEFT.cumcases - RIGHT.confirmed),
                                     SELF := RIGHT)),                                    
                                     diff <= 1000,
                                     'Warning: Diff of ' + country +'\'s Cumulative Cases > 1,000') ;; 
@@ -47,7 +47,7 @@ state_cumdeaths_cpr        := ASSERT(JOIN(Files.dailyStates_confirmed , Files.st
                                     TRANSFORM({RECORDOF(RIGHT), UNSIGNED lncases, INTEGER diff},
                                     SELF.deaths := RIGHT.deaths,
                                     SELF.lncases := LEFT.cumdeaths,
-                                    SELF.diff := LEFT.cumdeaths - RIGHT.deaths,
+                                    SELF.diff := ABS(LEFT.cumdeaths - RIGHT.deaths),
                                     SELF := RIGHT)),                                    
                                     diff <= 500,
                                     'Warning: Diff of ' + State +'\'s Cumulative Deaths > 500') ;;
@@ -59,7 +59,7 @@ us_cumdeaths_cpr           := JOIN(Files.dailyCountries(location = 'US') , Files
                                     TRANSFORM({RECORDOF(RIGHT), UNSIGNED lncases, INTEGER diff},
                                     SELF.deaths := RIGHT.deaths,
                                     SELF.lncases := LEFT.cumcases,
-                                    SELF.diff := LEFT.cumcases - RIGHT.deaths,
+                                    SELF.diff := ABS(LEFT.cumcases - RIGHT.deaths),
                                     SELF := RIGHT));
 // OUTPUT(SORT(us_cumdeaths_cpr, -date) , NAMED('us_cumdeaths_cpr'));   
 
@@ -68,7 +68,7 @@ us_cumconfirmed_cpr        := JOIN(Files.dailyCountries(location = 'US'),Files.u
                                     TRANSFORM({RECORDOF(RIGHT), UNSIGNED lncases, INTEGER diff},
                                     SELF.confirmed := RIGHT.confirmed,
                                     SELF.lncases := LEFT.cumcases,
-                                    SELF.diff := LEFT.cumcases - RIGHT.confirmed,
+                                    SELF.diff := ABS(LEFT.cumcases - RIGHT.confirmed),
                                     SELF := RIGHT));
 // OUTPUT(SORT(us_cumconfirmed_cpr, -date)  , NAMED('us_cumconfirmed_cpr'));    
 
@@ -77,7 +77,7 @@ us_county_cumdeaths_cpr           := JOIN(Files.dailyCounties_confirmed , Files.
                                     TRANSFORM({RECORDOF(RIGHT), UNSIGNED lncases, INTEGER diff},
                                     SELF.deaths := RIGHT.deaths,
                                     SELF.lncases := LEFT.cumdeaths,
-                                    SELF.diff := LEFT.cumdeaths - RIGHT.deaths,
+                                    SELF.diff := ABS(LEFT.cumdeaths - RIGHT.deaths),
                                     SELF := RIGHT), RIGHT ONLY);
 // OUTPUT(SORT(us_county_cumdeaths_cpr , -diff)  , NAMED('us_county_cumdeaths_cpr'));   
 
@@ -86,7 +86,7 @@ us_county_cumConfirmed_cpr           := JOIN(Files.dailyCounties_confirmed , Fil
                                     TRANSFORM({RECORDOF(RIGHT), UNSIGNED lncases, INTEGER diff},
                                     SELF.confirmed := RIGHT.confirmed,
                                     SELF.lncases := LEFT.cumcases,
-                                    SELF.diff := LEFT.cumcases - RIGHT.confirmed,
+                                    SELF.diff := ABS(LEFT.cumcases - RIGHT.confirmed),
                                     SELF := RIGHT), RIGHT ONLY);
 // OUTPUT(SORT(us_county_cumConfirmed_cpr, -diff)  , NAMED('us_county_cumConfirmed_cpr') );   
 
