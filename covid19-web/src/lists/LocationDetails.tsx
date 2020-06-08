@@ -235,18 +235,9 @@ export default function LocationDetails(props: LocationDetailsProps) {
 
                 </Tabs.TabPane>
 
-                <Tabs.TabPane key={'cases_deaths_trends'} tab={'Cases & Deaths Trends'}>
-                    <div style={{height: 20}}/>
-                    <Row>
-                        <Col span={24}>
-                            <Chart chart={StackedColumn} config={chartPeriodCasesDeathsTrend}
-                                   data={locationPeriodCasesDeathsTrendData}
-                                   height={'600px'}/>
-                        </Col>
-                    </Row>
-                </Tabs.TabPane>
 
-                <Tabs.TabPane key={'metrics'} tab={'Stats & Metrics'}>
+
+                <Tabs.TabPane key={'metrics'} tab={'Metrics'}>
 
                     <Row>
                         <Col span={12}>
@@ -334,6 +325,17 @@ export default function LocationDetails(props: LocationDetailsProps) {
                     </Row>
 
 
+                </Tabs.TabPane>
+
+                <Tabs.TabPane key={'cases_deaths_trends'} tab={'New Cases & Deaths'}>
+                    <div style={{height: 20}}/>
+                    <Row>
+                        <Col span={24}>
+                            <Chart chart={StackedColumn} config={chartPeriodCasesDeathsTrend}
+                                   data={locationPeriodCasesDeathsTrendData}
+                                   height={'600px'}/>
+                        </Col>
+                    </Row>
                 </Tabs.TabPane>
                 {/* Show the tab conditionally for a state. Does not apply to country or county*/}
                 {/*{props.type === 'states' &&*/}
