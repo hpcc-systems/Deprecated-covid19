@@ -16,9 +16,12 @@ EXPORT CalcMetrics := MODULE
     EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats) := FUNCTION
         statsS := SORT(stats, location, -date);
         statsE0 := PROJECT(statsS, TRANSFORM(statsExtRec, SELF.id := COUNTER, SELF := LEFT));
+				latestDate := MAX(statsE0, date);
+				obsoleteLocations := DEDUP(statsS, location)(date < latestDate);
+				statsE1 := JOIN(statsE0, obsoleteLocations, LEFT.location = RIGHT.location, LEFT ONLY);
         // Compute the extended data
         // Extend data with previous reading on each record. Note: sort is descending by date, so current has lower id
-        statsE1 := ASSERT(JOIN(statsE0, statsE0, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - 1,
+        statsE2 := ASSERT(JOIN(statsE1, statsE1, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - 1,
 											TRANSFORM(RECORDOF(LEFT),
                             SELF.prevCases := RIGHT.cumCases,
                             SELF.newCases := LEFT.cumCases - RIGHT.cumCases,
@@ -29,23 +32,26 @@ EXPORT CalcMetrics := MODULE
                             SELF := LEFT), LEFT OUTER),newCases >= 0, 'Warning: newCases < 0.  Location = ' + location + '(' + date + ')');
 
         // Go infectionPeriod days back to see how many have recovered and how many are still active
-        statsE2 := JOIN(statsE1, statsE1, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod, TRANSFORM(RECORDOF(LEFT),
+        statsE3 := JOIN(statsE2, statsE2, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod, TRANSFORM(RECORDOF(LEFT),
                             SELF.active := IF (LEFT.cumCases < RIGHT.cumCases, LEFT.cumCases, LEFT.cumCases - RIGHT.cumCases),
                             SELF.recovered := IF(RIGHT.cumCases < LEFT.cumDeaths, 0, RIGHT.cumCases - LEFT.cumDeaths),
                             SELF.prevActive := LEFT.prevCases - RIGHT.prevCases,
                             SELF.iMort := LEFT.cumDeaths / RIGHT.cumCases,
                             SELF := LEFT), LEFT OUTER);
 
-        statsE := statsE2;
-        RETURN statsE2;
+        statsE := statsE3;
+        RETURN statsE;
     END;
     // Calculate Metrics, given input Stats Data.
     EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault, DECIMAL5_3 parentCFR = 0) := FUNCTION
-				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, REAL parent_cfr) := EMBED(Python)
+				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, UNSIGNED infPeriod, REAL parent_cfr) := EMBED(Python)
 					import time
+					from math import log
 					def numFormat(num):
 						number_with_commas = "{:,}".format(num)
 						return number_with_commas
+					def doublingTime(r, infPeriod):
+						return round(log(2.0**infPeriod, r))
 					outstr = ''
 					for rec in recs:
 						location = rec[1].strip()
@@ -73,6 +79,13 @@ EXPORT CalcMetrics := MODULE
 						prevState = rec[34].strip()
 						sti = rec[35]
 						surgeStart = rec[37]
+						# Early Warning Indicator (EWI)
+						ewi = 0.0
+						if sdi < -.2 and mdi > .2:
+							ewi = sdi - mdi
+						elif sdi > .2 and mdi < -.2:
+							ewi = sdi - mdi
+						ewi = round(ewi, 2)
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -113,10 +126,11 @@ EXPORT CalcMetrics := MODULE
 							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
 								scaleStr += relapsestr
 						elif iState == 'Spreading':
+							scaleStr = 'At this growth rate, new infections and deaths will double every ' + str(doublingTime(r, infPeriod)) + ' days. '
 							probStr = 'probably '
 							if cases > 10 * minActive:
 								probStr = ''
-							scaleStr = 'This outbreak is ' + probStr + 'beyond containment, with ' + numFormat(active) + ' active cases, and requires mitigation. '
+							scaleStr += 'This outbreak is ' + probStr + 'beyond containment, with ' + numFormat(active) + ' active cases, and requires mitigation. '
 							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
 								scaleStr += relapsestr
 						elif iState == 'Regressing':
@@ -129,6 +143,7 @@ EXPORT CalcMetrics := MODULE
 							if prevState in ['Recovering', 'Recovered']:
 								scaleStr += relapsestr
 						elif iState == 'Stabilizing':
+							scaleStr = 'At this growth rate, new infections and deaths will double every ' + str(doublingTime(r, infPeriod)) + ' days. '
 							if prevState in ['Recovering', 'Recovered', 'Stabilized']:
 								scaleStr += relapsestr
 						elif iState == 'Recovered':
@@ -220,6 +235,12 @@ EXPORT CalcMetrics := MODULE
 						elif sdi > .1:
 							sdistr = 'The Short-Term Indicator(STI) suggests that the infection is likely to slow somewhat over the next few days.'
 						outstr += sdistr
+						ewistr = ''
+						if ewi < -.5:
+							ewistr = 'The Early Warning Indicator (' + str(ewi) + ') indicates that a significant increase in infection growth rate is imminent. '
+						elif ewi > .5:
+							ewistr = 'The Early Warning Indicator (' + str(ewi) + ') indicates that a slowdown in infection growth rate is imminent. '
+						outstr += ewistr
 					return outstr
 				ENDEMBED;
 
@@ -339,13 +360,13 @@ EXPORT CalcMetrics := MODULE
             mR := IF(r.mR > 1, r.mR - 1, 0);
             mi := IF(r.medIndicator < 0, -r.medIndicator, 0);
             sdi := IF(r.sdIndicator < 0, -r.sdIndicator, 0);
-            SELF.heatIndex := LOG(r.active) * (cR + mR + mi + sdi) / scaleFactor;
+            SELF.heatIndex := LOG(r.active) * (MIN(cR, mR + 1) + MIN(mR, cR+1) + mi + sdi) / scaleFactor;
             SELF := r;          
         END;
         metrics5 := SORT(metrics4, location, -period);
         metrics6 := ITERATE(metrics5, calc2(LEFT, RIGHT));
 				metricsRec addCommentary(metricsRec rec) := TRANSFORM
-					SELF.commentary := generateCommentary(DATASET([rec], metricsRec), minActive, parentCFR);
+					SELF.commentary := generateCommentary(DATASET([rec], metricsRec), minActive, InfectionPeriod, parentCFR);
 					SELF := rec;
 				END;
 				metrics7 := PROJECT(metrics6, addCommentary(LEFT));

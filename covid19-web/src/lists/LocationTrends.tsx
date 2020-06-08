@@ -3,7 +3,7 @@ import {QueryData} from "../components/QueryData";
 import {Card, Col, Descriptions, Input, Layout, PageHeader, Row, Statistic, Table, Tabs} from "antd";
 import {Space} from "antd/es";
 import {Chart} from "../components/Chart";
-import {GroupedColumn, Line} from "@antv/g2plot";
+import {Line} from "@antv/g2plot";
 
 
 const {TabPane} = Tabs;
@@ -80,7 +80,6 @@ export default function LocationTrends(props: LocationTrendsProps) {
                 setCasesRecovered(item.recovered_total);
             })
         }
-
     }
 
     function toLocationsFilter(data: any) {
@@ -202,15 +201,19 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'Active Cases',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
-        xAxis: {
-          title: {visible:false}
+        xAxis:{
+            title: {text:'Date'}
+        },
+        yAxis:{
+            title: {text:'Active'}
         },
         data: [],
         xField: 'date_string',
         yField: 'active',
-        groupField: 'location',
+        seriesField: 'location',
         barSize: 10
     }
     const chartRecovered = {
@@ -219,16 +222,20 @@ export default function LocationTrends(props: LocationTrendsProps) {
             visible: true,
             text: 'Recovered Cases',
         },
-        xAxis: {
-            title: {visible:false}
+        xAxis:{
+            title: {text:'Date'}
+        },
+        yAxis:{
+            title: {text:'Recovered'}
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
         yField: 'recovered',
-        groupField: 'location',
+        seriesField: 'location',
         barSize: 10
     }
     const chartCases = {
@@ -238,17 +245,22 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'Cases',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
-        xAxis: {
-            title: {visible:false}
+        xAxis:{
+            title: {text:'Date'}
+        },
+        yAxis:{
+            title: {text:'Cases'}
         },
         data: [],
         xField: 'date_string',
         yField: 'cases',
-        groupField: 'location',
+        seriesField: 'location',
         barSize: 10
     }
+
     const chartDeaths = {
         padding: 'auto',
         title: {
@@ -256,15 +268,19 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'Deaths',
         },
         label: {
-            visible: true
-        },
-        xAxis: {
-            title: {visible:false}
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
         yField: 'deaths',
-        groupField: 'location',
+        xAxis:{
+            title: {text:'Date'}
+        },
+        yAxis:{
+            title: {text:'Deaths'}
+        },
+        seriesField: 'location',
         barSize: 10
     }
 
@@ -275,12 +291,20 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'New Cases',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
         yField: 'new_cases',
-        groupField: 'location',
+        xAxis:{
+            title: {text:'Date'},
+            label: {visible: true}
+        },
+        yAxis:{
+            title: {text:'New Cases'}
+        },
+        seriesField: 'location',
         barSize: 10
     }
 
@@ -291,12 +315,19 @@ export default function LocationTrends(props: LocationTrendsProps) {
             text: 'New Deaths',
         },
         label: {
-            visible: true
+            visible: true,
+            type: 'line'
         },
         data: [],
         xField: 'date_string',
         yField: 'new_deaths',
-        groupField: 'location',
+        xAxis:{
+            title: {text:'Date'}
+        },
+        yAxis:{
+            title: {text:'New Deaths'}
+        },
+        seriesField: 'location',
         barSize: 10
     }
     return (
@@ -370,18 +401,18 @@ export default function LocationTrends(props: LocationTrendsProps) {
 
                 <Tabs defaultActiveKey="1">
                     <TabPane tab="New" key="1">
-                        <Chart chart={GroupedColumn} config={chartCasesIncrease} data={trends}/>
+                        <Chart chart={Line} config={chartCasesIncrease} data={trends}/>
                         <div style={{height: '10px'}}/>
-                        <Chart chart={GroupedColumn} config={chartDeathsIncrease} data={trends}/>
+                        <Chart chart={Line} config={chartDeathsIncrease} data={trends}/>
                     </TabPane>
                     <TabPane tab="Cumulative" key="2">
-                        <Chart chart={GroupedColumn} config={chartActive} data={trends}/>
+                        <Chart chart={Line} config={chartActive} data={trends}/>
                         <div style={{height: '10px'}}/>
-                        <Chart chart={GroupedColumn} config={chartCases} data={trends}/>
+                        <Chart chart={Line} config={chartCases} data={trends}/>
                         <div style={{height: '10px'}}/>
-                        <Chart chart={GroupedColumn} config={chartRecovered} data={trends}/>
+                        <Chart chart={Line} config={chartRecovered} data={trends}/>
                         <div style={{height: '10px'}}/>
-                        <Chart chart={GroupedColumn} config={chartDeaths} data={trends}/>
+                        <Chart chart={Line} config={chartDeaths} data={trends}/>
                     </TabPane>
                     {/*<TabPane tab="Deaths" key="3">*/}
                     {/*    <div style={{height:'10px'}}/>*/}

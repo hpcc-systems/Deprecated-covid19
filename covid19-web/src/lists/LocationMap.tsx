@@ -1,25 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react'
 
-import {
-    Button,
-    Card,
-    Col,
-    Descriptions,
-    Layout,
-    Modal,
-    PageHeader, Popover,
-    Radio,
-    Row,
-    Space,
-    Statistic,
-    Table,
-    Tabs
-} from "antd";
+import {Button, Col, Descriptions, Layout, PageHeader, Popover, Radio, Row, Space} from "antd";
 import {QueryData} from "../components/QueryData";
-import {Bar, Column, StackedColumn} from "@antv/g2plot";
-import {Chart} from "../components/Chart";
 import OlMap from "../components/OlMap";
-import Search from "antd/es/input/Search";
+import LocationDetails from "./LocationDetails";
 
 
 interface LocationMapProps {
@@ -63,22 +47,17 @@ function useStateRef(initialValue: any) {
 
 export default function LocationMap(props: LocationMapProps) {
     const queryLocationsMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
-    const queryLocation = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_location_metrics'));
-    const summaryData = useRef<SummaryData>(new SummaryData());
+    const [summaryDataState, setSummaryData, summaryData] = useStateRef(new SummaryData());
     const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
     const mapData = useRef<Map<string, any>>(new Map());
     const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('status');
-    const [mapSelectedLocation, setMapSelectedLocation] = useState<any>([]);
-    const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-    const [locationSummaryQueryData, setLocationSummaryQueryData] = useState<any>([]);
     const [toolTipRow, setToolTipRow] = useState<any>([]);
-    const [locationChildrenQueryData, setLocationChildrenQueryData] = useState<any>([]);
-    const [locationPeriodTrendData, setLocationPeriodTrendQueryData] = useState<any>([]);
-    const [locationPeriodCasesDeathsTrendData, setLocationPeriodCasesDeathsTrendQueryData] = useState<any>([]);
-    const [modalTab, setModalTab] = useState<string>('r');
     const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
-    const [tableLocationFilterValue, setTableLocationFilterValue] = React.useState<string>('');
+
+
+    const [showLocationDetails, setShowLocationDetails] =
+        useState<any>({visible: false, location: '', locationType: ''});
 
     function toMapData(data: any) {
         let mapData: Map<string, any> = new Map();
@@ -99,7 +78,6 @@ export default function LocationMap(props: LocationMapProps) {
         queryLocationsMap.current.initData(undefined).then(() => {
             mapData.current = toMapData(queryLocationsMap.current.getData('latest'));
             setSummaryQueryData(queryLocationsMap.current.getData('summary'));
-            setMapSelectedLocation([]);
         })
 
     }, [props]);
@@ -111,18 +89,20 @@ export default function LocationMap(props: LocationMapProps) {
             if (summaryQueryData.length > 0) {
 
                 summaryQueryData.forEach((item: any) => {
-                    summaryData.current.newCases = item.new_cases_total;
-                    summaryData.current.newDeaths = item.new_deaths_total;
-                    summaryData.current.cases = item.cases_total;
-                    summaryData.current.active = item.active_total;
-                    summaryData.current.deaths = item.deaths_total;
-                    summaryData.current.recovered = item.recovered_total;
-                    summaryData.current.casesMax = item.cases_max;
-                    summaryData.current.newCasesMax = item.new_cases_max;
-                    summaryData.current.deathsMax = item.deaths_max;
-                    summaryData.current.newDeathsMax = item.new_deaths_max;
-                    summaryData.current.statusMax = item.status_max;
-                    summaryData.current.commentary = item.commentary;
+                    let summaryData = new SummaryData();
+                    summaryData.newCases = item.new_cases_total;
+                    summaryData.newDeaths = item.new_deaths_total;
+                    summaryData.cases = item.cases_total;
+                    summaryData.active = item.active_total;
+                    summaryData.deaths = item.deaths_total;
+                    summaryData.recovered = item.recovered_total;
+                    summaryData.casesMax = item.cases_max;
+                    summaryData.newCasesMax = item.new_cases_max;
+                    summaryData.deathsMax = item.deaths_max;
+                    summaryData.newDeathsMax = item.new_deaths_max;
+                    summaryData.statusMax = item.status_max;
+                    summaryData.commentary = item.commentary;
+                    setSummaryData(summaryData);
                 })
             } else {
                 return '';
@@ -133,21 +113,6 @@ export default function LocationMap(props: LocationMapProps) {
 
     }, [summaryQueryData]);
 
-    const locationCommentary: any = () => {
-        if (locationSummaryQueryData.length > 0) {
-            return locationSummaryQueryData[0]['commentary'];
-        } else {
-            return '';
-        }
-    }
-
-    const locationDetail: any = (name: string) => {
-        if (locationSummaryQueryData.length > 0) {
-            return locationSummaryQueryData[0][name];
-        } else {
-            return '';
-        }
-    }
 
     const heatMapTypeChange = (value: any) => {
         setHeatMapType(value);
@@ -185,7 +150,7 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = toolTipRow;
         if (row) {
 
-            return <div style={{width: 300, paddingLeft: 10, background: '#fee08b'}}>
+            return <div style={{width: 300, paddingLeft: 10}}>
                 <Row>
                     <Col span={24}><b>Daily Stats</b></Col>
                 </Row>
@@ -245,12 +210,9 @@ export default function LocationMap(props: LocationMapProps) {
                     <Col span={12}>Status</Col>
                     <Col><b>{row.status}</b></Col>
                 </Row>
-
             </div>
 
-
         } else {
-
 
         }
     }
@@ -260,10 +222,6 @@ export default function LocationMap(props: LocationMapProps) {
         let row: any = mapData.current.get(name.toUpperCase());
 
         if (row) {
-            // console.log('row -' + row.location + ' heat map type -' +
-            //     heatMapTypeRef.current + ' max: ' +
-            //     summaryData.current.casesMax);
-            //
             let d = 0;
             switch (heatMapTypeRef.current) {
                 case 'cases':
@@ -293,7 +251,6 @@ export default function LocationMap(props: LocationMapProps) {
                     } else {
                         return '#1a9850'
                     }
-
             }
 
             return d >= 0.9 ? '#a50026' :
@@ -309,218 +266,50 @@ export default function LocationMap(props: LocationMapProps) {
         setTooltipVisible(false);
 
         if (name === '') {
-            setMapSelectedLocation([]);
+
         } else {
             let row: any = mapData.current.get(name.toUpperCase());
             if (row) {
-                setMapSelectedLocation(row);
-                let filters: Map<string, string> = new Map();
-                filters.set('location_type', props.type);
-                filters.set('location', row['location_code']);
-                queryLocation.current.initData(filters).then(() => {
-                    setLocationSummaryQueryData(queryLocation.current.getData('summary'));
-                    setLocationChildrenQueryData(queryLocation.current.getData('children'));
-                    setLocationPeriodTrendQueryData(queryLocation.current.getData('period_trend'));
-                    setLocationPeriodCasesDeathsTrendQueryData(queryLocation.current.getData('period_cases_deaths_trend'));
-                    showModal();
-                });
-
+                setShowLocationDetails({visible: true, location: row['location_code'], locationType: props.type});
+                setTooltipVisible(false);
             } else {
-                setMapSelectedLocation([]);
+
             }
         }
     }
 
     const commentaryDetailHandler = () => {
-        let filters: Map<string, string> = new Map();
+        // let filters: Map<string, string> = new Map();
         if (props.type === 'states' || props.type === 'counties') {
-            filters.set('location_type', 'countries');
-            filters.set('location', 'US');
+            setShowLocationDetails({visible: true, location: 'US', locationType: 'countries'});
         } else {
-            filters.set('location_type', 'world');
-            filters.set('location', 'The World');
-        }
-
-        queryLocation.current.initData(filters).then(() => {
-            setLocationSummaryQueryData(queryLocation.current.getData('summary'));
-            setLocationChildrenQueryData(queryLocation.current.getData('children'));
-            setLocationPeriodTrendQueryData(queryLocation.current.getData('period_trend'));
-            setLocationPeriodCasesDeathsTrendQueryData(queryLocation.current.getData('period_cases_deaths_trend'));
-            showModal();
-        });
-    }
-
-
-    function getMapToolTipHeader() {
-        if (locationDetail('location') !== '') {
-            return locationDetail('location')
-        } else {
-            return 'PLEASE: View the metrics my selecting a state or mouse over'
+            setShowLocationDetails({visible: true, location: 'The World', locationType: 'world'});
         }
     }
-
-    const showModal = () => {
-        setTooltipVisible(false);
-        setModalVisible(true);
-    };
-
-    const handleOk = () => {
-        setModalVisible(false);
-        setModalTab('r');
-        setTableLocationFilterValue('');
-    };
-
-
-    const chartModelData = [{"name": "Heat Index", "value": locationDetail("heatindex")},
-        {"name": "Case Fatality Rate", "value": locationDetail("imort")},
-        {"name": "Medical Indicator", "value": locationDetail("medindicator")},
-        {"name": "Social Distance Indicator", "value": locationDetail("sdindicator")},
-        {"name": "Mortality Rate (mR)", "value": locationDetail("mr")},
-        {"name": "Cases Rate (cR)", "value": locationDetail("cr")},
-        {"name": "Infection Rate (R)", "value": locationDetail("r")}
-    ];
-
-    const chartModel = {
-        padding: 'auto',
-        title: {
-            visible: false,
-        },
-        forceFit: true,
-        label: {
-            visible: true,
-            style: {
-                strokeColor: 'black'
-            }
-        },
-        xAxis: {
-            title: {visible: false}
-        },
-        color: (d: any) => {
-            return d === 'Infection Rate (R)' ? '#6394f8' :
-                d === 'Case Rate (cR)' ? '#61d9aa' :
-                    d === 'Mortality Rate (mR)' ? '#657797' :
-                        d === 'Social Distance Indicator' ? '#f6c02c' :
-                            d === 'Medical Indicator' ? '#7a4e48' :
-                                d === 'Case Fatality Rate' ? '#6dc8ec' :
-                                    '#9867bc'
-        },
-        colorField: 'name',
-        data: [],
-        xField: 'value',
-        yField: 'name',
-
-    }
-
-
-    const chartPeriodTrend = {
-        padding: 'auto',
-        title: {
-            visible: false,
-        },
-        forceFit: true,
-        label: {
-            visible: true
-        },
-        legend: {
-            visible: false
-        },
-        color: (d: any) => {
-            return d > 1.1 ? '#d73027' :
-                d > 0.9 ? '#fee08b' :
-                    '#1a9850'
-        },
-        colorField: 'r',
-        data: [],
-        xField: 'period_string',
-        yField: 'r',
-
-    }
-
-    const chartPeriodCasesDeathsTrend = {
-        padding: 'auto',
-        title: {
-            visible: false,
-        },
-        forceFit: true,
-        label: {
-            visible: true
-        },
-        legend: {
-            visible: true
-        },
-        color: ['#fee08b', '#d73027',],
-        colorField: 'measure',
-        data: [],
-        xField: 'period_string',
-        yField: 'value',
-        stackField: 'measure'
-    }
-
-    const locationDetailColumns = [
-        {
-            title: 'Location',
-            dataIndex: 'location',
-            width: '200px',
-            onFilter: (value: any, record: any) =>
-                record['location']
-                    .toString()
-                    .toLowerCase()
-                    .includes(value.toLowerCase()),
-            filteredValue: tableLocationFilterValue.split(',')
-        },
-        {
-            title: 'Location',
-            dataIndex: 'location',
-            width: '200px'
-        },
-        {
-            title: 'Status',
-            dataIndex: 'istate',
-            width: '200px'
-        },
-        {
-            title: 'R',
-            dataIndex: 'r',
-            className: 'column-number',
-            width: '100px'
-        },
-        {
-            title: 'Commentary',
-            dataIndex: 'commentary',
-        }
-    ];
 
     return (
-        <Layout style={{padding: 5}} >
-            <PageHeader title={props.title} subTitle={props.description} extra={<Button onClick={() => commentaryDetailHandler()}>Details</Button>}
+        <Layout style={{padding: 5}}>
+            <PageHeader title={props.title} subTitle={props.description}
+                        extra={<Button type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>}
 
-             >
+            >
                 <Descriptions size="small" column={1} bordered>
-
-                    <Descriptions.Item label={<b>Commentary</b>}>{summaryData.current.commentary}</Descriptions.Item>
-
+                    <Descriptions.Item label={<b>Commentary</b>}>{summaryDataState.commentary}</Descriptions.Item>
                 </Descriptions>
-                <Descriptions size="small" column={2} style={{paddingTop:5}}>
 
-                    <Descriptions.Item ><h5>Data Attribution: John Hopkins University</h5></Descriptions.Item>
-                    <Descriptions.Item ><h5>Filters: Please click and select a location from the chart to view the metrics</h5>
-                        </Descriptions.Item>
-
+                <Descriptions size="small" column={2} style={{paddingTop: 5}}>
+                    <Descriptions.Item><h5>Data Attribution: John Hopkins University</h5></Descriptions.Item>
+                    <Descriptions.Item><h5>Filters: Please click and select a location from the chart to view the
+                        metrics</h5>
+                    </Descriptions.Item>
                 </Descriptions>
 
             </PageHeader>
 
-
-
-
-
             <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
-                         value={heatMapType} buttonStyle="solid">
+                         value={heatMapType} >
                 <Space direction={'horizontal'}>
-
                     <Radio.Button value={'status'}>Spreading Model</Radio.Button>
-
-
                     <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
                     <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
                     <Radio.Button value={'cases'}>Total Cases</Radio.Button>
@@ -529,156 +318,19 @@ export default function LocationMap(props: LocationMapProps) {
             </Radio.Group>
 
             <Popover content={renderToolTip()} title={renderToolTipHeader()}
-                     placement={"right"} visible={tooltipVisible} style={{background: '#fee08b'}}>
+                     placement={"rightBottom"} visible={tooltipVisible} >
                 <div style={{height: 5}}/>
             </Popover>
 
-            <div  onMouseLeave={() => setTooltipVisible(false)}>
+            <div onMouseLeave={() => setTooltipVisible(false)}>
 
-            <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
-                   selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
-                   geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
-                   height={'730px'}/>
+                <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
+                       selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
+                       geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
+                       height={'730px'}/>
             </div>
 
-            <Modal
-                title={getMapToolTipHeader()}
-                visible={modalVisible}
-                onOk={(e) => handleOk()}
-                onCancel={(e) => handleOk()}
-                width={1400}
-                footer={null}
-            >
-                <Descriptions size="small" column={1}>
-                    <Descriptions.Item label={<b>Commentary</b>}>{locationCommentary()}</Descriptions.Item>
-                </Descriptions>
-
-                <Tabs defaultActiveKey={'r'} activeKey={modalTab} onChange={(key) => {
-                    setModalTab(key)
-                }}>
-                    <Tabs.TabPane key={'r'} tab={'Rate of Infection (R)'}>
-                        <div style={{height: 20}}/>
-                        <Row>
-                            <Col span={24}>
-                                <Chart chart={Column} config={chartPeriodTrend} data={locationPeriodTrendData}
-                                       height={'600px'}/>
-                            </Col>
-                        </Row>
-
-                    </Tabs.TabPane>
-
-                    <Tabs.TabPane key={'cases_deaths_trends'} tab={'Cases & Deaths Trends'}>
-                        <div style={{height: 20}}/>
-                        <Row>
-                            <Col span={24}>
-                                <Chart chart={StackedColumn} config={chartPeriodCasesDeathsTrend}
-                                       data={locationPeriodCasesDeathsTrendData}
-                                       height={'600px'}/>
-                            </Col>
-                        </Row>
-                    </Tabs.TabPane>
-
-                    <Tabs.TabPane key={'metrics'} tab={'Stats & Metrics'}>
-
-                        <Row>
-                            <Col span={12}>
-                                <b>Daily Stats - {locationDetail("date_string")}</b>
-                            </Col>
-                            <Col span={12} style={{paddingLeft: 25}}>
-                                <b>Weekly Stats and Metrics - {locationDetail("period_string")}</b>
-                            </Col>
-                        </Row>
-
-                        <Row>
-                            <Col span={12}>
-                                <Card>
-                                    <Statistic
-                                        title="New Cases"
-                                        value={locationDetail("newcasesdaily")}
-                                        valueStyle={{color: '#cf1322'}}
-                                    />
-                                </Card>
-                                <Card>
-                                    <Statistic
-                                        title="New Deaths"
-                                        value={locationDetail("newdeathsdaily")}
-                                        valueStyle={{color: '#cf1322'}}
-                                    />
-                                </Card>
-                                <Card>
-                                    <Statistic
-                                        title="Active Cases"
-                                        value={locationDetail('active')}
-                                        valueStyle={{color: '#cf1322'}}
-                                    />
-                                </Card>
-                                <Card>
-                                    <Statistic
-                                        title="Recovered Cases"
-                                        value={locationDetail('recovered')}
-                                        valueStyle={{color: '#cf1322'}}
-                                    />
-                                </Card>
-                                <Card>
-                                    <Statistic
-                                        title="Total Cases"
-                                        value={locationDetail('cases')}
-                                        valueStyle={{color: '#cf1322'}}
-                                    />
-                                </Card>
-                                <Card>
-                                    <Statistic
-                                        title="Total Deaths"
-                                        value={locationDetail('deaths')}
-                                        valueStyle={{color: '#cf1322'}}
-                                    />
-                                </Card>
-                            </Col>
-                            <Col span={12} style={{paddingLeft: 25}}>
-                                <Row>
-                                    <Col span={24}>
-
-                                        <Card>
-                                            <Statistic
-                                                title="New Cases"
-                                                value={locationDetail('newcases')}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                        <Card>
-                                            <Statistic
-                                                title="New Deaths"
-                                                value={locationDetail('newdeaths')}
-                                                valueStyle={{color: '#cf1322'}}
-                                            />
-                                        </Card>
-                                    </Col>
-
-                                </Row>
-                                <Row>
-                                    <Col span={24}>
-                                        <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
-                                    </Col>
-                                </Row>
-
-                            </Col>
-
-                        </Row>
-
-
-                    </Tabs.TabPane>
-                    {/* Show the tab conditionally for a state. Does not apply to country or county*/}
-                    {/*{props.type === 'states' &&*/}
-                    <Tabs.TabPane key={'location_children'} tab={'Locations'}>
-                        <Search placeholder="input search text" onSearch={value => setTableLocationFilterValue(value)}
-                                enterButton/>
-                        <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
-                               pagination={false} scroll={{y: 550}} style={{minHeight: 600}}/>
-                    </Tabs.TabPane>
-                    {/*}*/}
-                </Tabs>
-                <Button type="primary" onClick={() => handleOk()}>Close</Button>
-            </Modal>
+            <LocationDetails show={showLocationDetails}/>
 
         </Layout>);
 }
