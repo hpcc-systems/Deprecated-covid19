@@ -153,7 +153,7 @@ export default function LocationMap(props: LocationMapProps) {
     const renderScale = () => {
         function statusScale() {
 
-            return <div style={{width: 300, paddingLeft: 10}}>
+            return <div style={{width: 250, paddingLeft: 10}}>
                 <table cellPadding={5}>
                     <tr style={{}}>
                         <td>Initial or Recovered</td>
@@ -207,7 +207,7 @@ export default function LocationMap(props: LocationMapProps) {
             //                 d > 0.1 ? '#66bd63' :
             //                     '#1a9850';
 
-            return <div style={{width: 300, paddingLeft: 10}}>
+            return <div style={{width: 250, paddingLeft: 10}}>
                 <table cellPadding={5}>
                     <tr style={{}}>
                         <td>Less than {format(d * 0.1)}</td>
