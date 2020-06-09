@@ -3,7 +3,7 @@ IMPORT hpccsystems.covid19.file.raw.JohnHopkinsV1 as jhv1;
 IMPORT hpccsystems.covid19.file.raw.JohnHopkinsV2 as jhv2;
 IMPORT hpccsystems.covid19.file.public.JohnHopkins as jh; 
 
-#WORKUNIT('name', 'hpccsystems_covid19_scraped_spray');
+#WORKUNIT('name', 'JohnHopkinsScrapedCompare');
 // #WORKUNIT('protect', TRUE);
 
 // Define attributes for spray

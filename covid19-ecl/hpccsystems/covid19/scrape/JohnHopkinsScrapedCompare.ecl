@@ -1,5 +1,7 @@
 IMPORT hpccsystems.covid19.scrape.Files as Files;
 
+#WORKUNIT('name', 'hpccsystems_covid19_scraped_spray');
+
 world_cumConfirmed_cpr := ASSERT(JOIN(Files.dailyGlobal, Files.world_cumconfirmed_ds ,
                               LEFT.date = RIGHT.date, 
                               TRANSFORM({RECORDOF(RIGHT), UNSIGNED cumcases, INTEGER diff},
