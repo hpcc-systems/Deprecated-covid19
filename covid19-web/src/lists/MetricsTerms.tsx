@@ -1,7 +1,7 @@
 import {Descriptions} from "antd";
 import React from "react";
 
-export default function StatusTerms() {
+export default function MetricsTerms() {
     return (
         <div style={{width: 700}}>
             <Descriptions column={1}>
@@ -13,6 +13,9 @@ export default function StatusTerms() {
                 <Descriptions.Item label="mR">
                     Compound growth rate for Deaths. Though this lags the cR, it may be a better proxy for
                     actual number of cases because it is not confounded by test availability and policy.
+                </Descriptions.Item>
+                <Descriptions.Item label="R">
+                Estimation of the Effective Growth Rate of the infection based on a composite of confirmed cases and deaths.  This can be understood as the average number of people infected by each infected individual during the course of their infection.  If this number is greater than 1.0, the number of infections is growing, while a value below 1.0 indicates that the number of infections is shrinking.
                 </Descriptions.Item>
                 <Descriptions.Item label="sdIndicator">
                     Shows progress in social distancing behavior from period to period. Positive values indicate
@@ -28,7 +31,7 @@ export default function StatusTerms() {
                     later in the cycle can indicate an erosion in the quality of medical care.
                 </Descriptions.Item>
 
-                <Descriptions.Item label="iMort">
+                <Descriptions.Item label="Case Fatality Rate (CFR)">
                     This is an approximation of Infection Mortality which is the likelihood that someone who
                     tests positive for the infection will die as a result of the infection. This number may be
                     exaggerated during the very early stages of the infection in a location due to lack of
