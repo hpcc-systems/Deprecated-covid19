@@ -13,8 +13,9 @@ EXPORT CalcMetrics := MODULE
 		SHARED periodDays := 7;
 		SHARED scaleFactor := 5;  // Lower will give more hot spots.
 		SHARED minActDefault := 20; // Minimum cases to be considered emerging, by default.
-    EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats) := FUNCTION
-        statsS := SORT(stats, location, -date);
+    EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats, UNSIGNED asOfDate = 0) := FUNCTION
+				stats0 := IF(asOfDate = 0, stats, stats(date < asOfDate));
+        statsS := SORT(stats0, location, -date);
         statsE0 := PROJECT(statsS, TRANSFORM(statsExtRec, SELF.id := COUNTER, SELF := LEFT));
 				latestDate := MAX(statsE0, date);
 				obsoleteLocations := DEDUP(statsS, location)(date < latestDate);
@@ -43,7 +44,7 @@ EXPORT CalcMetrics := MODULE
         RETURN statsE;
     END;
     // Calculate Metrics, given input Stats Data.
-    EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault, DECIMAL5_3 parentCFR = 0) := FUNCTION
+    EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, DATASET(populationRec) pops, UNSIGNED minActive = minActDefault, DECIMAL5_3 parentCFR = 0, UNSIGNED asOfDate = 0) := FUNCTION
 				STRING generateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, UNSIGNED infPeriod, REAL parent_cfr) := EMBED(Python)
 					import time
 					from math import log
@@ -53,6 +54,7 @@ EXPORT CalcMetrics := MODULE
 					def doublingTime(r, infPeriod):
 						return round(log(2.0**infPeriod, r))
 					outstr = ''
+					stateMap = {'Initial':0, 'Recovered':0, 'Recovering':1, 'Stabilized':2, 'Stabilizing':3, 'Emerging':4, 'Spreading':5}
 					for rec in recs:
 						location = rec[1].strip()
 						startDate = rec[3]
@@ -78,7 +80,7 @@ EXPORT CalcMetrics := MODULE
 						periodDays = rec[33]
 						prevState = rec[34].strip()
 						sti = rec[35]
-						surgeStart = rec[37]
+						surgeStart = rec[38]
 						# Early Warning Indicator (EWI)
 						ewi = 0.0
 						if sdi < -.2 and mdi > .2:
@@ -111,28 +113,41 @@ EXPORT CalcMetrics := MODULE
 						else:
 							dir = 'decreasing'
 						implstr = adv + dir
-						outstr = location + ' is currently ' + iState + '. '
+						iStateNum = stateMap[iState]
+						prevStateNum = stateMap[prevState]
+						if iState == 'Emerging':
+							article = 'an '
+						else:
+							article = 'a '
+						if iStateNum == prevStateNum:
+							if iState == prevState:	
+								outstr = location + ' remains in ' + article + iState + ' state. '
+							else:
+								outstr = location + ' is currently in ' + article + iState + ' state. '
+						elif iStateNum > prevStateNum:
+							outstr = location + ' has worsened to ' + article + iState + ' state from a previous state of ' + prevState + '. '
+						else:
+							outstr = location + ' has improved to ' + article + iState + ' state from a previous state of ' + prevState + '. '
 						if r > 0:
 							rstr = 'The infection is ' + implstr + ' (R = ' + str(r) + '). '
 						else:
 							rstr = 'It is too early to estimate the growth rate (R). '
 						relapsestr = 'This represents a regression from a previous state of ' + prevState + '. '
-
 						if iState != 'Recovered':
 							outstr += rstr
 						scaleStr = 'There are currently ' + numFormat(active) + ' active cases. '
 						if iState == 'Emerging':
 							scaleStr = 'This outbreak is based on a small number of detected infections (' + numFormat(active) + ' cases) and may be quickly contained by appropriate measures. '
-							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
-								scaleStr += relapsestr
+							# if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
+							#		scaleStr += relapsestr
 						elif iState == 'Spreading':
 							scaleStr = 'At this growth rate, new infections and deaths will double every ' + str(doublingTime(r, infPeriod)) + ' days. '
 							probStr = 'probably '
 							if cases > 10 * minActive:
 								probStr = ''
 							scaleStr += 'This outbreak is ' + probStr + 'beyond containment, with ' + numFormat(active) + ' active cases, and requires mitigation. '
-							if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
-								scaleStr += relapsestr
+							# if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
+							#		scaleStr += relapsestr
 						elif iState == 'Regressing':
 							scaleStr = 'The infection was previously recovering, but has recently begun to grow again (' + numFormat(active) + ' active cases, ' + \
 														numFormat(newCases) + ' new). '
@@ -140,12 +155,12 @@ EXPORT CalcMetrics := MODULE
 							scaleStr = 'No significant infection has been detected. '
 						elif iState == 'Stabilized':
 							scaleStr += 'At this rate, expect to see approximately ' + numFormat(newCases) + ' new cases and ' + numFormat(newDeaths) + ' deaths per week. '
-							if prevState in ['Recovering', 'Recovered']:
-								scaleStr += relapsestr
+							# if prevState in ['Recovering', 'Recovered']:
+							#		scaleStr += relapsestr
 						elif iState == 'Stabilizing':
 							scaleStr = 'At this growth rate, new infections and deaths will double every ' + str(doublingTime(r, infPeriod)) + ' days. '
-							if prevState in ['Recovering', 'Recovered', 'Stabilized']:
-								scaleStr += relapsestr
+							# if prevState in ['Recovering', 'Recovered', 'Stabilized']:
+							#		scaleStr += relapsestr
 						elif iState == 'Recovered':
 							scaleStr = 'No significant active infections remain. '
 						elif iState == 'Recovering':
@@ -228,23 +243,26 @@ EXPORT CalcMetrics := MODULE
 								else:
 									cmp = 'consistent with '
 								cfrstr += 'This is ' + cmp + 'the average CFR of ' + str(round(parent_cfr * 100.0, 2)) + '%. '
+								cfrRatio = cfr / parent_cfr
+								if cfrRatio > 3 or cfrRatio < 1/3.0:
+									cfrstr += 'It is likely that ' + location + ' uses a different reporting protocol than its peers.  '
 							outstr += cfrstr
 						sdistr = ''
 						if sdi < -.1:
-							sdistr = 'The Short-Term Indicator(STI) suggests that the infection is likely to worsen over the course of the next few days.'
+							sdistr = 'The Short-Term Indicator suggests that the infection is likely to worsen over the course of the next few days.'
 						elif sdi > .1:
 							sdistr = 'The Short-Term Indicator(STI) suggests that the infection is likely to slow somewhat over the next few days.'
 						outstr += sdistr
 						ewistr = ''
 						if ewi < -.5:
-							ewistr = 'The Early Warning Indicator (' + str(ewi) + ') indicates that a significant increase in infection growth rate is imminent. '
+							ewistr = 'The Early Warning Indicator at ' + str(ewi) + ' implies that a significant increase in infection growth rate is imminent. '
 						elif ewi > .5:
-							ewistr = 'The Early Warning Indicator (' + str(ewi) + ') indicates that a slowdown in infection growth rate is imminent. '
+							ewistr = 'The Early Warning Indicator (' + str(ewi) + ') implies that a slowdown in infection growth rate is imminent. '
 						outstr += ewistr
 					return outstr
 				ENDEMBED;
 
-        statsE := DailyStats(stats);
+        statsE := DailyStats(stats, asOfDate);
         // Now combine the records for each week.
         // First add a period to records for each state
         statsGrpd0 := GROUP(statsE, location);
@@ -343,7 +361,7 @@ EXPORT CalcMetrics := MODULE
             SELF.iState := MAP(
                 //prevState in ['Recovered', 'Recovering'] AND R1 >= 1.1 => 'Regressing',
                 prevState = 'Initial' AND r.active = 0 => 'Initial',
-                R1 >= 1.5 AND r.active >= 1 AND r.active < minActive => 'Emerging',
+                prevState in ['Initial', 'Recovered', 'Recovering'] AND R1 > 1.1 AND r.active >= 1 AND r.active < minActive => 'Emerging',
                 R1 >= 1.5 => 'Spreading',
                 R1 >= 1.1 AND R1 < 1.5 => 'Stabilizing',
                 R1 >= .9 AND R1 < 1.1 => 'Stabilized',
