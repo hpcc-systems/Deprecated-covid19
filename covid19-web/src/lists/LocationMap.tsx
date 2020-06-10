@@ -59,6 +59,7 @@ export default function LocationMap(props: LocationMapProps) {
     const [showLocationDetails, setShowLocationDetails] =
         useState<any>({visible: false, location: '', locationType: ''});
 
+
     function toMapData(data: any) {
         let mapData: Map<string, any> = new Map();
 
@@ -138,6 +139,133 @@ export default function LocationMap(props: LocationMapProps) {
         }
     }
 
+    const renderScaleTitle = () => {
+        switch (heatMapType) {
+            case 'cases': return 'Total Cases - Scale';
+            case 'deaths': return 'Total Deaths - Scale';
+            case 'new_cases': return 'New Cases - Scale';
+            case 'new_deaths': return 'New Deaths - Scale';
+            case 'status': return 'Spreading Model - Scale';
+            default: return '';
+        }
+    }
+
+    const renderScale = () => {
+        function statusScale() {
+
+            return <div style={{width: 250, paddingLeft: 10}}>
+                <table cellPadding={5}>
+                    <tr style={{}}>
+                        <td>Initial or Recovered</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#1a9850"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Recovering</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#66bd63"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Stabilized</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fee08b"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Stabilizing</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fdae61"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Emerging</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#d73027"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Spreading or Regressing</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#a50026"}}/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+        function format(d: number) {
+            return Math.trunc(d).toLocaleString();
+        }
+
+        function statsScale(d: number, label: string) {
+            // return d >= 0.9 ? '#a50026' :
+            //     d > 0.6 ? '#d73027' :
+            //         d > 0.4 ? '#fdae61' :
+            //             d > 0.2 ? '#fee08b' :
+            //                 d > 0.1 ? '#66bd63' :
+            //                     '#1a9850';
+
+            return <div style={{width: 250, paddingLeft: 10}}>
+                <table cellPadding={5}>
+                    <tr style={{}}>
+                        <td>Less than {format(d * 0.1)}</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#1a9850"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{format(d * 0.1 + 1)}  to  {format(d * 0.2)}</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#66bd63"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{format(d * 0.2 + 1)}  to  {format(d * 0.4)}</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fee08b"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{format(d * 0.4 + 1)}  to  {format(d * 0.6)}</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fdae61"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{format(d * 0.6 + 1)}  to  {format(d * 0.9)}</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#d73027"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Greater than {format(d * 0.9)}</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#a50026"}}/>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        }
+
+
+        switch (heatMapType) {
+            case 'cases':
+                return statsScale(summaryData.current.casesMax, 'Cases');
+            case 'new_cases':
+                return statsScale(summaryData.current.newCasesMax, 'New Cases');
+            case 'deaths':
+                return statsScale(summaryData.current.deathsMax, 'Deaths');
+            case 'new_deaths':
+                return statsScale(summaryData.current.newDeathsMax, 'New Deaths');
+            case 'status':
+                return statusScale()
+        }
+
+    }
+
     const renderToolTipHeader = () => {
         let row: any = toolTipRow;
         if (row) {
@@ -146,6 +274,8 @@ export default function LocationMap(props: LocationMapProps) {
             return ''
         }
     }
+
+
     const renderToolTip = () => {
         let row: any = toolTipRow;
         if (row) {
@@ -305,20 +435,29 @@ export default function LocationMap(props: LocationMapProps) {
                 </Descriptions>
 
             </PageHeader>
+            <Row>
+                <Col span={20}>
+                    <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
+                                 value={heatMapType}>
+                        <Space direction={'horizontal'}>
+                            <Radio.Button value={'status'}>Spreading Model</Radio.Button>
+                            <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
+                            <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
+                            <Radio.Button value={'cases'}>Total Cases</Radio.Button>
+                            <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
+                        </Space>
 
-            <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
-                         value={heatMapType} >
-                <Space direction={'horizontal'}>
-                    <Radio.Button value={'status'}>Spreading Model</Radio.Button>
-                    <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
-                    <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
-                    <Radio.Button value={'cases'}>Total Cases</Radio.Button>
-                    <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
-                </Space>
-            </Radio.Group>
+                    </Radio.Group>
+                </Col>
+                <Col span={4}>
+                    <Popover content={renderScale()} title={renderScaleTitle()} >
+                        <Button type={"link"} style={{alignSelf: "right"}}>{renderScaleTitle()}</Button>
+                    </Popover>
+                </Col>
+            </Row>
 
             <Popover content={renderToolTip()} title={renderToolTipHeader()}
-                     placement={"rightBottom"} visible={tooltipVisible} >
+                     placement={"rightBottom"} visible={tooltipVisible}>
                 <div style={{height: 5}}/>
             </Popover>
 
