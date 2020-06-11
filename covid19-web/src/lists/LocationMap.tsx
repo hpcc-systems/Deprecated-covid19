@@ -438,22 +438,22 @@ export default function LocationMap(props: LocationMapProps) {
 
             </PageHeader>
             <Row>
-                <Col span={20}>
+                <Col span={21}>
                     <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                                  value={heatMapType}>
                         <Space direction={'horizontal'}>
-                            <Radio.Button value={'status'}>Spreading Model</Radio.Button>
-                            <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
-                            <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
-                            <Radio.Button value={'cases'}>Total Cases</Radio.Button>
-                            <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
+                            <Radio value={'status'}>Spreading Model</Radio>
+                            <Radio value={'new_cases'}>New Cases</Radio>
+                            <Radio value={'new_deaths'}>New Deaths</Radio>
+                            <Radio value={'cases'}>Total Cases</Radio>
+                            <Radio value={'deaths'}>Total Deaths</Radio>
                         </Space>
 
                     </Radio.Group>
                 </Col>
-                <Col span={4}>
+                <Col span={3}>
                     <Popover content={renderScale()} title={renderScaleTitle()} >
-                        <Button type={"link"} style={{alignSelf: "right"}}>{renderScaleTitle()}</Button>
+                        <Button  style={{alignSelf: "right"}}>{renderScaleTitle()}</Button>
                     </Popover>
                 </Col>
             </Row>
