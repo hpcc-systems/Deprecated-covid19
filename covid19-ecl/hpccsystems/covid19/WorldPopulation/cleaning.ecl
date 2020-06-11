@@ -39,7 +39,7 @@ worldpopgender_clean := PROJECT(worldpopgender_2019,
                    SELF.popDensity := (REAL)LEFT.PopDensity * 1000,
                    SELF := LEFT
                    ));
-// OUTPUT(worldpopgender_clean,, '~hpccsystems::covid19::file::public::worldpopulation::population.flat' );
+OUTPUT(worldpopgender_clean,, '~hpccsystems::covid19::file::public::worldpopulation::population_gender.flat' );
 
 
 l_worldpopage := RECORD
@@ -83,7 +83,7 @@ worldpopage_clean := PROJECT(worldpopage_2019,
                    SELF.PopTotal   := (INTEGER) (LEFT.PopTotal )  * 1000,
                    SELF := LEFT
                    ));
-OUTPUT(worldpopage_clean,, '~hpccsystems::covid19::file::public::worldpopulation::worldpopulation_age.flat' );
+OUTPUT(worldpopage_clean,, '~hpccsystems::covid19::file::public::worldpopulation::population_age.flat' );
 
 
 // OUTPUT(worldpopage_clean );
