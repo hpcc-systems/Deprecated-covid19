@@ -38,10 +38,10 @@ thingsToDo := ORDERED
         KUtils.genInstanceID;
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
+        RunOrPublishByName('global_metrics', 'RUN');
         RunOrPublishByName('metrics_by_country', 'RUN');
         RunOrPublishByName('metrics_by_us_states', 'RUN');
         RunOrPublishByName('metrics_by_us_county', 'RUN');
-        RunOrPublishByName('global_metrics', 'RUN');
         RunOrPublishByName('FormateWeeklyMetrics', 'RUN');
         RunOrPublishByName('hpccsystems_covid19_query_counties_map');
         RunOrPublishByName('hpccsystems_covid19_query_countries_map');
@@ -56,5 +56,5 @@ thingsToDo := ORDERED
              
     );
 
-// thingsToDo : WHEN(CRON('0 0-23/6 * * *'));
-thingsToDo;
+thingsToDo : WHEN(CRON('0 0-23/6 * * *'));
+// thingsToDo;
