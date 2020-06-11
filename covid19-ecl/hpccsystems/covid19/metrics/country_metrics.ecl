@@ -10,6 +10,7 @@ metric_t := Types.metric_t;
 statsRec := Types.statsRec;
 metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
+metricsEvolRec := Types.metricsEvolRec;
 CalcMetrics := COVID19.CalcMetrics;
 
 minActive := 200;  // Minimum cases to consider a location active.
@@ -87,8 +88,28 @@ metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData, minActive, worldCFR);
 metrics1 := metrics0(period != 1 OR endDate > 20200401);
 metrics := metrics1;
 
+
+
 OUTPUT(metrics, ALL, NAMED('MetricsByWeek'));
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat', Thor, OVERWRITE);
+
+allDates0 := DEDUP(SORT(statsE, -date), date)[..10];
+allDates := TABLE(allDates0, {UNSIGNED date := date});
+OUTPUT(allDates0, NAMED('AllDates'));
+tempRec := {UNSIGNED asOfDate, DATASET(MetricsRec) metrics};
+
+tempRec getEvol({UNSIGNED date} datRec) := TRANSFORM
+	metr := CalcMetrics.WeeklyMetrics(statsData, popData, minActive, worldCFR, datRec.date);
+	SELF.asOfDate := datRec.date;
+	SELF.metrics := metr(period = 1);
+END;
+
+evol0 := PROJECT(allDates, getEvol(LEFT));
+
+evol1 := NORMALIZE(evol0, LEFT.metrics, TRANSFORM(metricsEvolRec, SELF.asOfDate := LEFT.asOfDate, SELF := RIGHT));
+evol := SORT(evol1, location, -asOfDate);
+
+OUTPUT(evol, {location, asOfDate, iState, active, r, cR, mR, sdIndicator, medIndicator, sti, commentary}, ALL, NAMED('MetricsEvolution'));
 sortedByCR := SORT(metrics, period, -cR, location);
 OUTPUT(sortedByCR, ALL, NAMED('metricsByCR'));
 sortedByMR := SORT(metrics, period, -mR, location);
