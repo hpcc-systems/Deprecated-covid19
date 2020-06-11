@@ -58,10 +58,14 @@ EXPORT Types := MODULE
         metric_t cR_old := 0;
 				STRING prevState := '';
 				metric_t sti := 0; // Short term indicator
+				metric_t ewi := 0; // Early warning indicator
 				BOOLEAN wasRecovering := FALSE;
 				date_t surgeStart := '';
         count_t population :=0;
     END;
+		EXPORT metricsEvolRec := RECORD(metricsRec)
+			UNSIGNED asOfDate;
+		END;
     // Extended Stats Record
     EXPORT statsExtRec := RECORD(statsRec)
         UNSIGNED id;

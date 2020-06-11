@@ -4,6 +4,7 @@ import {Button, Col, Descriptions, Layout, PageHeader, Popover, Radio, Row, Spac
 import {QueryData} from "../components/QueryData";
 import OlMap from "../components/OlMap";
 import LocationDetails from "./LocationDetails";
+import MetricsTerms from "./MetricsTerms";
 
 
 interface LocationMapProps {
@@ -186,7 +187,7 @@ export default function LocationMap(props: LocationMapProps) {
                         </td>
                     </tr>
                     <tr>
-                        <td>Spreading or Regressing</td>
+                        <td>Spreading</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#a50026"}}/>
                         </td>
@@ -420,7 +421,8 @@ export default function LocationMap(props: LocationMapProps) {
     return (
         <Layout style={{padding: 5}}>
             <PageHeader title={props.title} subTitle={props.description}
-                        extra={<Button type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>}
+                        extra={[<Popover placement={"left"} title={"Metrics Terms"} content={<MetricsTerms/>} trigger={"click"}><Button>Metrics Terms</Button></Popover>,
+                                <Button type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>]}
 
             >
                 <Descriptions size="small" column={1} bordered>
@@ -436,22 +438,22 @@ export default function LocationMap(props: LocationMapProps) {
 
             </PageHeader>
             <Row>
-                <Col span={20}>
+                <Col span={21}>
                     <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                                  value={heatMapType}>
                         <Space direction={'horizontal'}>
-                            <Radio.Button value={'status'}>Spreading Model</Radio.Button>
-                            <Radio.Button value={'new_cases'}>New Cases</Radio.Button>
-                            <Radio.Button value={'new_deaths'}>New Deaths</Radio.Button>
-                            <Radio.Button value={'cases'}>Total Cases</Radio.Button>
-                            <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
+                            <Radio value={'status'}>Spreading Model</Radio>
+                            <Radio value={'new_cases'}>New Cases</Radio>
+                            <Radio value={'new_deaths'}>New Deaths</Radio>
+                            <Radio value={'cases'}>Total Cases</Radio>
+                            <Radio value={'deaths'}>Total Deaths</Radio>
                         </Space>
 
                     </Radio.Group>
                 </Col>
-                <Col span={4}>
+                <Col span={3}>
                     <Popover content={renderScale()} title={renderScaleTitle()} >
-                        <Button type={"link"} style={{alignSelf: "right"}}>{renderScaleTitle()}</Button>
+                        <Button  style={{alignSelf: "right"}}>{renderScaleTitle()}</Button>
                     </Popover>
                 </Col>
             </Row>
