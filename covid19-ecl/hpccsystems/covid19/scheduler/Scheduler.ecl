@@ -42,7 +42,7 @@ thingsToDo := ORDERED
         RunOrPublishByName('metrics_by_country', 'RUN');
         RunOrPublishByName('metrics_by_us_states', 'RUN');
         RunOrPublishByName('metrics_by_us_county', 'RUN');
-        RunOrPublishByName('FormateWeeklyMetrics', 'RUN');
+        RunOrPublishByName('FormatWeeklyMetrics', 'RUN');
         RunOrPublishByName('hpccsystems_covid19_query_counties_map');
         RunOrPublishByName('hpccsystems_covid19_query_countries_map');
         RunOrPublishByName('hpccsystems_covid19_query_daily_metrics');
