@@ -37,7 +37,7 @@ EXPORT Types := MODULE
         metric_t sdIndicator := 0;
         metric_t medIndicator := 0;
         DECIMAL8_3 heatIndex := 0;
-        DECIMAL5_3 iMort;
+        DECIMAL5_3 cfr;
 				count_t infectionCount := 1;
         metric_t immunePct := 0;
         count_t newCases;
@@ -45,8 +45,8 @@ EXPORT Types := MODULE
 				count_t newCasesDaily;
 				count_t newDeathsDaily;
         count_t recovered;
-        REAL cases_per_capita := 0;
-        REAL deaths_per_capita := 0;
+        metric_t cases_per_capita := 0; // Per 100,000
+        metric_t deaths_per_capita := 0; // Per 100,000
         metric_t cmRatio := 0;
         metric_t dcR := 0;
         metric_t dmR := 0;
@@ -61,6 +61,7 @@ EXPORT Types := MODULE
 				metric_t ewi := 0; // Early warning indicator
 				BOOLEAN wasRecovering := FALSE;
 				date_t surgeStart := '';
+				DECIMAL5_3 currCFR := 0;
         count_t population :=0;
     END;
 		EXPORT metricsEvolRec := RECORD(metricsRec)
@@ -79,7 +80,7 @@ EXPORT Types := MODULE
         count_t active := 0;
         count_t prevActive := 0;
         count_t recovered := 0;
-        DECIMAL5_3 iMort := 0;
+        DECIMAL5_3 cfr := 0;
     END;
     // Population Record
     EXPORT populationRec := RECORD

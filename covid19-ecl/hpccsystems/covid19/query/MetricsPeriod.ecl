@@ -7,7 +7,7 @@ _periodFilter := 1:STORED('periodFilter');
 
 allData := CASE (_typeFilter, 'states' => metrics.statesAll, 'countries' => metrics.worldAll, 'counties' => metrics.countiesAll, metrics.statesAll);
 
-filtered := SORT(allData(period = _periodFilter),-heatindex);
+filtered := SORT(allData(period = _periodFilter and heatindex >= 1.0),-heatindex);
 
 
 OUTPUT(CHOOSEN(filtered, 10000),,NAMED('metrics_period'));

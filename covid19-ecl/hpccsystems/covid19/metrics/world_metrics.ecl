@@ -12,7 +12,8 @@ metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
 CalcMetrics := COVID19.CalcMetrics;
 
-minActive := 1000;  // Minimum cases to consider a location active.
+minSpreadingInfections := 1000;
+
 
 rawFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';
 
@@ -29,7 +30,7 @@ scRecord := RECORD
   unsigned4 recovered;
   unsigned4 active;
   string combined_key;
- END;
+END;
 
 // Filter county info
 rawData0 := DATASET(rawFilePath, scRecord, THOR);
@@ -63,7 +64,7 @@ OUTPUT(popData, NAMED('PopulationData'));
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_global.flat', Thor, OVERWRITE);
 
-metrics := CalcMetrics.WeeklyMetrics(statsData, popData, minActive);
+metrics := CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections);
 
 OUTPUT(metrics, ALL, NAMED('MetricsByWeek'));
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_global.flat', Thor, OVERWRITE);

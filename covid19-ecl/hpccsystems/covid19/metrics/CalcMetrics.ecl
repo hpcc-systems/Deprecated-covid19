@@ -13,6 +13,7 @@ EXPORT CalcMetrics := MODULE
 		SHARED periodDays := 7;
 		SHARED scaleFactor := 5;  // Lower will give more hot spots.
 		SHARED minActDefault := 20; // Minimum cases to be considered emerging, by default.
+		SHARED minActPer100k := 30; // Minimum active per 100K population to be considered emerging.
     EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats, UNSIGNED asOfDate = 0) := FUNCTION
 				stats0 := IF(asOfDate = 0, stats, stats(date < asOfDate));
         statsS := SORT(stats0, location, -date);
@@ -37,9 +38,8 @@ EXPORT CalcMetrics := MODULE
                             SELF.active := IF (LEFT.cumCases < RIGHT.cumCases, LEFT.cumCases, LEFT.cumCases - RIGHT.cumCases),
                             SELF.recovered := IF(RIGHT.cumCases < LEFT.cumDeaths, 0, RIGHT.cumCases - LEFT.cumDeaths),
                             SELF.prevActive := LEFT.prevCases - RIGHT.prevCases,
-                            SELF.iMort := LEFT.cumDeaths / RIGHT.cumCases,
+                            SELF.cfr := LEFT.cumDeaths / RIGHT.cumCases,
                             SELF := LEFT), LEFT OUTER);
-
         statsE := statsE3;
         RETURN statsE;
     END;
@@ -80,14 +80,8 @@ EXPORT CalcMetrics := MODULE
 						periodDays = rec[33]
 						prevState = rec[34].strip()
 						sti = rec[35]
+						ewi = rec[36]
 						surgeStart = rec[38]
-						# Early Warning Indicator (EWI)
-						ewi = 0.0
-						if sdi < -.2 and mdi > .2:
-							ewi = sdi - mdi
-						elif sdi > .2 and mdi < -.2:
-							ewi = sdi - mdi
-						ewi = round(ewi, 2)
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -137,7 +131,7 @@ EXPORT CalcMetrics := MODULE
 							outstr += rstr
 						scaleStr = 'There are currently ' + numFormat(active) + ' active cases. '
 						if iState == 'Emerging':
-							scaleStr = 'This outbreak is based on a small number of detected infections (' + numFormat(active) + ' cases) and may be quickly contained by appropriate measures. '
+							scaleStr = 'This outbreak is based on a small number of active infections (' + numFormat(active) + ') and may be contained by appropriate measures. '
 							# if prevState in ['Recovered', 'Recovering', 'Stabilized', 'Stabilizing']:
 							#		scaleStr += relapsestr
 						elif iState == 'Spreading':
@@ -291,7 +285,7 @@ EXPORT CalcMetrics := MODULE
             SELF.newDeathsDaily := IF(lastM.cumDeaths > lastM.prevDeaths, lastM.cumDeaths - lastM.prevDeaths, 0);
             SELF.active := lastC.active,
             SELF.recovered := lastC.recovered,
-            SELF.iMort := lastC.iMort,
+            SELF.cfr := lastC.cfr,
 						cGrowth := SELF.newCases / firstC.active;
             cR_old := POWER(cGrowth, InfectionPeriod/cCount);  // Old CR calc might be useful later
             SELF.cR_old := MIN(cR_old, 9.99);
@@ -300,9 +294,10 @@ EXPORT CalcMetrics := MODULE
         metrics0 := ROLLUP(statsGrpd, GROUP, doRollup(LEFT, ROWS(LEFT)));
         metrics1 := JOIN(metrics0, pops, LEFT.location = RIGHT.location, TRANSFORM(RECORDOF(LEFT),
                                     SELF.population := IF (RIGHT.population > 0, RIGHT.population, 1),
-                                    SELF.cases_per_capita := LEFT.cases / (SELF.population),
-                                    SELF.deaths_per_capita := LEFT.deaths / (SELF.population),
-                                    SELF.immunePct := LEFT.recovered / SELF.population;
+																		
+                                    SELF.cases_per_capita := IF(SELF.population > 1, LEFT.cases * 100000 / SELF.population, 0),
+                                    SELF.deaths_per_capita := IF(SELF.population > 1, LEFT.deaths * 100000 / SELF.population, 0),
+                                    SELF.immunePct := IF(SELF.population > 1, LEFT.recovered / SELF.population * 100, 0),
                                     SELF := LEFT), LEFT OUTER);
         metricsRec calc1(metricsRec l, metricsRec r) := TRANSFORM
 						prevNewCases := IF(r.newCases > 0, r.newCases, 1);
@@ -338,6 +333,10 @@ EXPORT CalcMetrics := MODULE
 						// Convert from ratio to indicator  (Negative is bad -- more than average cases on last day)
 						STI := IF(STI0 <= 1.0, (1 / STI0) - 1, -(STI0 - 1));
 						SELF.sti := STI;
+						SELF.currCFR := l.newDeaths / r.active;
+						EWI := IF(SELF.sdIndicator < -.2 AND SELF.medIndicator > .2, SELF.sdIndicator - SELF.medIndicator,
+											IF(SELF.sdIndicator > .2 AND SELF.medIndicator < -.2, SELF.sdIndicator - SELF.medIndicator, 0));
+						SELF.ewi := EWI;
             SELF := l;
         END;
 				// Join twice to force all of the dependent calculations to be there.
@@ -358,15 +357,17 @@ EXPORT CalcMetrics := MODULE
 						SELF.prevState := prevState;
 						prevInfectCount := IF(l.location = r.location, l.infectionCount, 1);
 						R1 := r.R;
+						isOverMin := IF(r.population > 1, r.active / r.population * 100000 > minActPer100k OR r.active > minActive, r.active > minActive);
             SELF.iState := MAP(
                 //prevState in ['Recovered', 'Recovering'] AND R1 >= 1.1 => 'Regressing',
                 prevState = 'Initial' AND r.active = 0 => 'Initial',
-                prevState in ['Initial', 'Recovered', 'Recovering'] AND R1 > 1.1 AND r.active >= 1 AND r.active < minActive => 'Emerging',
+                //prevState in ['Initial', 'Recovered', 'Recovering'] AND R1 > 1.1 AND r.active >= 1 AND r.active < minActive => 'Emerging',
+                prevState in ['Initial', 'Recovered', 'Recovering', 'Emerging'] AND R1 > 1.1 AND r.active >= 1 AND NOT isOverMin => 'Emerging',
                 R1 >= 1.5 => 'Spreading',
                 R1 >= 1.1 AND R1 < 1.5 => 'Stabilizing',
                 R1 >= .9 AND R1 < 1.1 => 'Stabilized',
-                prevState != 'Initial' AND (R1 > .1 OR r.active > minActive) => 'Recovering',
-                prevState != 'Initial' AND R1 <= .1 AND r.active <= minActive => 'Recovered',
+                prevState != 'Initial' AND (R1 > .1 OR isOverMin => 'Recovering',
+                prevState != 'Initial' AND R1 <= .1 AND NOT isOverMin => 'Recovered',
                 'Initial');
 						wasRecovering := IF(l.location = r.location, IF(SELF.iState IN ['Recovered', 'Recovering'], TRUE, l.wasRecovering), FALSE);
 						SELF.infectionCount := IF(wasRecovering AND self.iState IN ['Stabilizing', 'Emerging', 'Spreading'], prevInfectCount + 1, prevInfectCount);
