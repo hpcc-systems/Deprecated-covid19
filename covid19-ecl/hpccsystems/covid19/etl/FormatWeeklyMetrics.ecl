@@ -25,18 +25,21 @@ formatAllMetrics(DATASET(Types.metricsRec) metricsData, STRING destinationFileSc
                                                                       'Spreading' => '6-Spreading',
                                                                       'Regressing' => '7-Regressing', '8-Unknown');
                                                        SELF := LEFT;
-                                                        
+                                                         
                                     ));
         
 
         locationsCatalog := TABLE(DEDUP(SORT(projectedMetrics(period=1), location), location), {STRING50 id:= TRIM(location), STRING50 title:= TRIM(location)}); 
         defaultLocations := TABLE(TOPN(projectedMetrics(period=1),50,-heatindex), {location});
 
-        metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),7,TRANSFORM
+        metricsByLocation := NORMALIZE(SORT(projectedMetrics,-heatindex),9,TRANSFORM
                                         (
                                             metrics.groupedLayout,
-                                            SELF.measure := CASE (COUNTER, 1 => 'Infection Rate(R)', 2 => 'Cases Rate (cR)', 3 => 'Mortality Rate(mR)', 4 => 'Social Distance Indicator', 5 => 'Medical Indicator', 6 => 'Case Fatality Rate' ,7 => 'Heat Index' ,''),
-                                            SELF.value := CASE (COUNTER, 1 => LEFT.r, 2 => LEFT.cr, 3 => LEFT.mr, 4 => LEFT.sdIndicator, 5 => LEFT.medIndicator, 6 => LEFT.imort, 7 => LEFT.heatindex,0),
+                                            SELF.measure := CASE (COUNTER, 1 => 'Infection Rate(R)', 2 => 'Cases Rate (cR)', 3 => 'Mortality Rate(mR)', 
+                                                                 4 => 'Social Distance Indicator', 5 => 'Medical Indicator', 6 => 'Case Fatality Rate' ,
+                                                                 7 => 'Heat Index' ,8 => 'Short Term Indicator', 9 => 'Early Warning Indicator', ''),
+                                            SELF.value := CASE (COUNTER, 1 => LEFT.r, 2 => LEFT.cr, 3 => LEFT.mr, 4 => LEFT.sdIndicator, 5 => LEFT.medIndicator, 
+                                                                6 => LEFT.cfr, 7 => LEFT.heatindex, 8 => LEFT.sti, 9 => LEFT.ewi,0),
                                             SELF.locationstatus := TRIM(LEFT.location) + ' [' + TRIM(LEFT.istate) + ']',
                                             SELF := LEFT;
                                         )
