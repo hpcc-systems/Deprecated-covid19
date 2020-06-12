@@ -31,7 +31,7 @@ worldpopgender_2019 := worldpopgender_raw(time = '2019');
 
 worldpopgender_clean := PROJECT(worldpopgender_2019,
                    TRANSFORM(l_worldpopgender_clean,
-                   SELF.Location   := STD.Str.ToUpperCase(LEFT.Location),
+                   SELF.Location   := TRIM(STD.Str.ToUpperCase(LEFT.Location), LEFT, RIGHT),
                    SELF.time       := (INTEGER) LEFT.time,
                    SELF.popMale    := (INTEGER) (LEFT.PopMale  )  * 1000,
                    SELF.popFemale  := (INTEGER) (LEFT.PopFemale)  * 1000,
@@ -39,7 +39,7 @@ worldpopgender_clean := PROJECT(worldpopgender_2019,
                    SELF.popDensity := (REAL)LEFT.PopDensity * 1000,
                    SELF := LEFT
                    ));
-OUTPUT(worldpopgender_clean,, '~hpccsystems::covid19::file::public::worldpopulation::population_gender.flat' );
+OUTPUT(worldpopgender_clean,, '~hpccsystems::covid19::file::public::worldpopulation::population_gender.flat', OVERWRITE );
 
 
 l_worldpopage := RECORD
@@ -76,14 +76,14 @@ worldpopage_2019 := worldpopage_raw( time = '2019');
 
 worldpopage_clean := PROJECT(worldpopage_2019,
                    TRANSFORM(l_worldpopage_clean,
-                   SELF.Location   := STD.Str.ToUpperCase(LEFT.Location),
+                   SELF.Location   := TRIM(STD.Str.ToUpperCase(LEFT.Location), LEFT, RIGHT),
                    SELF.time       := (INTEGER) LEFT.time,
                    SELF.popMale    := (INTEGER) (LEFT.PopMale  )  * 1000,
                    SELF.popFemale  := (INTEGER) (LEFT.PopFemale)  * 1000,
                    SELF.PopTotal   := (INTEGER) (LEFT.PopTotal )  * 1000,
                    SELF := LEFT
                    ));
-OUTPUT(worldpopage_clean,, '~hpccsystems::covid19::file::public::worldpopulation::population_age.flat' );
+OUTPUT(worldpopage_clean,, '~hpccsystems::covid19::file::public::worldpopulation::population_age.flat' , OVERWRITE);
 
 
 // OUTPUT(worldpopage_clean );

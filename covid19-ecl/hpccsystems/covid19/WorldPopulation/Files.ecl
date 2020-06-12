@@ -31,7 +31,7 @@ EXPORT Files := MODULE
     // Fileter time = 2019
     EXPORT worldpopgender_2019 := worldpopgender_raw(time = '2019');
 
-    EXPORT worldpopgender := DATASET('~hpccsystems::covid19::file::public::worldpopulation::population.flat', l_worldpopgender_clean, THOR);
+    EXPORT worldpopgender := DATASET('~hpccsystems::covid19::file::public::worldpopulation::population_gender.flat', l_worldpopgender_clean, THOR);
 
     EXPORT l_worldpopage := RECORD
         STRING LocID;
