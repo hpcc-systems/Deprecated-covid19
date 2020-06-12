@@ -9,6 +9,8 @@ metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
 CalcMetrics := COVID19.CalcMetrics;
 
+minSpreadingInfections := 100;
+
 countyFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
 _stateFilter := '':STORED('stateCountyFilter'); 
 
@@ -60,7 +62,7 @@ OUTPUT(popData, NAMED('PopulationData'));
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_us_county.flat', Thor, OVERWRITE);
 
-metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, 10);
+metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections);
 
 
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat', Thor, OVERWRITE);

@@ -13,11 +13,13 @@ populationRec := Types.populationRec;
 metricsEvolRec := Types.metricsEvolRec;
 CalcMetrics := COVID19.CalcMetrics;
 
-minActive := 200;  // Minimum cases to consider a location active.
+minSpreadingInfections := 2000;
 
 rawFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';
 
 worldMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_global.flat';
+
+populationPath := '~hpccsystems::covid19::file::public::worldpopulation::population_gender.flat';
 
 scRecord := RECORD
   string50 fips;
@@ -33,6 +35,16 @@ scRecord := RECORD
   REAL8 active;
   string combined_key;
  END;
+
+rawPopRecord := RECORD
+	string locid;
+	string location;
+	unsigned4 time;
+	string agegrp;
+	unsigned8 popmale;
+	unsigned8 popfemale;
+	unsigned8 poptotal;
+END;
 
 _countryFilter := '':STORED('countryFilter'); 
 
@@ -70,19 +82,22 @@ statsData := PROJECT(rollupDat, TRANSFORM(statsRec,
 
 OUTPUT(statsData, ALL, NAMED('InputStats'));
 
-popData := DATASET([], populationRec);
+popData0 := DATASET(populationPath, rawPopRecord, THOR);
+popData1 := DEDUP(SORT(popData0, location, -time), location);
+popData := PROJECT(popData1, TRANSFORM(populationRec, SELF.location := LEFT.location,
+																											SELF.population := LEFT.poptotal));
 
 OUTPUT(popData, NAMED('PopulationData'));
 
 worldMetrics := DATASET(worldMetricsPath, metricsRec, THOR);
-worldCFR := worldMetrics(period=1)[1].iMort;
+worldCFR := worldMetrics(period=1)[1].cfr;
 OUTPUT(worldCFR, NAMED('WorldCFR'));
 
 // Extended Statistics
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_country.flat', Thor, OVERWRITE);
 
-metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData, minActive, worldCFR);
+metrics0 := CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections, worldCFR);
 
 // Filter out some bad country names that only had data for one period
 metrics1 := metrics0(period != 1 OR endDate > 20200401);
@@ -99,7 +114,7 @@ OUTPUT(allDates0, NAMED('AllDates'));
 tempRec := {UNSIGNED asOfDate, DATASET(MetricsRec) metrics};
 
 tempRec getEvol({UNSIGNED date} datRec) := TRANSFORM
-	metr := CalcMetrics.WeeklyMetrics(statsData, popData, minActive, worldCFR, datRec.date);
+	metr := CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections, worldCFR, datRec.date);
 	SELF.asOfDate := datRec.date;
 	SELF.metrics := metr(period = 1);
 END;
