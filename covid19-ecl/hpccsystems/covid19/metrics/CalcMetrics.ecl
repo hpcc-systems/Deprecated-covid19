@@ -366,7 +366,7 @@ EXPORT CalcMetrics := MODULE
                 R1 >= 1.5 => 'Spreading',
                 R1 >= 1.1 AND R1 < 1.5 => 'Stabilizing',
                 R1 >= .9 AND R1 < 1.1 => 'Stabilized',
-                prevState != 'Initial' AND (R1 > .1 OR isOverMin => 'Recovering',
+                prevState != 'Initial' AND (R1 > .1 OR isOverMin) => 'Recovering',
                 prevState != 'Initial' AND R1 <= .1 AND NOT isOverMin => 'Recovered',
                 'Initial');
 						wasRecovering := IF(l.location = r.location, IF(SELF.iState IN ['Recovered', 'Recovering'], TRUE, l.wasRecovering), FALSE);
