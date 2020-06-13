@@ -3,11 +3,11 @@
 IMPORT hpccsystems.covid19.file.public.WeeklyMetrics as metrics;
 
 _typeFilter := 'states':STORED('typeFilter');
-_periodFilter := 1:STORED('periodFilter');
+_heatIndex := 1:STORED('heatIndex');
 
 allData := CASE (_typeFilter, 'states' => metrics.statesAll, 'countries' => metrics.worldAll, 'counties' => metrics.countiesAll, metrics.statesAll);
 
-filtered := SORT(allData(period = _periodFilter and heatindex >= 1.0),-heatindex);
+filtered := SORT(allData(period = 1 and heatindex >= _heatIndex),-heatindex);   
 
 
 OUTPUT(CHOOSEN(filtered, 10000),,NAMED('metrics_period'));

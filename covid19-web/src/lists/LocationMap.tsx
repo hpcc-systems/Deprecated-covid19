@@ -276,69 +276,69 @@ export default function LocationMap(props: LocationMapProps) {
         }
     }
 
-
+    const renderOptionalValue= (value: any) => {
+        if (value) {
+            return '(' + value + ' per 100K)'
+        } else {
+            return ''
+        }
+    }
     const renderToolTip = () => {
         let row: any = toolTipRow;
         if (row) {
 
-            return <div style={{width: 300, paddingLeft: 10}}>
+            return <div style={{width: 400, paddingLeft: 10}}>
                 <Row>
-                    <Col span={24}><b>Daily Stats</b></Col>
+                    <Col span={10}><b>Daily Stats</b></Col>
+                    <Col><b>{row.date_string}</b></Col>
                 </Row>
                 <div style={{height: 20}}/>
                 <Row>
-                    <Col span={24}><b>{row.date_string}</b></Col>
-                </Row>
-                <div style={{height: 20}}/>
-                <Row>
-                    <Col span={12}>New Cases</Col>
+                    <Col span={10}>New Cases</Col>
                     <Col span={4}><b>{formatNumber(row.new_cases)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>New Deaths</Col>
+                    <Col span={10}>New Deaths</Col>
                     <Col><b>{formatNumber(row.new_deaths)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Active</Col>
+                    <Col span={10}>Active</Col>
                     <Col><b>{formatNumber(row.active)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Recovered</Col>
+                    <Col span={10}>Recovered</Col>
                     <Col><b>{formatNumber(row.recovered)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Total Cases</Col>
-                    <Col><b>{formatNumber(row.cases)}</b></Col>
+                    <Col span={10}>Total Cases</Col>
+                    <Col><b>{formatNumber(row.cases)} {renderOptionalValue(row.cases_per_capita)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Total Deaths</Col>
-                    <Col><b>{formatNumber(row.deaths)}</b></Col>
+                    <Col span={10}>Total Deaths</Col>
+                    <Col><b>{formatNumber(row.deaths)} {renderOptionalValue(row.deaths_per_capita)}</b></Col>
                 </Row>
 
                 <div style={{height: 20}}/>
 
                 <Row>
-                    <Col span={24}><b>Weekly Stats</b></Col>
+                    <Col span={10}><b>Period Metrics</b></Col>
+                    <Col><b>{row.period_string}</b></Col>
                 </Row>
                 <div style={{height: 20}}/>
                 <Row>
-                    <Col span={24}><b>{row.period_string}</b></Col>
-                </Row>
-                <div style={{height: 20}}/>
-                <Row>
-                    <Col span={12}>New Cases</Col>
+                    <Col span={10}>Period New Cases</Col>
                     <Col span={4}><b>{formatNumber(row.period_new_cases)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>New Deaths</Col>
+                    <Col span={10}>Period New Deaths</Col>
                     <Col><b>{formatNumber(row.period_new_deaths)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Infection Rate (R)</Col>
+                    <Col span={10}>Infection Rate (R)</Col>
                     <Col><b>{row.r}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Status</Col>
+                    <Col span={10}>Status</Col>
                     <Col><b>{row.status}</b></Col>
                 </Row>
             </div>

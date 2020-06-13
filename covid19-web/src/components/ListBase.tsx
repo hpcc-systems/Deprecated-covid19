@@ -1,7 +1,7 @@
 import React from "react";
 import ListService, {ListMetadata} from "../services/ListService";
 import {Layout} from "antd";
-import AllMetrics from "../lists/AllMetrics";
+import Hotspots from "../lists/Hotspots";
 import LocationTrends from "../lists/LocationTrends";
 import LocationMap from "../lists/LocationMap";
 
@@ -11,7 +11,6 @@ const {Content} = Layout;
 interface ListProps {
     listId: string
 }
-
 
 
 interface ListState {
@@ -63,13 +62,13 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                                                description={this.state.listMetadata.description} locationAlias={'State'}
                                                typeFilter={'states'}/>;
                     case 'us_states/states_metrics':
-                        return <AllMetrics key={'states-metrics'} locationAlias={'State'} typeFilter={'states'}
-                                           title={this.state.listMetadata.title}
-                                           description={this.state.listMetadata.description}/>;
+                        return <Hotspots key={'states-metrics'} locationAlias={'State'} typeFilter={'states'}
+                                         title={this.state.listMetadata.title}
+                                         description={this.state.listMetadata.description}/>;
                     case 'us_counties/counties_metrics':
-                        return <AllMetrics key={'counties'} locationAlias={'County'} typeFilter={'counties'}
-                                           title={this.state.listMetadata.title}
-                                           description={this.state.listMetadata.description}/>;
+                        return <Hotspots key={'counties'} locationAlias={'County'} typeFilter={'counties'}
+                                         title={this.state.listMetadata.title}
+                                         description={this.state.listMetadata.description}/>;
                     case 'us_counties/trends':
                         return <LocationTrends key={'states-trends'} title={this.state.listMetadata.title}
                                                description={this.state.listMetadata.description} locationAlias={'County'}
@@ -89,9 +88,9 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                                                description={this.state.listMetadata.description}
                                                locationAlias={'Country'} typeFilter={'countries'}/>;
                     case 'world_countries/countries_metrics':
-                        return <AllMetrics key={'countries-metrics'} locationAlias={'Country'} typeFilter={'countries'}
-                                           title={this.state.listMetadata.title}
-                                           description={this.state.listMetadata.description}/>
+                        return <Hotspots key={'countries-metrics'} locationAlias={'Country'} typeFilter={'countries'}
+                                         title={this.state.listMetadata.title}
+                                         description={this.state.listMetadata.description}/>
                     case 'world_countries/countries_map':
                         return <LocationMap key={'countries-map'} title={this.state.listMetadata.title}
                                             description={this.state.listMetadata.description}

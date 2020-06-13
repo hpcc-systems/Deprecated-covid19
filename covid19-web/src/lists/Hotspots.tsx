@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 
-import {Button, Descriptions, Layout, PageHeader, Table, Tabs} from "antd";
+import {Button, Col, Descriptions, Layout, PageHeader, Radio, Space, Table, Tabs} from "antd";
 
 import {QueryData} from "../components/QueryData";
 import {FilterRenderer} from "../components/FilterRenderer";
@@ -15,18 +15,18 @@ interface AllMetricsProps {
     locationAlias: string;
 }
 
-export default function AllMetrics(props: AllMetricsProps) {
+export default function Hotspots(props: AllMetricsProps) {
 
     const queryGrouped = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
     const queryPeriod = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
     const queryCatalog = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
-    const [queryLocationsFilter, setQueryLocationsFilter] = React.useState<Array<string>>([]);
-    const [queryPeriodFilter, setQueryPeriodFilter] = React.useState<string>('1');
+    //const [queryLocationsFilter, setQueryLocationsFilter] = React.useState<Array<string>>([]);
+    //const [queryPeriodFilter, setQueryPeriodFilter] = React.useState<string>('1');
 
-
+    const [heatIndex, setHeatIndex] = React.useState<number>(1);
     const [allMeasuresData, setAllMeasuresData] = React.useState<any>([]);
-    const [periodFilter, setPeriodFilter] = React.useState<string>('1');
-    const [periodsCatalog, setPeriodsCatalog] = React.useState<any>([]);
+    // const [periodFilter, setPeriodFilter] = React.useState<string>('1');
+    // const [periodsCatalog, setPeriodsCatalog] = React.useState<any>([]);
     const [dataLoadingStatus, setDataLoadingStatus] = React.useState<boolean>(false);
     const [tableFilterValue, setTableFilterValue] = React.useState<string>('');
 
@@ -34,94 +34,20 @@ export default function AllMetrics(props: AllMetricsProps) {
     const [showLocationDetails, setShowLocationDetails] =
         useState<any>({visible: false, location: '', locationType: ''});
 
-    function toLocationsFilter(data: any) {
-        let a: string[] = [];
-        if (data) {
-            data.forEach((item: any) => {
-                a.push(item.location);
-            })
-        }
-        return a;
-    }
-
 
     useEffect(() => {
-        //This will be called once. Maybe fetch the catalog info and defaults here
-        const fetchData = async () => {
-            let filters: Map<string, string> = new Map();
-            filters.set('typeFilter', props.typeFilter);
-
-            await queryCatalog.current.initData(filters);
-            setPeriodsCatalog(queryCatalog.current.getData('catalog_periods'));
-
-            await queryPeriod.current.initData(filters);
-
-            setAllMeasuresData(queryPeriod.current.getData('metrics_period'));
-            let lf = toLocationsFilter(queryPeriod.current.getData('default_locations'));
-            setQueryLocationsFilter(lf);
-
-        }
-
-        fetchData().then();
-    }, [props.typeFilter]); //This will be called only if the typeFilter changes. Should be only once.
-
-
-    useEffect(() => {
-        let filters: Map<string, string> = new Map();
-        filters.set('periodFilter', queryPeriodFilter);
-        filters.set('typeFilter', props.typeFilter);
-
-        queryPeriod.current.initData(filters).then(() => {
-            setAllMeasuresData(queryPeriod.current.getData('metrics_period'));
-            let lf = toLocationsFilter(queryPeriod.current.getData('default_locations'));
-            setQueryLocationsFilter(lf);
-        });
-    }, [queryPeriodFilter, props.typeFilter]);
-
-
-    useEffect(() => {
-
-        let filters: Map<string, string> = new Map();
-        filters.set('periodFilter', queryPeriodFilter);
-        filters.set('locationsFilter', stringArrayToString(queryLocationsFilter));
+        let filters: Map<string, any> = new Map();
+        filters.set('heatIndex', heatIndex);
         filters.set('typeFilter', props.typeFilter);
         setDataLoadingStatus(true);
-
-        if (queryLocationsFilter.length > 0) {
-            queryGrouped.current.initData(filters).then(() => {
-
-                setDataLoadingStatus(false);
-
-            });
-        } else {
-
+        queryPeriod.current.initData(filters).then(() => {
+            setAllMeasuresData(queryPeriod.current.getData('metrics_period'));
             setDataLoadingStatus(false);
-        }
-
-    }, [queryLocationsFilter, queryPeriodFilter, props.typeFilter])
-
-
-
-    const applyPeriodFilter = (value: any) => {
-        setQueryPeriodFilter(value);
-        setPeriodFilter(value);
-    }
+        });
+    }, [heatIndex, props.typeFilter]);
 
 
 
-    const stringArrayToString = (value: string[]) => {
-        let rslt = '';
-        if (value) {
-            value.forEach((item) => {
-                if (rslt === '') {
-                    rslt = item;
-                } else {
-                    rslt = rslt + ',' + item;
-                }
-            });
-        }
-        return rslt;
-    }
 
     function showDetail(record: any) {
         if (props.typeFilter !== 'counties') {
@@ -173,27 +99,31 @@ export default function AllMetrics(props: AllMetricsProps) {
 
 
 
-
-
     return (
 
         <Layout style={{padding: '20px'}}>
 
             <PageHeader title={props.title} subTitle={props.description}
             >
-                <Descriptions size="small" column={1}>
+                <Descriptions size="small" column={2}>
                     <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
-                    <Descriptions.Item label="Filters">Default filters select the top 10 locations by heat index and the current period. Use
-                        the Data & Location Filters tab to customize filters.</Descriptions.Item>
+                    <Descriptions.Item label="Filters">Filter by Hotspot > 1 or All. Then, further filter by location (partial text searches work)</Descriptions.Item>
                 </Descriptions>
             </PageHeader>
 
             <LocationDetails show={showLocationDetails}/>
 
-            <FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}
-                            mode={undefined}
-                            onFilterChange={(value) => applyPeriodFilter(value)}/>
+            {/*<FilterRenderer title={'Select a Period'} data={periodsCatalog} value={periodFilter}*/}
+            {/*                mode={undefined}*/}
+            {/*                onFilterChange={(value) => applyPeriodFilter(value)}/>*/}
+            <Radio.Group onChange={(e) => setHeatIndex(e.target.value)}
+                         value={heatIndex}>
+                <Space direction={'horizontal'}>
+                    <Radio value={1}>Heat Index > 1</Radio>
+                    <Radio value={0}>All</Radio>
+                </Space>
 
+            </Radio.Group>
             <div style={{height: 20}}/>
             <Search placeholder="Type location to search" onSearch={value => setTableFilterValue(value)} enterButton/>
 
