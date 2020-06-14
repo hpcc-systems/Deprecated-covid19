@@ -76,8 +76,25 @@ export default function LocationDetails(props: LocationDetailsProps) {
         setTableLocationFilterValue('');
     };
 
-    const chartModelData = [{"name": "Heat Index", "value": locationDetail("heatindex")},
-        {"name": "Case Fatality Rate", "value": locationDetail("imort")},
+    const renderOptionalValue= (value: any) => {
+        if (value) {
+            return '  (' + value + ' per 100K)'
+        } else {
+            return ''
+        }
+    }
+
+    const renderCommaFormattedValue= (value: any) => {
+        if (value) {
+            return Math.trunc(value).toLocaleString()
+        } else {
+            return ''
+        }
+    }
+
+    const chartModelData = [{"name": "Short Term Indicator", "value": locationDetail("sti")},
+        {"name": "Heat Index", "value": locationDetail("heatindex")},
+        {"name": "Case Fatality Rate", "value": locationDetail("cfr")},
         {"name": "Medical Indicator", "value": locationDetail("medindicator")},
         {"name": "Social Distance Indicator", "value": locationDetail("sdindicator")},
         {"name": "Mortality Rate (mR)", "value": locationDetail("mr")},
@@ -107,6 +124,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
                         d === 'Social Distance Indicator' ? '#f6c02c' :
                             d === 'Medical Indicator' ? '#7a4e48' :
                                 d === 'Case Fatality Rate' ? '#6dc8ec' :
+                                    d === 'Short Term Indicator' ? 'gray':
                                     '#9867bc'
         },
         colorField: 'name',
@@ -281,14 +299,14 @@ export default function LocationDetails(props: LocationDetailsProps) {
                             <Card>
                                 <Statistic
                                     title="Total Cases"
-                                    value={locationDetail('cases')}
+                                    value={renderCommaFormattedValue(locationDetail('cases')) + renderOptionalValue(locationDetail('cases_per_capita'))}
                                     valueStyle={{color: '#cf1322'}}
                                 />
                             </Card>
                             <Card>
                                 <Statistic
                                     title="Total Deaths"
-                                    value={locationDetail('deaths')}
+                                    value={renderCommaFormattedValue(locationDetail('deaths')) + renderOptionalValue(locationDetail('deaths_per_capita') )}
                                     valueStyle={{color: '#cf1322'}}
                                 />
                             </Card>
@@ -299,14 +317,14 @@ export default function LocationDetails(props: LocationDetailsProps) {
 
                                     <Card>
                                         <Statistic
-                                            title="New Cases"
+                                            title="Weekly New Cases"
                                             value={locationDetail('newcases')}
                                             valueStyle={{color: '#cf1322'}}
                                         />
                                     </Card>
                                     <Card>
                                         <Statistic
-                                            title="New Deaths"
+                                            title="Weekly New Deaths"
                                             value={locationDetail('newdeaths')}
                                             valueStyle={{color: '#cf1322'}}
                                         />
