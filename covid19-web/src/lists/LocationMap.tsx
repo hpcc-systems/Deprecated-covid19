@@ -142,11 +142,11 @@ export default function LocationMap(props: LocationMapProps) {
 
     const renderScaleTitle = () => {
         switch (heatMapType) {
-            case 'cases': return 'Total Cases - Scale';
-            case 'deaths': return 'Total Deaths - Scale';
-            case 'new_cases': return 'New Cases - Scale';
-            case 'new_deaths': return 'New Deaths - Scale';
-            case 'status': return 'Spreading Model - Scale';
+            case 'cases': return 'Legend for Total Cases';
+            case 'deaths': return 'Legend for Total Deaths';
+            case 'new_cases': return 'Legend for New Cases';
+            case 'new_deaths': return 'Legend for New Deaths';
+            case 'status': return 'Legend for Spreading Model';
             default: return '';
         }
     }
@@ -283,6 +283,7 @@ export default function LocationMap(props: LocationMapProps) {
             return ''
         }
     }
+
     const renderToolTip = () => {
         let row: any = toolTipRow;
         if (row) {
@@ -321,16 +322,16 @@ export default function LocationMap(props: LocationMapProps) {
                 <div style={{height: 20}}/>
 
                 <Row>
-                    <Col span={10}><b>Period Metrics</b></Col>
+                    <Col span={10}><b>Weekly Metrics</b></Col>
                     <Col><b>{row.period_string}</b></Col>
                 </Row>
                 <div style={{height: 20}}/>
                 <Row>
-                    <Col span={10}>Period New Cases</Col>
+                    <Col span={10}>Weekly New Cases</Col>
                     <Col span={4}><b>{formatNumber(row.period_new_cases)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={10}>Period New Deaths</Col>
+                    <Col span={10}>Weekly New Deaths</Col>
                     <Col><b>{formatNumber(row.period_new_deaths)}</b></Col>
                 </Row>
                 <Row>
@@ -438,7 +439,7 @@ export default function LocationMap(props: LocationMapProps) {
 
             </PageHeader>
             <Row>
-                <Col span={21}>
+                <Col span={24}>
                     <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                                  value={heatMapType}>
                         <Space direction={'horizontal'}>
@@ -447,14 +448,12 @@ export default function LocationMap(props: LocationMapProps) {
                             <Radio value={'new_deaths'}>New Deaths</Radio>
                             <Radio value={'cases'}>Total Cases</Radio>
                             <Radio value={'deaths'}>Total Deaths</Radio>
+                            <Popover content={renderScale()} title={renderScaleTitle()} >
+                                <Button  type={"link"}>Legend</Button>
+                            </Popover>
                         </Space>
 
                     </Radio.Group>
-                </Col>
-                <Col span={3}>
-                    <Popover content={renderScale()} title={renderScaleTitle()} >
-                        <Button  style={{alignSelf: "right"}}>{renderScaleTitle()}</Button>
-                    </Popover>
                 </Col>
             </Row>
 
