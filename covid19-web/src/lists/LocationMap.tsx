@@ -265,6 +265,10 @@ export default function LocationMap(props: LocationMapProps) {
                 return statsScale(summaryData.current.deathsMax, 'Deaths');
             case 'new_deaths':
                 return statsScale(summaryData.current.newDeathsMax, 'New Deaths');
+            case 'cases_per_capita':
+                return statsScale(summaryData.current.casesPerCapitaMax, 'Cases/100K');
+            case 'deaths_per_capita':
+                return statsScale(summaryData.current.deathsPerCapitaMax, 'Deaths/100K');
             case 'status':
                 return statusScale()
         }
