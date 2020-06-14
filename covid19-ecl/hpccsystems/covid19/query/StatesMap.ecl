@@ -88,7 +88,9 @@ maxDs := TABLE(daily, {date,
                       cases_max := MAX(GROUP, cases),
                       new_cases_max := MAX(GROUP, new_cases),
                       deaths_max := MAX(GROUP, deaths),
-                      new_deaths_max := MAX(GROUP, new_deaths)
+                      new_deaths_max := MAX(GROUP, new_deaths),
+                      cases_per_capita_max := MAX(GROUP, cases_per_capita),
+                      deaths_per_capita_max := MAX(GROUP, deaths_per_capita)
                       }, date);
 
 OUTPUT(TABLE(weeklyMetrics.world (period = 1 and location='US'), {cases_total:= cases,
@@ -101,6 +103,8 @@ OUTPUT(TABLE(weeklyMetrics.world (period = 1 and location='US'), {cases_total:= 
                                                  deaths_max := maxDs[1].deaths_max,
                                                  new_cases_max := maxDs[1].new_cases_max,
                                                  new_deaths_max := maxDs[1].new_deaths_max,
+                                                 cases_per_capita_max := maxDs[1].cases_per_capita_max,
+                                                 deaths_per_capita_max := maxDs[1].deaths_per_capita_max,
                                                  commentary}),,NAMED('summary'));  
 
 

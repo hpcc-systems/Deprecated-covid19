@@ -1,9 +1,10 @@
-import {Button, Card, Col, Descriptions, Modal, Row, Statistic, Table, Tabs} from "antd";
+import {Button, Card, Col, Descriptions, Modal, Popover, Row, Statistic, Table, Tabs} from "antd";
 import {Chart} from "../components/Chart";
 import {Bar, Column, StackedColumn} from "@antv/g2plot";
 import Search from "antd/es/input/Search";
 import React, {useEffect, useRef, useState} from "react";
 import {QueryData} from "../components/QueryData";
+import MetricsTerms from "./MetricsTerms";
 
 interface LocationDetailsProps {
    show: any;
@@ -236,7 +237,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
             style={{ top: 10 }}
         >
             <Descriptions size="small" column={1}>
-                <Descriptions.Item label={<b>Commentary</b>}>{locationCommentary()}</Descriptions.Item>
+                <Descriptions.Item label={<b>Commentary</b>}>{locationCommentary()}  {<Popover placement={"left"} title={"Metrics Terms"} content={<MetricsTerms/>} trigger={"click"}><Button>Metrics Terms</Button></Popover>}</Descriptions.Item>
             </Descriptions>
 
             <Tabs defaultActiveKey={'r'} activeKey={modalTab} onChange={(key) => {
