@@ -31,6 +31,8 @@ class SummaryData {
     deathsMax: number = 0;
     newDeathsMax: number = 0;
     statusMax: number = 0;
+    casesPerCapitaMax: number = 0;
+    deathsPerCapitaMax: number = 0;
     commentary: string = '';
 }
 
@@ -103,6 +105,8 @@ export default function LocationMap(props: LocationMapProps) {
                     summaryData.deathsMax = item.deaths_max;
                     summaryData.newDeathsMax = item.new_deaths_max;
                     summaryData.statusMax = item.status_max;
+                    summaryData.casesPerCapitaMax = item.cases_per_capita_max;
+                    summaryData.deathsPerCapitaMax = item.deaths_per_capita_max;
                     summaryData.commentary = item.commentary;
                     setSummaryData(summaryData);
                 })
@@ -142,11 +146,11 @@ export default function LocationMap(props: LocationMapProps) {
 
     const renderScaleTitle = () => {
         switch (heatMapType) {
-            case 'cases': return 'Total Cases - Scale';
-            case 'deaths': return 'Total Deaths - Scale';
-            case 'new_cases': return 'New Cases - Scale';
-            case 'new_deaths': return 'New Deaths - Scale';
-            case 'status': return 'Spreading Model - Scale';
+            case 'cases': return 'Legend for Total Cases';
+            case 'deaths': return 'Legend for Total Deaths';
+            case 'new_cases': return 'Legend for New Cases';
+            case 'new_deaths': return 'Legend for New Deaths';
+            case 'status': return 'Legend for Spreading Model';
             default: return '';
         }
     }
@@ -261,6 +265,10 @@ export default function LocationMap(props: LocationMapProps) {
                 return statsScale(summaryData.current.deathsMax, 'Deaths');
             case 'new_deaths':
                 return statsScale(summaryData.current.newDeathsMax, 'New Deaths');
+            case 'cases_per_capita':
+                return statsScale(summaryData.current.casesPerCapitaMax, 'Cases/100K');
+            case 'deaths_per_capita':
+                return statsScale(summaryData.current.deathsPerCapitaMax, 'Deaths/100K');
             case 'status':
                 return statusScale()
         }
@@ -276,69 +284,70 @@ export default function LocationMap(props: LocationMapProps) {
         }
     }
 
+    const renderOptionalValue= (value: any) => {
+        if (value) {
+            return '(' + value + ' per 100K)'
+        } else {
+            return ''
+        }
+    }
 
     const renderToolTip = () => {
         let row: any = toolTipRow;
         if (row) {
 
-            return <div style={{width: 300, paddingLeft: 10}}>
+            return <div style={{width: 400, paddingLeft: 10}}>
                 <Row>
-                    <Col span={24}><b>Daily Stats</b></Col>
+                    <Col span={10}><b>Daily Stats</b></Col>
+                    <Col><b>{row.date_string}</b></Col>
                 </Row>
                 <div style={{height: 20}}/>
                 <Row>
-                    <Col span={24}><b>{row.date_string}</b></Col>
-                </Row>
-                <div style={{height: 20}}/>
-                <Row>
-                    <Col span={12}>New Cases</Col>
+                    <Col span={10}>New Cases</Col>
                     <Col span={4}><b>{formatNumber(row.new_cases)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>New Deaths</Col>
+                    <Col span={10}>New Deaths</Col>
                     <Col><b>{formatNumber(row.new_deaths)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Active</Col>
+                    <Col span={10}>Active</Col>
                     <Col><b>{formatNumber(row.active)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Recovered</Col>
+                    <Col span={10}>Recovered</Col>
                     <Col><b>{formatNumber(row.recovered)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Total Cases</Col>
-                    <Col><b>{formatNumber(row.cases)}</b></Col>
+                    <Col span={10}>Total Cases</Col>
+                    <Col><b>{formatNumber(row.cases)} {renderOptionalValue(row.cases_per_capita)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Total Deaths</Col>
-                    <Col><b>{formatNumber(row.deaths)}</b></Col>
+                    <Col span={10}>Total Deaths</Col>
+                    <Col><b>{formatNumber(row.deaths)} {renderOptionalValue(row.deaths_per_capita)}</b></Col>
                 </Row>
 
                 <div style={{height: 20}}/>
 
                 <Row>
-                    <Col span={24}><b>Weekly Stats</b></Col>
+                    <Col span={10}><b>Weekly Metrics</b></Col>
+                    <Col><b>{row.period_string}</b></Col>
                 </Row>
                 <div style={{height: 20}}/>
                 <Row>
-                    <Col span={24}><b>{row.period_string}</b></Col>
-                </Row>
-                <div style={{height: 20}}/>
-                <Row>
-                    <Col span={12}>New Cases</Col>
+                    <Col span={10}>Weekly New Cases</Col>
                     <Col span={4}><b>{formatNumber(row.period_new_cases)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>New Deaths</Col>
+                    <Col span={10}>Weekly New Deaths</Col>
                     <Col><b>{formatNumber(row.period_new_deaths)}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Infection Rate (R)</Col>
+                    <Col span={10}>Infection Rate (R)</Col>
                     <Col><b>{row.r}</b></Col>
                 </Row>
                 <Row>
-                    <Col span={12}>Status</Col>
+                    <Col span={10}>Status</Col>
                     <Col><b>{row.status}</b></Col>
                 </Row>
             </div>
@@ -366,6 +375,13 @@ export default function LocationMap(props: LocationMapProps) {
                     break;
                 case 'new_deaths':
                     d = row.new_deaths / Math.max(1, summaryData.current.newDeathsMax);
+                    break;
+                case 'cases_per_capita':
+                    d = row.cases_per_capita / Math.max(1, summaryData.current.casesPerCapitaMax);
+                    console.log('cases per capita')
+                    break;
+                case 'deaths_per_capita':
+                    d = row.deaths_per_capita / Math.max(1, summaryData.current.deathsPerCapitaMax);
                     break;
                 case 'status':
                     d = row.status_numb;
@@ -438,7 +454,7 @@ export default function LocationMap(props: LocationMapProps) {
 
             </PageHeader>
             <Row>
-                <Col span={21}>
+                <Col span={24}>
                     <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                                  value={heatMapType}>
                         <Space direction={'horizontal'}>
@@ -447,14 +463,14 @@ export default function LocationMap(props: LocationMapProps) {
                             <Radio value={'new_deaths'}>New Deaths</Radio>
                             <Radio value={'cases'}>Total Cases</Radio>
                             <Radio value={'deaths'}>Total Deaths</Radio>
+                            <Radio value={'cases_per_capita'}>Cases/100K</Radio>
+                            <Radio value={'deaths_per_capita'}>Deaths/100K</Radio>
+                            <Popover content={renderScale()} title={renderScaleTitle()} >
+                                <Button  type={"link"}>Legend</Button>
+                            </Popover>
                         </Space>
 
                     </Radio.Group>
-                </Col>
-                <Col span={3}>
-                    <Popover content={renderScale()} title={renderScaleTitle()} >
-                        <Button  style={{alignSelf: "right"}}>{renderScaleTitle()}</Button>
-                    </Popover>
                 </Col>
             </Row>
 
