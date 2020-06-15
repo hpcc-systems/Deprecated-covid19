@@ -12,6 +12,6 @@ EXPORT USPopulation := MODULE
       STRING change_2010_2018;
   END;
 
-  EXPORT ds := DATASET(filePath, layout, CSV(HEADING(1)));  
+  EXPORT ds := DATASET(filePath, layout, CSV);  
 
 END;
