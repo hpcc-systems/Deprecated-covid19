@@ -437,7 +437,7 @@ export default function LocationMap(props: LocationMapProps) {
                 </Descriptions>
 
                 <Descriptions size="small" column={2} style={{paddingTop: 5}}>
-                    <Descriptions.Item><h5>Data Attribution: John Hopkins University</h5></Descriptions.Item>
+                    <Descriptions.Item><h5>Data Attribution: John Hopkins University, US Census Bureau, UN DESA</h5></Descriptions.Item>
                     <Descriptions.Item><h5>Filters: Please click and select a location from the chart to view the
                         metrics</h5>
                     </Descriptions.Item>

@@ -106,7 +106,7 @@ export default function Hotspots(props: AllMetricsProps) {
             <PageHeader title={props.title} subTitle={props.description}
             >
                 <Descriptions size="small" column={2}>
-                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University, US Census Bureau, UN DESA</Descriptions.Item>
                     <Descriptions.Item label="Filters">Filter by Hotspot > 1 or All. Then, further filter by location (partial text searches work)</Descriptions.Item>
                 </Descriptions>
             </PageHeader>
