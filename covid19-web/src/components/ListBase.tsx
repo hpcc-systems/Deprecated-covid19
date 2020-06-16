@@ -65,24 +65,25 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                         return <Hotspots key={'states-metrics'} locationAlias={'State'} typeFilter={'states'}
                                          title={this.state.listMetadata.title}
                                          description={this.state.listMetadata.description}/>;
-                    case 'us_counties/counties_metrics':
-                        return <Hotspots key={'counties'} locationAlias={'County'} typeFilter={'counties'}
-                                         title={this.state.listMetadata.title}
-                                         description={this.state.listMetadata.description}/>;
-                    case 'us_counties/trends':
-                        return <LocationTrends key={'states-trends'} title={this.state.listMetadata.title}
-                                               description={this.state.listMetadata.description} locationAlias={'County'}
-                                               typeFilter={'counties'}/>;
-                    case 'us_counties/map':
-                        return <LocationMap key={'states-map'} title={this.state.listMetadata.title}
-                                            description={this.state.listMetadata.description}
-                                            type={'counties'} zoom={5} geoLat={38.2}
-                                            geoLong={-98.6} geoFile={'us-counties.geojson'} geoKeyField={'GEOID'}/>
                     case 'us_states/map':
                         return <LocationMap key={'states-map'} title={this.state.listMetadata.title}
                                             description={this.state.listMetadata.description}
                                             type={'states'} zoom={4.5} geoLat={38.2}
                                             geoLong={-98.6} geoFile={'us-states.geojson'} geoKeyField={'name'}/>
+                    case 'us_counties/counties_metrics':
+                        return <Hotspots key={'counties-metrics'} locationAlias={'County'} typeFilter={'counties'}
+                                         title={this.state.listMetadata.title}
+                                         description={this.state.listMetadata.description}/>;
+                    case 'us_counties/trends':
+                        return <LocationTrends key={'counties-trends'} title={this.state.listMetadata.title}
+                                               description={this.state.listMetadata.description} locationAlias={'County'}
+                                               typeFilter={'counties'}/>;
+                    case 'us_counties/map':
+                        return <LocationMap key={'counties-map'} title={this.state.listMetadata.title}
+                                            description={this.state.listMetadata.description}
+                                            type={'counties'} zoom={5} geoLat={38.2}
+                                            geoLong={-98.6} geoFile={'us-counties.geojson'} geoKeyField={'GEOID'}/>
+
                     case 'world_countries/trends':
                         return <LocationTrends key={'countries-trends'} title={this.state.listMetadata.title}
                                                description={this.state.listMetadata.description}
