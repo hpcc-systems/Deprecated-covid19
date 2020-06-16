@@ -51,7 +51,6 @@ function useStateRef(initialValue: any) {
 export default function LocationMap(props: LocationMapProps) {
     const queryLocationsMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
     const [summaryDataState, setSummaryData, summaryData] = useStateRef(new SummaryData());
-    const [summaryQueryData, setSummaryQueryData] = useState<any>([]);
     const mapData = useRef<Map<string, any>>(new Map());
     const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('status');
 
@@ -74,25 +73,17 @@ export default function LocationMap(props: LocationMapProps) {
         return mapData;
     }
 
-
-    useEffect(() => {
+    const mount = () => {
         let queryName = 'hpccsystems_covid19_query_' + props.type + '_map';
 
         queryLocationsMap.current = new QueryData(queryName);
         queryLocationsMap.current.initData(undefined).then(() => {
             mapData.current = toMapData(queryLocationsMap.current.getData('latest'));
-            setSummaryQueryData(queryLocationsMap.current.getData('summary'));
-        })
+            let summary = queryLocationsMap.current.getData('summary');
 
-    }, [props]);
+            if (summary.length > 0) {
 
-
-    useEffect(() => {
-
-        function initSummary() {
-            if (summaryQueryData.length > 0) {
-
-                summaryQueryData.forEach((item: any) => {
+                summary.forEach((item: any) => {
                     let summaryData = new SummaryData();
                     summaryData.newCases = item.new_cases_total;
                     summaryData.newDeaths = item.new_deaths_total;
@@ -113,11 +104,16 @@ export default function LocationMap(props: LocationMapProps) {
             } else {
                 return '';
             }
+        })
+
+        const unmount = () => {
+            console.log('unmounted')
+            // ...
         }
+        return unmount
+    }
 
-        initSummary();
-
-    }, [summaryQueryData]);
+    useEffect((mount),[]);
 
 
     const heatMapTypeChange = (value: any) => {
@@ -150,6 +146,8 @@ export default function LocationMap(props: LocationMapProps) {
             case 'deaths': return 'Legend for Total Deaths';
             case 'new_cases': return 'Legend for New Cases';
             case 'new_deaths': return 'Legend for New Deaths';
+            case 'cases_per_capita': return 'Legend for Cases/100K';
+            case 'deaths_per_capita': return 'Legend for Deaths/100K';
             case 'status': return 'Legend for Spreading Model';
             default: return '';
         }
@@ -205,13 +203,6 @@ export default function LocationMap(props: LocationMapProps) {
         }
 
         function statsScale(d: number, label: string) {
-            // return d >= 0.9 ? '#a50026' :
-            //     d > 0.6 ? '#d73027' :
-            //         d > 0.4 ? '#fdae61' :
-            //             d > 0.2 ? '#fee08b' :
-            //                 d > 0.1 ? '#66bd63' :
-            //                     '#1a9850';
-
             return <div style={{width: 250, paddingLeft: 10}}>
                 <table cellPadding={5}>
                     <tr style={{}}>
