@@ -24,4 +24,22 @@ EXPORT USCountyPopulation := MODULE
 
   EXPORT ds := DATASET(filePath, layout, THOR);
 
+  EXPORT filePath_agegender := '~hpccsystems::covid19::file::public::uscountypopulation::population_genderage.flat';  
+
+ 
+  EXPORT layout_agegender := RECORD
+    STRING FIPS;
+    STRING STATE;
+    STRING COUNTY;
+    STRING STNAME;
+    STRING CTYNAME;
+    STRING YEAR;
+    STRING AGEGRP;
+    STRING TOT_POP;
+    STRING TOT_MALE;
+    STRING TOT_FEMALE;
+  END;
+
+  EXPORT ds_agegender := DATASET(filePath_agegender, layout_agegender, THOR);
+
 END;
