@@ -359,13 +359,13 @@ export default function LocationMap(props: LocationMapProps) {
                     d = row.cases / Math.max(1, summaryData.current.casesMax);
                     break;
                 case 'new_cases':
-                    d = row.new_cases / Math.max(1, summaryData.current.newCasesMax);
+                    d = row.period_new_cases / Math.max(1, summaryData.current.newCasesMax);
                     break;
                 case 'deaths':
                     d = row.deaths / Math.max(1, summaryData.current.deathsMax);
                     break;
                 case 'new_deaths':
-                    d = row.new_deaths / Math.max(1, summaryData.current.newDeathsMax);
+                    d = row.period_new_deaths / Math.max(1, summaryData.current.newDeathsMax);
                     break;
                 case 'cases_per_capita':
                     d = row.cases_per_capita / Math.max(1, summaryData.current.casesPerCapitaMax);
@@ -450,12 +450,12 @@ export default function LocationMap(props: LocationMapProps) {
                                  value={heatMapType}>
                         <Space direction={'horizontal'}>
                             <Radio value={'status'}>Spreading Model</Radio>
-                            <Radio value={'new_cases'}>New Cases</Radio>
-                            <Radio value={'new_deaths'}>New Deaths</Radio>
-                            <Radio value={'cases'}>Total Cases</Radio>
-                            <Radio value={'deaths'}>Total Deaths</Radio>
+                            <Radio value={'new_cases'}>Weekly New Cases</Radio>
+                            <Radio value={'new_deaths'}>Weekly New Deaths</Radio>
                             <Radio value={'cases_per_capita'}>Cases/100K</Radio>
                             <Radio value={'deaths_per_capita'}>Deaths/100K</Radio>
+                            <Radio value={'cases'}>Total Cases</Radio>
+                            <Radio value={'deaths'}>Total Deaths</Radio>
                             <Popover content={renderScale()} title={renderScaleTitle()} >
                                 <Button  type={"link"}>Legend</Button>
                             </Popover>
