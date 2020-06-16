@@ -1,17 +1,15 @@
-00000000 2020-06-16 12:01:28 23213   775 Warning: Could not load /opt/HPCCSystems/7.2.6/clienttools/filehooks/libgitfile.dylib: dlopen(/opt/HPCCSystems/7.2.6/clienttools/filehooks/libgitfile.dylib, 2): Library not loaded: /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib
+00000000 2020-06-16 16:02:35 24460   775 Warning: Could not load /opt/HPCCSystems/7.2.6/clienttools/filehooks/libgitfile.dylib: dlopen(/opt/HPCCSystems/7.2.6/clienttools/filehooks/libgitfile.dylib, 2): Library not loaded: /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib
   Referenced from: /opt/HPCCSystems/7.2.6/clienttools/filehooks/libgitfile.dylib
   Reason: image not found
-00000001 2020-06-16 12:01:28 23213   775 File hook library /opt/HPCCSystems/7.2.6/clienttools/filehooks/libgitfile.dylib could not be loaded
-00000002 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libdebugservices.dylib[lib_debugservices] version = DEBUGSERVICES 1.0.1
-00000003 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libunicodelib.dylib[lib_unicodelib] version = UNICODELIB 1.1.06
-00000004 2020-06-16 12:01:28 23213   775 Plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libdmetaphone.dylib exports getECLPluginDefinition but does not export ECL - not loading
-00000005 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/liblogging.dylib[lib_logging] version = LOGGING 1.0.1
-00000006 2020-06-16 12:01:28 23213   775 Plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libh3.dylib exports getECLPluginDefinition but does not export ECL - not loading
-00000007 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libfileservices.dylib[lib_fileservices] version = FILESERVICES 2.1.4
-00000008 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libparselib.dylib[lib_parselib] version = PARSELIB 1.0.1
-00000009 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libworkunitservices.dylib[lib_WORKUNITSERVICES] version = WORKUNITSERVICES 1.0.2
-0000000A 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libtimelib.dylib[lib_timelib] version = TIMELIB 1.0.0
-0000000B 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libstringlib.dylib[lib_stringlib] version = STRINGLIB 1.1.14
-0000000C 2020-06-16 12:01:28 23213   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libauditlib.dylib[lib_auditlib] version = AUDITLIB 1.0.1
-0000000D 2020-06-16 12:01:28 23213   775 Duplicate module found at /Users/achala/Source/covid19/covid19-ecl/./hpccsystems
-0000000E 2020-06-16 12:01:28 23213   775 Cannot create archive from cache for hpccsystems.covid19.query.CountiesMap because it is not up to date
+00000001 2020-06-16 16:02:35 24460   775 File hook library /opt/HPCCSystems/7.2.6/clienttools/filehooks/libgitfile.dylib could not be loaded
+00000002 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libdebugservices.dylib[lib_debugservices] version = DEBUGSERVICES 1.0.1
+00000003 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libunicodelib.dylib[lib_unicodelib] version = UNICODELIB 1.1.06
+00000004 2020-06-16 16:02:35 24460   775 Plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libdmetaphone.dylib exports getECLPluginDefinition but does not export ECL - not loading
+00000005 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/liblogging.dylib[lib_logging] version = LOGGING 1.0.1
+00000006 2020-06-16 16:02:35 24460   775 Plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libh3.dylib exports getECLPluginDefinition but does not export ECL - not loading
+00000007 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libfileservices.dylib[lib_fileservices] version = FILESERVICES 2.1.4
+00000008 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libparselib.dylib[lib_parselib] version = PARSELIB 1.0.1
+00000009 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libworkunitservices.dylib[lib_WORKUNITSERVICES] version = WORKUNITSERVICES 1.0.2
+0000000A 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libtimelib.dylib[lib_timelib] version = TIMELIB 1.0.0
+0000000B 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libstringlib.dylib[lib_stringlib] version = STRINGLIB 1.1.14
+0000000C 2020-06-16 16:02:35 24460   775 Loading plugin /opt/HPCCSystems/7.2.6/clienttools/plugins/libauditlib.dylib[lib_auditlib] version = AUDITLIB 1.0.1
