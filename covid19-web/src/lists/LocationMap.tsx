@@ -136,7 +136,7 @@ export default function LocationMap(props: LocationMapProps) {
         if (value) {
             return value.toLocaleString();
         } else {
-            return '';
+            return '0';
         }
     }
 
