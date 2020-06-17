@@ -101,12 +101,13 @@ export class App extends Component<AppProps, AppState> {
         }
     }
 
-    renderLogoutButton() {//TODO: Placeholder for the logout button
+    renderMenuButtons() {//TODO: Placeholder for the logout button
         // if (this.authService.isAuthenticated()) {
         //     return <Button style={{float: "right", marginTop: 20}} type="link" onClick={() => this.logout()}>Logout</Button>
         // } else {
-            return '';
+            //return '';
         // }
+        return <Button style={{float: "right", marginTop: 20}} type="link" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</Button>
     }
 
 
@@ -127,7 +128,7 @@ export class App extends Component<AppProps, AppState> {
                             this.renderMenu(this.state.menus)
                         }
                         {
-                            this.renderLogoutButton()
+                            this.renderMenuButtons()//logout, disclaimers
                         }
                     </Menu>
 
