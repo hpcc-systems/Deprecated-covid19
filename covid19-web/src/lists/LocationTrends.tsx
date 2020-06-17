@@ -335,7 +335,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
 
             <PageHeader title={props.title} subTitle={props.description}>
                 <Descriptions size="small" column={1}>
-                    <Descriptions.Item label="Data Attribution">John Hopkins University</Descriptions.Item>
+                    <Descriptions.Item label="Data Attribution">John Hopkins University, US Census Bureau, UN DESA</Descriptions.Item>
                     <Descriptions.Item label="Filters">Default filters select the top 5 locations by active cases. Use
                         the Data & Filters tab to customize filters.</Descriptions.Item>
                 </Descriptions>
