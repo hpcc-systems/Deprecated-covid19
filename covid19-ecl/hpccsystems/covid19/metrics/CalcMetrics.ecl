@@ -14,6 +14,7 @@ EXPORT CalcMetrics := MODULE
 		SHARED scaleFactor := 5;  // Lower will give more hot spots.
 		SHARED minActDefault := 20; // Minimum cases to be considered emerging, by default.
 		SHARED minActPer100k := 30; // Minimum active per 100K population to be considered emerging.
+		SHARED infectedConfirmedRatio := 7.5; // Calibrated by early antibody testing (rough estimate.
     EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats, UNSIGNED asOfDate = 0) := FUNCTION
 				stats0 := IF(asOfDate = 0, stats, stats(date < asOfDate));
         statsS := SORT(stats0, location, -date);
@@ -71,6 +72,7 @@ EXPORT CalcMetrics := MODULE
 						hi = rec[14]
 						cfr = rec[15]
 						infCount = rec[16]
+						immunePct = rec[17]
 						newCases = rec[18]
 						newDeaths = rec[19]
 						newCasesDaily = rec[20]
@@ -82,6 +84,8 @@ EXPORT CalcMetrics := MODULE
 						sti = rec[35]
 						ewi = rec[36]
 						surgeStart = rec[38]
+						currIFR = rec[39]
+						ifr = rec[40]
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -241,6 +245,19 @@ EXPORT CalcMetrics := MODULE
 								if cfrRatio > 3 or cfrRatio < 1/3.0:
 									cfrstr += 'It is likely that ' + location + ' uses a different reporting protocol than its peers.  '
 							outstr += cfrstr
+						immunestr = 'Preliminary antibody testing suggests that ' + str(round(immunePct)) + '% of the population may have been infected and are presumed immune. '
+						if immunePct < 10:
+							immunestr += 'This is not enough to significantly slow the spread of the virus. '
+						elif immunePct < 25:
+							immunestr += 'This may be enough to slightly suppress the spread of the virus. '
+						elif immunePct < 50:
+							immunestr += 'This should significantly suppress the spread of the virus. '
+						elif immunePct > 50:
+							immunestr += 'This location is approaching herd immunity and should not see significant further spread. '
+						immunestr += 'This preliminary testing also implies an Infection Fatality Rate (IFR) of roughly ' + str(round(ifr*100, 1)) + '%. '
+
+						if immunePct > .5:
+							outstr += immunestr
 						sdistr = ''
 						if sdi < -.1:
 							sdistr = 'The Short-Term Indicator suggests that the infection is likely to worsen over the course of the next few days.'
@@ -286,6 +303,7 @@ EXPORT CalcMetrics := MODULE
             SELF.active := lastC.active,
             SELF.recovered := lastC.recovered,
             SELF.cfr := lastC.cfr,
+						SELF.ifr := SELF.cfr / infectedConfirmedRatio;
 						cGrowth := SELF.newCases / firstC.active;
             cR_old := POWER(cGrowth, InfectionPeriod/cCount);  // Old CR calc might be useful later
             SELF.cR_old := MIN(cR_old, 9.99);
@@ -297,7 +315,7 @@ EXPORT CalcMetrics := MODULE
 																		
                                     SELF.cases_per_capita := IF(SELF.population > 1, LEFT.cases * 100000 / SELF.population, 0),
                                     SELF.deaths_per_capita := IF(SELF.population > 1, LEFT.deaths * 100000 / SELF.population, 0),
-                                    SELF.immunePct := IF(SELF.population > 1, LEFT.recovered / SELF.population * 100, 0),
+                                    SELF.immunePct := IF(SELF.population > 1, LEFT.recovered / SELF.population * infectedConfirmedRatio * 100, 0),
                                     SELF := LEFT), LEFT OUTER);
         metricsRec calc1(metricsRec l, metricsRec r) := TRANSFORM
 						prevNewCases := IF(r.newCases > 0, r.newCases, 1);
@@ -362,7 +380,7 @@ EXPORT CalcMetrics := MODULE
                 //prevState in ['Recovered', 'Recovering'] AND R1 >= 1.1 => 'Regressing',
                 prevState = 'Initial' AND r.active = 0 => 'Initial',
                 //prevState in ['Initial', 'Recovered', 'Recovering'] AND R1 > 1.1 AND r.active >= 1 AND r.active < minActive => 'Emerging',
-                prevState in ['Initial', 'Recovered', 'Recovering', 'Emerging'] AND R1 > 1.1 AND r.active >= 1 AND NOT isOverMin => 'Emerging',
+                R1 > 1.1 AND r.active >= 1 AND NOT isOverMin => 'Emerging',
                 R1 >= 1.5 => 'Spreading',
                 R1 >= 1.1 AND R1 < 1.5 => 'Stabilizing',
                 R1 >= .9 AND R1 < 1.1 => 'Stabilized',
