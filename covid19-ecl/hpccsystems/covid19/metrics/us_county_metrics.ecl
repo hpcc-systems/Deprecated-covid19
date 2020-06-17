@@ -12,9 +12,14 @@ CalcMetrics := COVID19.CalcMetrics;
 minSpreadingInfections := 100;
 
 countyFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
+
+populationPath := '~hpccsystems::covid19::file::public::uscountypopulation::population.flat';
+
 _stateFilter := '':STORED('stateCountyFilter'); 
 
 stateFilter := Std.Str.SplitWords(_stateFilter, ',');
+
+testLocations := ['NEW YORK,NEW YORK CITY', 'COLORADO,LARIMER','CALIFORNIA,SAN MATEO', 'NEW HAMPSHIRE,STRAFFORD', 'MASSACHUSETTS,SUFFOLK'];
 
 scRecord := RECORD
   string50 fips;
@@ -30,6 +35,26 @@ scRecord := RECORD
   REAL8 active;
   string combined_key;
  END;
+ 
+ rawPopRecord := RECORD
+  string fips;
+  string state;
+  string county;
+  string stname;
+  string ctyname;
+  string census2010pop;
+  string popestimate2010;
+  string popestimate2011;
+  string popestimate2012;
+  string popestimate2013;
+  string popestimate2014;
+  string popestimate2015;
+  string popestimate2016;
+  string popestimate2017;
+  string popestimate2018;
+  string popestimate2019;
+ END;
+ 
 // Filter county info
 countyDatIn0 := DATASET(countyFilePath, scRecord, THOR);
 // Recompute the combined key to put state first
@@ -53,10 +78,13 @@ statsData := PROJECT(countyDatIn, TRANSFORM(statsRec,
                                             SELF.negative := 0));
 
 OUTPUT(statsData[.. 10000], ALL, NAMED('InputStats'));
+popData0 := DATASET(populationPath, rawPopRecord, THOR);
+popData := JOIN(popData0, DEDUP(statsData, fips), LEFT.fips = RIGHT.fips, TRANSFORM(populationRec,
+																																SELF.location := RIGHT.location,
+																																SELF.population := IF((UNSIGNED)LEFT.popestimate2019 > 0, (UNSIGNED)LEFT.popestimate2019, 1)),
+																																				LEFT OUTER);
 
-popData := DATASET([], populationRec);
-
-OUTPUT(popData, NAMED('PopulationData'));
+OUTPUT(popData, ALL, NAMED('PopulationData'));
 
 // Extended Statistics
 statsE := CalcMetrics.DailyStats(statsData);
@@ -68,7 +96,7 @@ metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInf
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat', Thor, OVERWRITE);
 
 metricsRed := metrics[ .. 20000 ]; // Reduced set for wu output
-//OUTPUT(metricsRed, ALL, NAMED('MetricsByWeek'));
+OUTPUT(metricsRed(location in testLocations), ALL, NAMED('MetricsByWeek'));
 
 sortedByCases := SORT(metricsRed, period, -cases);
 //OUTPUT(sortedByCases, ALL, NAMED('metricsByCases'));
