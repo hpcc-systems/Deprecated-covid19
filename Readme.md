@@ -51,6 +51,7 @@ These define the potential values of the  _Infection State_ at a given location.
 Given a reasonable estimate of R, cR, and mR, we can begin to infer some other metrics that further illuminate the nature of the infection.
 Metrics are developed to provide insight into the dynamic state of the infection within a location.  They may illustrate temporal changes as well as contemporaneous relationships within the data.
 
+
 The _Case Fatality Rate_ (CFR) is the likelihood that someone who tests positive for the virus will die.  This is useful for comparing medical conditions between locations with a similar testing and reporting protocol and testing constraints.  It is somewhat confounded by changes in testing availabilty.  It almost always overstates the fatality of the infection and should not be confused with the _Infection Fatality Rate_.
 
 The _Infection Fatality Rate_ (IFR) is the likelihood that someone who catches the infection will die.  This is a very elusive number due to the difficulty in estimating the actual number of infections in a population.  This can be retroactively assessed via antibody testing, or approximated through calibrated adjustments.
