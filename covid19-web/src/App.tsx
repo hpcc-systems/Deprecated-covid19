@@ -128,14 +128,14 @@ export class App extends Component<AppProps, AppState> {
                             this.renderMenu(this.state.menus)
                         }
                         <Menu.Item>
-                            <a style={{color: 'lightblue'}} rel="noopener noreferrer" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</a>
+                            <a style={{color: 'lightblue' , fontSize:'9px', fontWeight:'bold'}} rel="noopener noreferrer" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</a>
                         </Menu.Item>
                         <Menu.Item>
-                            <a style={{color: 'lightblue'}}  rel="noopener noreferrer" target={"_blank"} href={"https://github.com/hpcc-systems/covid19"} >GitHub</a>
+                            <a style={{color: 'lightblue', fontSize:'9px', fontWeight:'bold'}}  rel="noopener noreferrer" target={"_blank"} href={"https://github.com/hpcc-systems/covid19"} >GitHub</a>
                         </Menu.Item>
                     </Menu>
 
-                </Header>
+                </Header>   
 
                 <Layout>
                     <Sider width={240}>
