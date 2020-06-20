@@ -100,17 +100,7 @@ export class App extends Component<AppProps, AppState> {
             return '';
         }
     }
-
-    renderMenuButtons() {//TODO: Placeholder for the logout button
-        // if (this.authService.isAuthenticated()) {
-        //     return <Button style={{float: "right", marginTop: 20}} type="link" onClick={() => this.logout()}>Logout</Button>
-        // } else {
-            //return '';
-        // }
-        return<span><Button style={{float: "right", marginTop: 20}} type="link" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</Button></span>
-    }
-
-
+    
     render() {
         return (
             <Layout style={{height: "100vh"}}>
@@ -135,7 +125,7 @@ export class App extends Component<AppProps, AppState> {
                         </Menu.Item>
                     </Menu>
 
-                </Header>   
+                </Header>
 
                 <Layout>
                     <Sider width={240}>
