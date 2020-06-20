@@ -107,7 +107,7 @@ export class App extends Component<AppProps, AppState> {
         // } else {
             //return '';
         // }
-        return <Button style={{float: "right", marginTop: 20}} type="link" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</Button>
+        return<span><Button style={{float: "right", marginTop: 20}} type="link" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</Button></span>
     }
 
 
@@ -127,9 +127,12 @@ export class App extends Component<AppProps, AppState> {
                         {
                             this.renderMenu(this.state.menus)
                         }
-                        {
-                            this.renderMenuButtons()//logout, disclaimers
-                        }
+                        <Menu.Item>
+                            <a style={{color: 'lightblue'}} rel="noopener noreferrer" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</a>
+                        </Menu.Item>
+                        <Menu.Item>
+                            <a style={{color: 'lightblue'}}  rel="noopener noreferrer" target={"_blank"} href={"https://github.com/hpcc-systems/covid19"} >GitHub</a>
+                        </Menu.Item>
                     </Menu>
 
                 </Header>
