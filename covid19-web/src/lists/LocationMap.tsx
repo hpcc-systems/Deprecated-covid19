@@ -11,6 +11,7 @@ interface LocationMapProps {
     title: string;
     description: string;
     geoFile: string;
+    secondaryGeoFile?: string;
     geoLat: number;
     geoLong: number;
     geoKeyField: string;
@@ -121,13 +122,18 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const olToolTipHandler = (name: string) => {
-        let row: any = mapData.current.get(name.toUpperCase());
-        if (row) {
-            setToolTipRow(row);
-            setTooltipVisible(true);
-        } else {
+        if (!name) {
             setToolTipRow([]);
             setTooltipVisible(false);
+        } else {
+            let row: any = mapData.current.get(name.toUpperCase());
+            if (row) {
+                setToolTipRow(row);
+                setTooltipVisible(true);
+            } else {
+                setToolTipRow([]);
+                setTooltipVisible(false);
+            }
         }
 
         return '';
@@ -475,6 +481,7 @@ export default function LocationMap(props: LocationMapProps) {
                 <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                        selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                        geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
+                       secondaryGeoFile={props.secondaryGeoFile}
                        height={'730px'}/>
             </div>
 

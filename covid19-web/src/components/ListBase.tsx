@@ -82,7 +82,9 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
                         return <LocationMap key={'counties-map'} title={this.state.listMetadata.title}
                                             description={this.state.listMetadata.description}
                                             type={'counties'} zoom={5} geoLat={38.2}
-                                            geoLong={-98.6} geoFile={'us-counties.geojson'} geoKeyField={'GEOID'}/>
+                                            geoLong={-98.6} geoFile={'us-counties.geojson'}
+                                            secondaryGeoFile={'us-states.geojson'}
+                                            geoKeyField={'GEOID'}/>
 
                     case 'world_countries/trends':
                         return <LocationTrends key={'countries-trends'} title={this.state.listMetadata.title}
