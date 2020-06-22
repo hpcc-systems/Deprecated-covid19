@@ -380,7 +380,7 @@ EXPORT CalcMetrics := MODULE
                 //prevState in ['Recovered', 'Recovering'] AND R1 >= 1.1 => 'Regressing',
                 prevState = 'Initial' AND r.active = 0 => 'Initial',
                 //prevState in ['Initial', 'Recovered', 'Recovering'] AND R1 > 1.1 AND r.active >= 1 AND r.active < minActive => 'Emerging',
-                R1 > 1.1 AND r.active >= 1 AND NOT isOverMin => 'Emerging',
+                R1 > 1.5 AND r.active >= 1 AND NOT isOverMin => 'Emerging',
                 R1 >= 1.5 => 'Spreading',
                 R1 >= 1.1 AND R1 < 1.5 => 'Stabilizing',
                 R1 >= .9 AND R1 < 1.1 => 'Stabilized',
