@@ -124,7 +124,7 @@ export default function OlMap(props: Props) {
             if (props.secondaryGeoFile) {
                 let secondaryLayer: VectorLayer = colorLayer(props.secondaryGeoFile,
                     'name',
-                    'lightblue',
+                    'skyblue',
                     2, 'transparent', false);
                 map.current.addLayer(secondaryLayer);
             }
