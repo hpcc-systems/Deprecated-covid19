@@ -1,6 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import {Map, View} from 'ol';
 import {Vector as VectorLayer} from 'ol/layer';
+
 import 'ol/ol.css';
 import GeoJSON from 'ol/format/GeoJSON';
 import VectorSource from "ol/source/Vector";
@@ -17,6 +18,7 @@ interface Props {
     colorHandler: (name: string) => string;
     selectHandler: (name: string) => void;
     geoFile: string;
+    secondaryGeoFile?: string;
     geoLat: number;
     geoLong: number;
     geoKeyField: string;
@@ -28,15 +30,6 @@ export default function OlMap(props: Props) {
     const container = useRef<HTMLElement|null>(null);
     const popup = useRef<HTMLElement|null>(null);
 
-    const selectSingleClick = useRef<Select>(new Select({
-        condition: click,
-        style: selectFunction
-    }));
-
-    const selectPointerMove = useRef<Select>(new Select({
-        condition: pointerMove,
-        style: selectFunction
-    }));
 
     function selectFunction(feature: FeatureLike) {
         const style = new Style({
@@ -82,7 +75,12 @@ export default function OlMap(props: Props) {
         })
     }));
 
-    function colorLayer(geoJsonFileName: string, geoKeyField: string) {
+    function colorLayer(geoJsonFileName: string,
+                        geoKeyField: string,
+                        borderColor: string,
+                        borderWidth: number,
+                        fillColor: string,
+                        showLabel: boolean) {
         return new VectorLayer({
             source: new VectorSource({
                 // url: 'us-states.json',
@@ -92,11 +90,11 @@ export default function OlMap(props: Props) {
             style: function (feature) {
                 const style = new Style({
                     fill: new Fill({
-                        color: props.colorHandler(feature.get(geoKeyField)),
+                        color: fillColor===''? props.colorHandler(feature.get(geoKeyField)): fillColor,
                     }),
                     stroke: new Stroke({
-                        color: '#319FD3',
-                        width: 1,
+                        color: borderColor,
+                        width: borderWidth,
                     }),
                     text: new Text({
                         font: '11px Calibri,sans-serif',
@@ -110,7 +108,7 @@ export default function OlMap(props: Props) {
                     }),
                 });
 
-                style.getText().setText(feature.get('name').toUpperCase());
+                style.getText().setText(showLabel? feature.get('name').toUpperCase(): '');
                 return style;
             },
         });
@@ -119,19 +117,30 @@ export default function OlMap(props: Props) {
     const mount = () => {
 
         if (container.current && popup.current) {
-            let layer: VectorLayer = colorLayer(props.geoFile, props.geoKeyField);
 
+            let layer: VectorLayer = colorLayer(props.geoFile, props.geoKeyField, '#319FD3', 1, '', true);
             map.current.addLayer(layer);
+
+            if (props.secondaryGeoFile) {
+                let secondaryLayer: VectorLayer = colorLayer(props.secondaryGeoFile,
+                    'name',
+                    'lightblue',
+                    2, 'transparent', false);
+                map.current.addLayer(secondaryLayer);
+            }
+
             map.current.getView().setCenter(fromLonLat([props.geoLong, props.geoLat]))
             map.current.getView().setZoom(props.zoom);
 
             overlay.setElement(popup.current);
             map.current.setTarget(container.current);
 
-            map.current.addInteraction(selectSingleClick.current);
-            map.current.addInteraction(selectPointerMove.current);
-
-            selectPointerMove.current.on('select', function(e:any) {
+            let selectMouseMove = new Select({
+                layers: [layer],
+                condition: pointerMove,
+                style: selectFunction
+            });
+            selectMouseMove.on('select', function(e:any) {
                 if (e.selected.length > 0) {
                     let feature = e.selected[0];
                     if (popup.current) {
@@ -146,18 +155,24 @@ export default function OlMap(props: Props) {
                 }
             });
 
+            map.current.addInteraction(selectMouseMove);
 
-            map.current.on('singleclick', function(evt) {
-                 map.current.forEachFeatureAtPixel(evt.pixel,
-                    function(feature, layer) {
-                        props.selectHandler(feature.get(props.geoKeyField));
-                        return [feature, layer];
-                    });
+            let selectMouseClick = new Select({
+                layers: [layer],
+                condition: click,
+                style: selectFunction
             });
+
+            selectMouseClick.on('select', function(e:any) {
+                if (e.selected.length > 0) {
+                    let feature = e.selected[0];
+                    props.selectHandler(feature.get(props.geoKeyField));
+                }
+            });
+            map.current.addInteraction(selectMouseClick);
 
             map.current.updateSize();
             map.current.render();
-
         }
 
 

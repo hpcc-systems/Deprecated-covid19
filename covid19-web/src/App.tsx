@@ -101,16 +101,6 @@ export class App extends Component<AppProps, AppState> {
         }
     }
 
-    renderMenuButtons() {//TODO: Placeholder for the logout button
-        // if (this.authService.isAuthenticated()) {
-        //     return <Button style={{float: "right", marginTop: 20}} type="link" onClick={() => this.logout()}>Logout</Button>
-        // } else {
-            //return '';
-        // }
-        return <Button style={{float: "right", marginTop: 20}} type="link" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</Button>
-    }
-
-
     render() {
         return (
             <Layout style={{height: "100vh"}}>
@@ -127,9 +117,12 @@ export class App extends Component<AppProps, AppState> {
                         {
                             this.renderMenu(this.state.menus)
                         }
-                        {
-                            this.renderMenuButtons()//logout, disclaimers
-                        }
+                        <Menu.Item>
+                            <a style={{color: 'lightblue' , fontSize:'9px', fontWeight:'bold'}} rel="noopener noreferrer" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</a>
+                        </Menu.Item>
+                        <Menu.Item>
+                            <a style={{color: 'lightblue', fontSize:'9px', fontWeight:'bold'}}  rel="noopener noreferrer" target={"_blank"} href={"https://github.com/hpcc-systems/covid19"} >GitHub</a>
+                        </Menu.Item>
                     </Menu>
 
                 </Header>

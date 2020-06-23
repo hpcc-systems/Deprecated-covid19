@@ -90,5 +90,5 @@ The system provides a friendly web-based interface for viewing COVID-19 data and
 
 The user interface provides several ways to navigate:
 * _Map View_ shows aspects of the infection through color codings on a map.  The map can be color coded by a number of attributes including Infection State, New Cases, New Deaths, Cases per 100K, Deaths per 100K, Total Cases and Total Deaths.
-* _Hotspots View_ orders the locations by _Heat Index_,  showing a triage list of locations and a description of their state.  All details can be by clicking on any of the Hotspot locations.
+* _Hotspots View_ orders the locations by _Heat Index_,  showing a triage list of locations and a description of their state.  All details can be seen by clicking on any of the Hotspot locations.
 * _Comparison View_ allows simultaneous viewing of statistics from multiple selected locations of interest.
