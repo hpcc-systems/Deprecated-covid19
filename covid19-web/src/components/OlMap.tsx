@@ -157,19 +157,16 @@ export default function OlMap(props: Props) {
 
             map.current.addInteraction(selectMouseMove);
 
-            let selectMouseClick = new Select({
-                layers: [layer],
-                condition: click,
-                style: selectFunction
+            map.current.on('singleclick', function(evt) {
+                 map.current.forEachFeatureAtPixel(evt.pixel,
+                    function(feature, l) {
+                        if (l === layer) {
+                            props.selectHandler(feature.get(props.geoKeyField));
+                            return [feature, layer];
+                        }
+                    });
             });
 
-            selectMouseClick.on('select', function(e:any) {
-                if (e.selected.length > 0) {
-                    let feature = e.selected[0];
-                    props.selectHandler(feature.get(props.geoKeyField));
-                }
-            });
-            map.current.addInteraction(selectMouseClick);
 
             map.current.updateSize();
             map.current.render();
