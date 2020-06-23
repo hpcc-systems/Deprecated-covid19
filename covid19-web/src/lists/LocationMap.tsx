@@ -154,7 +154,7 @@ export default function LocationMap(props: LocationMapProps) {
             case 'new_deaths': return 'Legend for New Deaths';
             case 'cases_per_capita': return 'Legend for Cases/100K';
             case 'deaths_per_capita': return 'Legend for Deaths/100K';
-            case 'status': return 'Legend for Spreading Model';
+            case 'status': return 'Legend for Infection State';
             default: return '';
         }
     }
@@ -455,7 +455,7 @@ export default function LocationMap(props: LocationMapProps) {
                     <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                                  value={heatMapType}>
                         <Space direction={'horizontal'}>
-                            <Radio value={'status'}>Spreading Model</Radio>
+                            <Radio value={'status'}>Infection State</Radio>
                             <Radio value={'new_cases'}>Weekly New Cases</Radio>
                             <Radio value={'new_deaths'}>Weekly New Deaths</Radio>
                             <Radio value={'cases_per_capita'}>Cases/100K</Radio>

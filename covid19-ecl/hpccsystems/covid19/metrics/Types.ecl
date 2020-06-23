@@ -64,6 +64,7 @@ EXPORT Types := MODULE
 				DECIMAL5_3 currCFR := 0;
 				DECIMAL5_3 ifr := 0; // Infection Fatality Rate
 				DECIMAL5_3 currIFR := 0; // Current (non-cumulative) IFR
+				DECIMAL5_3 contagionRisk := 0; // Risk of catching the disease
         count_t population :=0;
     END;
 		EXPORT metricsEvolRec := RECORD(metricsRec)

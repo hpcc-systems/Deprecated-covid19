@@ -15,6 +15,8 @@ countyFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
 
 populationPath := '~hpccsystems::covid19::file::public::uscountypopulation::population.flat';
 
+parentMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat';
+
 _stateFilter := '':STORED('stateCountyFilter'); 
 
 stateFilter := Std.Str.SplitWords(_stateFilter, ',');
@@ -64,7 +66,7 @@ countyDatIn1 := PROJECT(countyDatIn0, TRANSFORM(RECORDOF(LEFT),
 countyDatIn2 := SORT(countyDatIn1, combined_key, update_date);
 countyDatIn := countyDatIn2(update_date != 0 AND admin2 != '' AND admin2 != 'UNASSIGNED' AND (COUNT(stateFilter) = 0 OR state IN stateFilter));
 
-OUTPUT(countyDatIn[.. 10000], ALL, NAMED('Raw'));
+OUTPUT(countyDatIn(state='TEXAS')[.. 10000], ALL, NAMED('Raw'));
 
 statsData := PROJECT(countyDatIn, TRANSFORM(statsRec,
                                             SELF.fips := LEFT.fips,
@@ -77,20 +79,24 @@ statsData := PROJECT(countyDatIn, TRANSFORM(statsRec,
                                             SELF.positive := 0,
                                             SELF.negative := 0));
 
-OUTPUT(statsData[.. 10000], ALL, NAMED('InputStats'));
+OUTPUT(statsData(location='TEXAS,HARRIS')[.. 10000], ALL, NAMED('InputStats'));
 popData0 := DATASET(populationPath, rawPopRecord, THOR);
-popData := JOIN(popData0, DEDUP(statsData, fips), LEFT.fips = RIGHT.fips, TRANSFORM(populationRec,
+popData := JOIN(popData0, DEDUP(statsData(fips != ''), fips), LEFT.fips = RIGHT.fips, TRANSFORM(populationRec,
 																																SELF.location := RIGHT.location,
 																																SELF.population := IF((UNSIGNED)LEFT.popestimate2019 > 0, (UNSIGNED)LEFT.popestimate2019, 1)),
 																																				LEFT OUTER);
 
 OUTPUT(popData, ALL, NAMED('PopulationData'));
 
-// Extended Statistics
+parentMetrics := DATASET(parentMetricsPath, metricsRec, THOR);
+parentCFR := parentMetrics(location = 'US' AND period=1)[1].cfr;
+OUTPUT(parentCFR, NAMED('US_CFR'));
+
+// Extended Statisticss
 statsE := CalcMetrics.DailyStats(statsData);
 OUTPUT(statsE, ,'~hpccsystems::covid19::file::public::metrics::daily_by_us_county.flat', Thor, OVERWRITE);
 
-metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections);
+metrics := COVID19.CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections, parentCFR);
 
 
 OUTPUT(metrics, ,'~hpccsystems::covid19::file::public::metrics::weekly_by_us_county.flat', Thor, OVERWRITE);
