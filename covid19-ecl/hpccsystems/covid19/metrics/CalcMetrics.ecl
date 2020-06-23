@@ -86,6 +86,7 @@ EXPORT CalcMetrics := MODULE
 						surgeStart = rec[38]
 						currIFR = rec[39]
 						ifr = rec[40]
+						cRisk = rec[42] # Contagion Risk
 						if r < 1:
 							if r == 0:
 								sev = 1.0
@@ -197,6 +198,25 @@ EXPORT CalcMetrics := MODULE
 						if surgeStart != startDate:
 							# Suppress if this is the first week of the new surge
 							outstr += peakstr
+						riskstr = 'The risk of contagion is '
+						if cRisk >= .25:
+							riskscale = 'extremely high  '
+						elif cRisk >= .17:
+							riskscale = 'very high '
+						elif cRisk >= .10:
+							riskscale = 'high '
+						elif cRisk >= .05:
+							riskscale = 'moderate '
+						elif cRisk >= .01:
+							riskscale = 'relatively low '
+						elif cRisk >= .005:
+							riskscale = 'very low '
+						else:
+							riskscale = 'negligible '
+						riskscale += 'at ' + str(round(cRisk * 100, 1)) + '%. '
+						riskstr += riskscale
+						riskstr += 'This is the likelihood of meeting an infected person during one hundred random encounters. '
+						outstr += riskstr
 						sdString = ''
 						if sdi < -.1 and iState not in ['Recovered', 'Recovering']:
 							sdString = 'It appears that the level of social distancing is decreasing, which may result in higher levels of infection growth. '
@@ -217,7 +237,9 @@ EXPORT CalcMetrics := MODULE
 							hiReason = ' various factors. '
 							hiString = location + ' is currently on the HotSpot list due to '
 							if r > 1.5 or cr > 1.5:
-								hiReason = ' rapid spread. '
+								hiReason = ' rapid increase in cases. '
+								if r < 1.5:
+									hiReason += 'The increase has not yet shown up in the R calculation because of a much lower growth in deaths.  See the Metrics page for details. '
 							elif mr > 1.5:
 								hiReason = ' a high increase in deaths. '
 							elif sdi < 0 or mdi < 0:
@@ -315,6 +337,7 @@ EXPORT CalcMetrics := MODULE
 																		
                                     SELF.cases_per_capita := IF(SELF.population > 1, LEFT.cases * 100000 / SELF.population, 0),
                                     SELF.deaths_per_capita := IF(SELF.population > 1, LEFT.deaths * 100000 / SELF.population, 0),
+																		SELF.contagionRisk := IF(SELF.population > 1, 1 - (POWER(1 - (LEFT.active / SELF.population), 100)), 0),
                                     SELF.immunePct := IF(SELF.population > 1, LEFT.recovered / SELF.population * infectedConfirmedRatio * 100, 0),
                                     SELF := LEFT), LEFT OUTER);
         metricsRec calc1(metricsRec l, metricsRec r) := TRANSFORM
@@ -395,8 +418,8 @@ EXPORT CalcMetrics := MODULE
 						SELF.peakDeaths := IF(l.location = r.location, IF(r.newDeaths > l.peakDeaths OR SELF.infectionCount > prevInfectCount, r.newDeaths, l.peakDeaths), r.newDeaths);			
             cR := IF(r.cR > 1, r.cR - 1, 0);
             mR := IF(r.mR > 1, r.mR - 1, 0);
-            mi := IF(r.medIndicator < 0, -r.medIndicator, 0);
-            sdi := IF(r.sdIndicator < 0, -r.sdIndicator, 0);
+            mi := IF(r.medIndicator < 0, -r.medIndicator / 2.5, 0);
+            sdi := IF(r.sdIndicator < 0, -r.sdIndicator / 2.5, 0);
             SELF.heatIndex := LOG(r.active) * (MIN(cR, mR + 1) + MIN(mR, cR+1) + mi + sdi) / scaleFactor;
             SELF := r;          
         END;
