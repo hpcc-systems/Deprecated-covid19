@@ -1,9 +1,8 @@
 import React, {useEffect, useRef, useState} from "react";
 
-import {Button, Col, Descriptions, Layout, PageHeader, Radio, Space, Table, Tabs} from "antd";
+import {Button, Descriptions, Layout, PageHeader, Radio, Space, Table} from "antd";
 
 import {QueryData} from "../components/QueryData";
-import {FilterRenderer} from "../components/FilterRenderer";
 import Search from "antd/es/input/Search";
 import LocationDetails from "./LocationDetails";
 
@@ -17,16 +16,10 @@ interface AllMetricsProps {
 
 export default function Hotspots(props: AllMetricsProps) {
 
-    const queryGrouped = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_grouped'));
     const queryPeriod = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_period'));
-    const queryCatalog = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_metrics_catalog'));
-    //const [queryLocationsFilter, setQueryLocationsFilter] = React.useState<Array<string>>([]);
-    //const [queryPeriodFilter, setQueryPeriodFilter] = React.useState<string>('1');
 
     const [heatIndex, setHeatIndex] = React.useState<number>(1);
     const [allMeasuresData, setAllMeasuresData] = React.useState<any>([]);
-    // const [periodFilter, setPeriodFilter] = React.useState<string>('1');
-    // const [periodsCatalog, setPeriodsCatalog] = React.useState<any>([]);
     const [dataLoadingStatus, setDataLoadingStatus] = React.useState<boolean>(false);
     const [tableFilterValue, setTableFilterValue] = React.useState<string>('');
 
