@@ -14,7 +14,8 @@ EXPORT CalcMetrics := MODULE
 		SHARED scaleFactor := 5;  // Lower will give more hot spots.
 		SHARED minActDefault := 20; // Minimum cases to be considered emerging, by default.
 		SHARED minActPer100k := 30; // Minimum active per 100K population to be considered emerging.
-		SHARED infectedConfirmedRatio := 7.5; // Calibrated by early antibody testing (rough estimate.
+		SHARED infectedConfirmedRatio := 3.0; // Calibrated by early antibody testing (rough estimate), and ILI Surge statistics.
+		
     EXPORT DATASET(statsExtRec) DailyStats(DATASET(statsRec) stats, UNSIGNED asOfDate = 0) := FUNCTION
 				stats0 := IF(asOfDate = 0, stats, stats(date < asOfDate));
         statsS := SORT(stats0, location, -date);
@@ -198,12 +199,12 @@ EXPORT CalcMetrics := MODULE
 						if surgeStart != startDate:
 							# Suppress if this is the first week of the new surge
 							outstr += peakstr
-						riskstr = 'The risk of contagion is '
-						if cRisk >= .25:
+						riskstr = 'The Contagion Risk is '
+						if cRisk >= .5:
 							riskscale = 'extremely high  '
-						elif cRisk >= .17:
+						elif cRisk >= .26:
 							riskscale = 'very high '
-						elif cRisk >= .10:
+						elif cRisk >= .15:
 							riskscale = 'high '
 						elif cRisk >= .05:
 							riskscale = 'moderate '
@@ -337,7 +338,7 @@ EXPORT CalcMetrics := MODULE
 																		
                                     SELF.cases_per_capita := IF(SELF.population > 1, LEFT.cases * 100000 / SELF.population, 0),
                                     SELF.deaths_per_capita := IF(SELF.population > 1, LEFT.deaths * 100000 / SELF.population, 0),
-																		SELF.contagionRisk := IF(SELF.population > 1, 1 - (POWER(1 - (LEFT.active / SELF.population), 100)), 0),
+																		SELF.contagionRisk := IF(SELF.population > 1, 1 - (POWER(1 - (LEFT.active * infectedConfirmedRatio / SELF.population), 100)), 0),
                                     SELF.immunePct := IF(SELF.population > 1, LEFT.recovered / SELF.population * infectedConfirmedRatio * 100, 0),
                                     SELF := LEFT), LEFT OUTER);
         metricsRec calc1(metricsRec l, metricsRec r) := TRANSFORM
