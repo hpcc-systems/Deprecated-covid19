@@ -189,7 +189,7 @@ export default function OlMap(props: Props) {
         })
 
     })
-
+//background: '#2b2b2b',
     return (
         <div>
         <div style={{background: '#2b2b2b', height:props.height}} ref={(e) => (container.current= e)} />

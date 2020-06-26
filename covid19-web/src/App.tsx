@@ -1,12 +1,21 @@
 import React, {Component} from 'react';
-import {Button, Layout, Menu} from 'antd';
+import {Layout, Menu} from 'antd';
 import './App.css';
 import Nav from "./components/Nav";
 import ModuleService, {Module} from "./services/ModuleService"
 import ListBase from "./components/ListBase";
 import {AuthForm} from "./components/AuthForm";
 import AuthService from "./services/AuthService";
-
+import {
+    AppstoreOutlined,
+    BarChartOutlined,
+    CloudOutlined,
+    ShopOutlined,
+    TeamOutlined,
+    UserOutlined,
+    UploadOutlined,
+    VideoCameraOutlined,
+} from '@ant-design/icons';
 const {SubMenu} = Menu;
 const {Header, Sider} = Layout;
 
@@ -83,7 +92,7 @@ export class App extends Component<AppProps, AppState> {
             if (item.children && item.children.length > 0) {
                 return <SubMenu key={item.id} title={item.title}>{this.renderMenu(item.children)}</SubMenu>
             } else {
-                return <Menu.Item key={item.id} title={item.title}>{item.title}</Menu.Item>
+                return <Menu.Item key={item.id} title={item.title} >{item.title}</Menu.Item>
             }
         })
     }
@@ -128,10 +137,10 @@ export class App extends Component<AppProps, AppState> {
                 </Header>
 
                 <Layout>
-                    <Sider width={240}>
+                    {/*<Sider width={200}>*/}
                         <Nav onSelect={(key: string) => this.setState({selectedListId: key})}
                              selectedKey={this.state.selectedListId} module={this.state.selectedModule}/>
-                    </Sider>
+                    {/*</Sider>*/}
 
                     {this.renderAuthForm()}
 
