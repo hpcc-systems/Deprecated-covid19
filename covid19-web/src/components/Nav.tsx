@@ -74,13 +74,12 @@ export  default class Nav extends React.Component<NavProps, NavState> {
     render() {
         return (
 
-            // <Card  style={{height:'100%', margin:0}} title={<div style={{textAlign:'center', fontWeight:'bold', backgroundColor:'#2d292d'}}>{this.props.module?.title}</div>} >
-
 
             <Menu
-                mode="inline"
-                theme={'dark'}
-                style={{height: '100%', background:'#2d2c2c'}}
+                mode="horizontal"
+
+                // theme={'dark'}
+                // style={{ background:'#2d2c2c'}}
                 defaultSelectedKeys={[this.state.defaultSelection]}
                 selectedKeys={[this.props.selectedKey]}
                 onClick={(e) =>
