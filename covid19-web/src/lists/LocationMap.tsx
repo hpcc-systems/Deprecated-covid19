@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 
-import {Button, Col, Descriptions, Layout, PageHeader, Popover, Radio, Row, Space} from "antd";
+import {Button, Col, Descriptions, Layout, PageHeader, Popover, Radio, Row, Select, Space} from "antd";
 import {QueryData} from "../components/QueryData";
 import OlMap from "../components/OlMap";
 import LocationDetails from "./LocationDetails";
@@ -53,7 +53,7 @@ export default function LocationMap(props: LocationMapProps) {
     const queryLocationsMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
     const [summaryDataState, setSummaryData, summaryData] = useStateRef(new SummaryData());
     const mapData = useRef<Map<string, any>>(new Map());
-    const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('status');
+    const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('contagion_risk');
 
     const [toolTipRow, setToolTipRow] = useState<any>([]);
     const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
@@ -114,7 +114,7 @@ export default function LocationMap(props: LocationMapProps) {
         return unmount
     }
 
-    useEffect((mount),[]);
+    useEffect((mount), []);
 
 
     const heatMapTypeChange = (value: any) => {
@@ -129,7 +129,8 @@ export default function LocationMap(props: LocationMapProps) {
             let row: any = mapData.current.get(name.toUpperCase());
             if (row) {
                 setToolTipRow(row);
-                setTooltipVisible(true);
+                //setTooltipVisible(true);
+                return makeTooltip(name, row);
             } else {
                 setToolTipRow([]);
                 setTooltipVisible(false);
@@ -138,6 +139,54 @@ export default function LocationMap(props: LocationMapProps) {
 
         return '';
     }
+
+    const makeTooltip = (name: string, row: any): string => {
+        return "<table style='background: darkslategray; color: whitesmoke; border: 1px solid black; padding: 5px'>" +
+            "<tr>" +
+            "<td colspan='2' style='font-weight: bold'>"
+            + row.location +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Contagion Risk:" +
+            "</td>" +
+            "<td>" +
+            Math.round(row.contagion_risk * 100)  +
+            "%</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Infection State:" +
+            "</td>" +
+            "<td>" +
+            row.status +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Weekly New Cases:" +
+            "</td>" +
+            "<td>" +
+            formatNumber(row.period_new_cases) +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Weekly New Deaths:" +
+            "</td>" +
+            "<td>" +
+            formatNumber(row.period_new_deaths) +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td colspan='2' style='font-style: italic;color: black'>"
+            + "Please click on the map for more details" +
+            "</td>" +
+            "</tr>" +
+            "</table>"
+    }
+
     const formatNumber: any = (value: any) => {
         if (value) {
             return value.toLocaleString();
@@ -148,18 +197,67 @@ export default function LocationMap(props: LocationMapProps) {
 
     const renderScaleTitle = () => {
         switch (heatMapType) {
-            case 'cases': return 'Legend for Total Cases';
-            case 'deaths': return 'Legend for Total Deaths';
-            case 'new_cases': return 'Legend for New Cases';
-            case 'new_deaths': return 'Legend for New Deaths';
-            case 'cases_per_capita': return 'Legend for Cases/100K';
-            case 'deaths_per_capita': return 'Legend for Deaths/100K';
-            case 'status': return 'Legend for Infection State';
-            default: return '';
+            case 'cases':
+                return 'Legend for Total Cases';
+            case 'deaths':
+                return 'Legend for Total Deaths';
+            case 'new_cases':
+                return 'Legend for New Cases';
+            case 'new_deaths':
+                return 'Legend for New Deaths';
+            case 'cases_per_capita':
+                return 'Legend for Cases/100K';
+            case 'deaths_per_capita':
+                return 'Legend for Deaths/100K';
+            case 'status':
+                return 'Legend for Infection State';
+            default:
+                return '';
         }
     }
 
     const renderScale = () => {
+        function contagionScale() {
+            return <div style={{width: 250, paddingLeft: 10}}>
+                <tr style={{}}>
+                    <td>0 %</td>
+                    <td>
+                        <div style={{width: 20, height: 20, background: "#1a9850"}}/>
+                    </td>
+                </tr>
+                <tr style={{}}>
+                    <td>0-5 %</td>
+                    <td>
+                        <div style={{width: 20, height: 20, background: "#66bd63"}}/>
+                    </td>
+                </tr>
+                <tr style={{}}>
+                    <td>6-15 %</td>
+                    <td>
+                        <div style={{width: 20, height: 20, background: "#fee08b"}}/>
+                    </td>
+                </tr>
+                <tr style={{}}>
+                    <td>16-25 %</td>
+                    <td>
+                        <div style={{width: 20, height: 20, background: "#fdae61"}}/>
+                    </td>
+                </tr>
+                <tr style={{}}>
+                    <td>26-40 %</td>
+                    <td>
+                        <div style={{width: 20, height: 20, background: "#d73027"}}/>
+                    </td>
+                </tr>
+                <tr style={{}}>
+                    <td>> than 40 %</td>
+                    <td>
+                        <div style={{width: 20, height: 20, background: "#a50026"}}/>
+                    </td>
+                </tr>
+            </div>
+        }
+
         function statusScale() {
 
             return <div style={{width: 250, paddingLeft: 10}}>
@@ -218,25 +316,25 @@ export default function LocationMap(props: LocationMapProps) {
                         </td>
                     </tr>
                     <tr>
-                        <td>{format(d * 0.1 + 1)}  to  {format(d * 0.2)}</td>
+                        <td>{format(d * 0.1 + 1)} to {format(d * 0.2)}</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#66bd63"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>{format(d * 0.2 + 1)}  to  {format(d * 0.4)}</td>
+                        <td>{format(d * 0.2 + 1)} to {format(d * 0.4)}</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fee08b"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>{format(d * 0.4 + 1)}  to  {format(d * 0.6)}</td>
+                        <td>{format(d * 0.4 + 1)} to {format(d * 0.6)}</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>{format(d * 0.6 + 1)}  to  {format(d * 0.9)}</td>
+                        <td>{format(d * 0.6 + 1)} to {format(d * 0.9)}</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#d73027"}}/>
                         </td>
@@ -268,6 +366,9 @@ export default function LocationMap(props: LocationMapProps) {
                 return statsScale(summaryData.current.deathsPerCapitaMax, 'Deaths/100K');
             case 'status':
                 return statusScale()
+            case 'contagion_risk':
+                return contagionScale()
+
         }
 
     }
@@ -281,7 +382,7 @@ export default function LocationMap(props: LocationMapProps) {
         }
     }
 
-    const renderOptionalValue= (value: any) => {
+    const renderOptionalValue = (value: any) => {
         if (value) {
             return '(' + value + ' per 100K)'
         } else {
@@ -344,6 +445,10 @@ export default function LocationMap(props: LocationMapProps) {
                     <Col><b>{row.r}</b></Col>
                 </Row>
                 <Row>
+                    <Col span={10}>Contagion Risk</Col>
+                    <Col><b>{row.contagion_risk}</b></Col>
+                </Row>
+                <Row>
                     <Col span={10}>Status</Col>
                     <Col><b>{row.status}</b></Col>
                 </Row>
@@ -380,6 +485,14 @@ export default function LocationMap(props: LocationMapProps) {
                 case 'deaths_per_capita':
                     d = row.deaths_per_capita / Math.max(1, summaryData.current.deathsPerCapitaMax);
                     break;
+                case 'contagion_risk':
+                    d = row.contagion_risk;
+                    return d >= 0.4 ? '#a50026' :
+                        d > 0.25 ? '#d73027' :
+                            d > 0.15 ? '#fdae61' :
+                                d > 0.6 ? '#fee08b' :
+                                    d > 0 ? '#66bd63' :
+                                        '#1a9850';
                 case 'status':
                     d = row.status_numb;
                     if (d >= 6) {
@@ -395,6 +508,7 @@ export default function LocationMap(props: LocationMapProps) {
                     } else {
                         return '#1a9850'
                     }
+
             }
 
             return d >= 0.9 ? '#a50026' :
@@ -434,8 +548,9 @@ export default function LocationMap(props: LocationMapProps) {
     return (
         <Layout style={{padding: 5}}>
             <PageHeader title={props.title} subTitle={props.description}
-                        extra={[<Popover placement={"left"} title={"Metrics Terms"} content={<MetricsTerms/>} trigger={"click"}><Button>Metrics Terms</Button></Popover>,
-                                <Button type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>]}
+                        extra={[<Popover placement={"left"} title={"Metrics Terms"} content={<MetricsTerms/>}
+                                         trigger={"click"}><Button>Metrics Terms</Button></Popover>,
+                            <Button type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>]}
 
             >
                 <Descriptions size="small" column={1} bordered>
@@ -443,7 +558,8 @@ export default function LocationMap(props: LocationMapProps) {
                 </Descriptions>
 
                 <Descriptions size="small" column={2} style={{paddingTop: 5}}>
-                    <Descriptions.Item><h5>Data Attribution: John Hopkins University, US Census Bureau, UN DESA</h5></Descriptions.Item>
+                    <Descriptions.Item><h5>Data Attribution: John Hopkins University, US Census Bureau, UN DESA</h5>
+                    </Descriptions.Item>
                     <Descriptions.Item><h5>Filters: Please click and select a location from the chart to view the
                         metrics</h5>
                     </Descriptions.Item>
@@ -452,22 +568,38 @@ export default function LocationMap(props: LocationMapProps) {
             </PageHeader>
             <Row>
                 <Col span={24}>
-                    <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
-                                 value={heatMapType}>
-                        <Space direction={'horizontal'}>
-                            <Radio value={'status'}>Infection State</Radio>
-                            <Radio value={'new_cases'}>Weekly New Cases</Radio>
-                            <Radio value={'new_deaths'}>Weekly New Deaths</Radio>
-                            <Radio value={'cases_per_capita'}>Cases/100K</Radio>
-                            <Radio value={'deaths_per_capita'}>Deaths/100K</Radio>
-                            <Radio value={'cases'}>Total Cases</Radio>
-                            <Radio value={'deaths'}>Total Deaths</Radio>
-                            <Popover content={renderScale()} title={renderScaleTitle()} >
-                                <Button  type={"link"}>Legend</Button>
-                            </Popover>
-                        </Space>
+                    {/*<Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}*/}
+                    {/*             value={heatMapType}>*/}
+                    {/*    <Space direction={'horizontal'}>*/}
+                    {/*        <Radio value={'contagion_risk'}>Contagion Risk</Radio>*/}
+                    {/*        <Radio value={'status'}>Infection State</Radio>*/}
+                    {/*        <Radio value={'new_cases'}>Weekly New Cases</Radio>*/}
+                    {/*        <Radio value={'new_deaths'}>Weekly New Deaths</Radio>*/}
+                    {/*        <Radio value={'cases_per_capita'}>Cases/100K</Radio>*/}
+                    {/*        <Radio value={'deaths_per_capita'}>Deaths/100K</Radio>*/}
+                    {/*        <Radio value={'cases'}>Total Cases</Radio>*/}
+                    {/*        <Radio value={'deaths'}>Total Deaths</Radio>*/}
+                    {/*        <Popover content={renderScale()} title={renderScaleTitle()}>*/}
+                    {/*            <Button type={"link"}>Legend</Button>*/}
+                    {/*        </Popover>*/}
+                    {/*    </Space>*/}
 
-                    </Radio.Group>
+                    {/*</Radio.Group>*/}
+                    <span>Color Map By: </span>
+                    <Select value={heatMapType} style={{ width: 250 }} onChange={(v) => heatMapTypeChange(v)}>
+                                <option value={'contagion_risk'}>Contagion Risk</option>
+                                <option value={'status'}>Infection State</option>
+                                <option value={'new_cases'}>Weekly New Cases</option>
+                                <option value={'new_deaths'}>Weekly New Deaths</option>
+                                <option value={'cases_per_capita'}>Cases/100K</option>
+                                <option value={'deaths_per_capita'}>Deaths/100K</option>
+                                <option value={'cases'}>Total Cases</option>
+                                <option value={'deaths'}>Total Deaths</option>
+
+                    </Select>
+                            <Popover content={renderScale()} title={renderScaleTitle()}>
+                                <Button type={"link"}>Legend</Button>
+                            </Popover>
                 </Col>
             </Row>
 
@@ -482,7 +614,7 @@ export default function LocationMap(props: LocationMapProps) {
                        selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                        geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
                        secondaryGeoFile={props.secondaryGeoFile}
-                       height={'730px'}/>
+                       height={'750px'}/>
             </div>
 
             <LocationDetails show={showLocationDetails}/>

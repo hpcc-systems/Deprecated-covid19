@@ -36,9 +36,10 @@ daily := JOIN(dailyMetrics.countries (date=latestDate), weeklyMetrics.world (per
                       REAL8 cfr,
                       REAL8 heat_index,
                       REAL8 status_numb,
-                      REAL8 infection_count,
+                      REAL8 infection_count,                      
                       REAL8 sti,
                       REAL8 ewi,
+                      REAL8 contagion_risk,
                       },
 
                       SELF.location := LEFT.location,
@@ -72,6 +73,7 @@ daily := JOIN(dailyMetrics.countries (date=latestDate), weeklyMetrics.world (per
                       SELF.cfr := RIGHT.cfr, 
                       SELF.sti := RIGHT.sti,
                       SELF.ewi := RIGHT.ewi,
+                      SELF.contagion_risk := RIGHT.contagionRisk,
                       SELF.heat_index := RIGHT.heatIndex,
                       SELF.infection_count := RIGHT.infectionCount,
                       SELF.period_new_cases := RIGHT.newCases;

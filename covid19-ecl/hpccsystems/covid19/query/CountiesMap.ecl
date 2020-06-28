@@ -42,6 +42,7 @@ daily := JOIN(dailyMetrics.counties (date=latestDate), weeklyMetrics.counties (p
                       REAL8 infection_count,
                       REAL8 sti,
                       REAL8 ewi,
+                      REAL8 contagion_risk,
                       },
 
                       SELF.location := LEFT.location,
@@ -75,6 +76,7 @@ daily := JOIN(dailyMetrics.counties (date=latestDate), weeklyMetrics.counties (p
                       SELF.cfr := RIGHT.cfr, 
                       SELF.sti := RIGHT.sti,
                       SELF.ewi := RIGHT.ewi,
+                      SELF.contagion_risk := RIGHT.contagionRisk,
                       SELF.heat_index := RIGHT.heatIndex,
                       SELF.infection_count := RIGHT.infectionCount,
                       SELF.period_new_cases := RIGHT.newCases;

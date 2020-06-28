@@ -100,7 +100,8 @@ export default function LocationDetails(props: LocationDetailsProps) {
         {"name": "Social Distance Indicator", "value": locationDetail("sdindicator")},
         {"name": "Mortality Rate (mR)", "value": locationDetail("mr")},
         {"name": "Cases Rate (cR)", "value": locationDetail("cr")},
-        {"name": "Infection Rate (R)", "value": locationDetail("r")}
+        {"name": "Infection Rate (R)", "value": locationDetail("r")},
+        {"name": "Contagion Risk", "value": locationDetail("contagionrisk")}
     ];
 
     const chartModel = {
@@ -138,7 +139,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
 
 
     const chartPeriodTrend = {
-        padding: 'auto',
+        padding: '100',
         title: {
             visible: false,
         },
@@ -159,7 +160,9 @@ export default function LocationDetails(props: LocationDetailsProps) {
         xField: 'period_string',
         yField: 'r',
         xAxis:{
-            title: {text:'Period'}
+            title: {text:'Period', visible: false},
+            label: {autoRotate: true, autoHide:false}
+
         },
         yAxis:{
             title: {text:'R'}
@@ -167,7 +170,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
     }
 
     const chartPeriodCasesDeathsTrend = {
-        padding: 'auto',
+        padding: '100',
         title: {
             visible: false,
         },
@@ -184,7 +187,9 @@ export default function LocationDetails(props: LocationDetailsProps) {
         xField: 'period_string',
         yField: 'value',
         xAxis:{
-            title: {text:'Period'}
+            title: {text:'Period', visible: false},
+            label: {autoRotate: true, autoHide:false}
+
         },
         yAxis:{
             title: {text:'Value'}
@@ -205,14 +210,9 @@ export default function LocationDetails(props: LocationDetailsProps) {
             filteredValue: tableLocationFilterValue.split(',')
         },
         {
-            title: 'Location',
-            dataIndex: 'location',
-            width: '200px'
-        },
-        {
             title: 'Status',
             dataIndex: 'istate',
-            width: '200px'
+            width: '100px'
         },
         {
             title: 'R',
@@ -232,7 +232,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
             visible={modalVisible}
             onOk={(e) => handleOk()}
             onCancel={(e) => handleOk()}
-            width={1600}
+            width={1000}
             footer={null}
             style={{ top: 10 }}
         >
@@ -251,7 +251,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
                                    height={'600px'}/>
                         </Col>
                     </Row>
-
+                    <div style={{height: 20}}/>
                 </Tabs.TabPane>
 
 
@@ -362,7 +362,7 @@ export default function LocationDetails(props: LocationDetailsProps) {
                     <Search placeholder="input search text" onSearch={value => setTableLocationFilterValue(value)}
                             enterButton/>
                     <Table dataSource={locationChildrenQueryData} columns={locationDetailColumns}
-                           pagination={false} scroll={{y: 550}} style={{minHeight: 600}}/>
+                           pagination={false} scroll={{y: 550}} style={{minHeight: 600, fontSize: '9px'}} size={'small'}/>
                 </Tabs.TabPane>
                 {/*}*/}
             </Tabs>
