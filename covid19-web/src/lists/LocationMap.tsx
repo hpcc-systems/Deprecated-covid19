@@ -157,6 +157,14 @@ export default function LocationMap(props: LocationMapProps) {
             "</tr>" +
             "<tr>" +
             "<td>" +
+            "R:" +
+            "</td>" +
+            "<td>" +
+            row.r +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
             "Infection State:" +
             "</td>" +
             "<td>" +
@@ -217,40 +225,41 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const renderScale = () => {
+
         function contagionScale() {
             return <div style={{width: 250, paddingLeft: 10}}>
                 <tr style={{}}>
-                    <td>0 %</td>
+                    <td>LT 1 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#1a9850"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>0-5 %</td>
+                    <td>1-4 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#66bd63"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>6-15 %</td>
+                    <td>5-15 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#fee08b"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>16-25 %</td>
+                    <td>15-24 % </td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>26-40 %</td>
+                    <td>25-50 % </td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#d73027"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>> than 40 %</td>
+                    <td>GT or = 50 % </td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#a50026"}}/>
                     </td>
@@ -487,11 +496,11 @@ export default function LocationMap(props: LocationMapProps) {
                     break;
                 case 'contagion_risk':
                     d = row.contagion_risk;
-                    return d >= 0.4 ? '#a50026' :
-                        d > 0.25 ? '#d73027' :
-                            d > 0.15 ? '#fdae61' :
-                                d > 0.6 ? '#fee08b' :
-                                    d > 0 ? '#66bd63' :
+                    return d >= 0.5 ? '#a50026' :
+                        d >= 0.25 ? '#d73027' :
+                            d >= 0.15 ? '#fdae61' :
+                                d >= 0.05 ? '#fee08b' :
+                                    d > 0.01 ? '#66bd63' :
                                         '#1a9850';
                 case 'status':
                     d = row.status_numb;
