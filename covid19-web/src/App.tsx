@@ -6,18 +6,10 @@ import ModuleService, {Module} from "./services/ModuleService"
 import ListBase from "./components/ListBase";
 import {AuthForm} from "./components/AuthForm";
 import AuthService from "./services/AuthService";
-import {
-    AppstoreOutlined,
-    BarChartOutlined,
-    CloudOutlined,
-    ShopOutlined,
-    TeamOutlined,
-    UserOutlined,
-    UploadOutlined,
-    VideoCameraOutlined,
-} from '@ant-design/icons';
+
+
 const {SubMenu} = Menu;
-const {Header, Sider} = Layout;
+const {Header} = Layout;
 
 interface AppState {
     selectedListId: string;
@@ -56,7 +48,7 @@ export class App extends Component<AppProps, AppState> {
     }
 
     initMenu() {
-        if(this.authService.isAuthenticated()) {
+        if (this.authService.isAuthenticated()) {
             this.moduleService.getModules().then(data => {
 
                 let defaultSelection: Module | null = null;
@@ -92,7 +84,7 @@ export class App extends Component<AppProps, AppState> {
             if (item.children && item.children.length > 0) {
                 return <SubMenu key={item.id} title={item.title}>{this.renderMenu(item.children)}</SubMenu>
             } else {
-                return <Menu.Item key={item.id} title={item.title} >{item.title}</Menu.Item>
+                return <Menu.Item key={item.id} title={item.title}>{item.title}</Menu.Item>
             }
         })
     }
@@ -113,12 +105,12 @@ export class App extends Component<AppProps, AppState> {
     render() {
         return (
             <Layout style={{height: "100vh"}}>
-                <Header style={{background: '#3a3939'}}>
+                <Header style={{paddingLeft:0, height:50,background: '#3a3939'}}>
                     <div className="logo"/>
                     <Menu
                         theme={"dark"}
                         mode="horizontal"
-                        style={{lineHeight: '64px', background: '#3a3939'}}
+                        style={{lineHeight: '50px', background: '#3a3939'}}
                         selectedKeys={[this.state.menuKey]}
                         onClick={(e) =>
                             this.initModule(e.key)}
@@ -127,20 +119,23 @@ export class App extends Component<AppProps, AppState> {
                             this.renderMenu(this.state.menus)
                         }
                         <Menu.Item>
-                            <a style={{color: 'lightblue' , fontSize:'9px', fontWeight:'bold'}} rel="noopener noreferrer" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</a>
+                            <a style={{color: 'lightblue', fontSize: '9px', fontWeight: 'bold'}}
+                               rel="noopener noreferrer" target={"_blank"} href={"open_database_license.pdf"}>Open
+                                Database License</a>
                         </Menu.Item>
                         <Menu.Item>
-                            <a style={{color: 'lightblue', fontSize:'9px', fontWeight:'bold'}}  rel="noopener noreferrer" target={"_blank"} href={"https://github.com/hpcc-systems/covid19"} >GitHub</a>
+                            <a style={{color: 'lightblue', fontSize: '9px', fontWeight: 'bold'}}
+                               rel="noopener noreferrer" target={"_blank"}
+                               href={"https://github.com/hpcc-systems/covid19"}>GitHub</a>
                         </Menu.Item>
                     </Menu>
 
                 </Header>
+                <Nav onSelect={(key: string) => this.setState({selectedListId: key})}
+                     selectedKey={this.state.selectedListId} module={this.state.selectedModule}/>
 
-                <Layout>
-                    {/*<Sider width={200}>*/}
-                        <Nav onSelect={(key: string) => this.setState({selectedListId: key})}
-                             selectedKey={this.state.selectedListId} module={this.state.selectedModule}/>
-                    {/*</Sider>*/}
+                <Layout style={{overflow: 'auto', background:'lightgray'}}>
+
 
                     {this.renderAuthForm()}
 

@@ -1,21 +1,6 @@
 /*@import '~antd/dist/antd.dark.min.css';*/
 @import '~antd/dist/antd.compact.css';
 
-/*.logo {*/
-/*  width: 120px;*/
-/*  height: 31px;*/
-/*  background: rgba(255, 255, 255, 0.2);*/
-/*  margin: 16px 28px 16px 100px;*/
-/*  float: left;*/
-/*}*/
-
-/*.logo {*/
-/*  height: 32px;*/
-/*  background: rgba(255, 255, 255, 0.2);*/
-/*  margin: 16px;*/
-/*}*/
-
-
 
 .ant-dropdown-button {
   margin: 0 8px 8px 0;
@@ -23,7 +8,7 @@
 }
 
 .logo {
-  width: 250px;
+  width: 190px;
   height: 60px;
   background-image: url("logo.png");
   background-repeat: no-repeat;
@@ -39,22 +24,13 @@
   pointer-events: none;
 }
 
-.site-drawer-render-in-current-wrapper {
-  height: 200px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid #ebedf0;
-  border-radius: 2px;
-  padding: 48px;
-  text-align: center;
-  background: #fafafa;
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
+/*@media (prefers-reduced-motion: no-preference) {*/
+/*  .App-logo {*/
+/*    animation: App-logo-spin infinite 20s linear;*/
+/*  }*/
+/*}*/
+
 th.column-number,
 td.column-number {
   text-align: right !important;
@@ -86,19 +62,6 @@ td.column-number {
 #components-form-demo-normal-login .login-form-button {
   width: 100%;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-
 
 a {
   color: red;

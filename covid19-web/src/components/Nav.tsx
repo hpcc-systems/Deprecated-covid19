@@ -80,6 +80,7 @@ export  default class Nav extends React.Component<NavProps, NavState> {
 
                 // theme={'dark'}
                 // style={{ background:'#2d2c2c'}}
+                style={{ background:'lightgray'}}
                 defaultSelectedKeys={[this.state.defaultSelection]}
                 selectedKeys={[this.props.selectedKey]}
                 onClick={(e) =>
