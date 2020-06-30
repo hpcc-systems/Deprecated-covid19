@@ -17,7 +17,7 @@ OUTPUT(
       ALL,NAMED('summary'));
 
 ds_filtered_children :=TABLE(ds_children(('US'=_location or 'The World'=_location or parentlocation=_location) and period=1),
-                            {location,istate,r,commentary});
+                            {location,istate,contagionrisk,r,commentary});
 OUTPUT(SORT(ds_filtered_children,-istate),ALL,NAMED('children'));//FIXME: Will need to fix counties FIPS. Ask Roger to do it in the processing itself?
 
 
