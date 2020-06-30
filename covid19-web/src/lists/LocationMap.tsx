@@ -152,7 +152,7 @@ export default function LocationMap(props: LocationMapProps) {
             "Contagion Risk:" +
             "</td>" +
             "<td>" +
-            Math.round(row.contagion_risk * 100)  +
+            Math.round(row.contagion_risk * 100) +
             "%</td>" +
             "</tr>" +
             "<tr>" +
@@ -247,19 +247,19 @@ export default function LocationMap(props: LocationMapProps) {
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>15-24 % </td>
+                    <td>15-24 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>25-50 % </td>
+                    <td>25-50 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#d73027"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>GT or = 50 % </td>
+                    <td>GT or = 50 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#a50026"}}/>
                     </td>
@@ -575,42 +575,38 @@ export default function LocationMap(props: LocationMapProps) {
                 </Descriptions>
 
             </PageHeader>
-            <Row>
-                <Col span={24}>
-                    {/*<Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}*/}
-                    {/*             value={heatMapType}>*/}
-                    {/*    <Space direction={'horizontal'}>*/}
-                    {/*        <Radio value={'contagion_risk'}>Contagion Risk</Radio>*/}
-                    {/*        <Radio value={'status'}>Infection State</Radio>*/}
-                    {/*        <Radio value={'new_cases'}>Weekly New Cases</Radio>*/}
-                    {/*        <Radio value={'new_deaths'}>Weekly New Deaths</Radio>*/}
-                    {/*        <Radio value={'cases_per_capita'}>Cases/100K</Radio>*/}
-                    {/*        <Radio value={'deaths_per_capita'}>Deaths/100K</Radio>*/}
-                    {/*        <Radio value={'cases'}>Total Cases</Radio>*/}
-                    {/*        <Radio value={'deaths'}>Total Deaths</Radio>*/}
-                    {/*        <Popover content={renderScale()} title={renderScaleTitle()}>*/}
-                    {/*            <Button type={"link"}>Legend</Button>*/}
-                    {/*        </Popover>*/}
-                    {/*    </Space>*/}
 
-                    {/*</Radio.Group>*/}
-                    <span>Color Map By: </span>
-                    <Select value={heatMapType} style={{ width: 250 }} onChange={(v) => heatMapTypeChange(v)}>
-                                <option value={'contagion_risk'}>Contagion Risk</option>
-                                <option value={'status'}>Infection State</option>
-                                <option value={'new_cases'}>Weekly New Cases</option>
-                                <option value={'new_deaths'}>Weekly New Deaths</option>
-                                <option value={'cases_per_capita'}>Cases/100K</option>
-                                <option value={'deaths_per_capita'}>Deaths/100K</option>
-                                <option value={'cases'}>Total Cases</option>
-                                <option value={'deaths'}>Total Deaths</option>
+            <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
+                         value={heatMapType} buttonStyle="solid" >
 
-                    </Select>
-                            <Popover content={renderScale()} title={renderScaleTitle()}>
-                                <Button type={"link"}>Legend</Button>
-                            </Popover>
-                </Col>
-            </Row>
+                <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
+                <Radio.Button value={'status'}>Infection State</Radio.Button>
+                <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
+                <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
+                <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>
+                <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
+                <Radio.Button value={'cases'}>Total Cases</Radio.Button>
+                <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
+                <Popover content={renderScale()} title={renderScaleTitle()}>
+                    <Button type={"link"}>Legend</Button>
+                </Popover>
+            </Radio.Group>
+            {/*<span>Color Map By: </span>*/}
+            {/*<Select value={heatMapType} style={{ width: 250 }} onChange={(v) => heatMapTypeChange(v)}>*/}
+            {/*            <option value={'contagion_risk'}>Contagion Risk</option>*/}
+            {/*            <option value={'status'}>Infection State</option>*/}
+            {/*            <option value={'new_cases'}>Weekly New Cases</option>*/}
+            {/*            <option value={'new_deaths'}>Weekly New Deaths</option>*/}
+            {/*            <option value={'cases_per_capita'}>Cases/100K</option>*/}
+            {/*            <option value={'deaths_per_capita'}>Deaths/100K</option>*/}
+            {/*            <option value={'cases'}>Total Cases</option>*/}
+            {/*            <option value={'deaths'}>Total Deaths</option>*/}
+
+            {/*</Select>*/}
+            {/*        <Popover content={renderScale()} title={renderScaleTitle()}>*/}
+            {/*            <Button type={"link"}>Legend</Button>*/}
+            {/*        </Popover>*/}
+
 
             <Popover content={renderToolTip()} title={renderToolTipHeader()}
                      placement={"rightBottom"} visible={tooltipVisible}>

@@ -13,7 +13,7 @@ EXPORT USStatePopulation := MODULE
   END;
 
 
-  EXPORT ds := DATASET(filePath, layout, CSV(HEADING(1)));  
+  EXPORT ds := DATASET(filePath, layout, FLAT);  
 
 
 END;
