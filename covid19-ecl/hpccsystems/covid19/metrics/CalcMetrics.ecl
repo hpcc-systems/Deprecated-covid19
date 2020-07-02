@@ -202,7 +202,7 @@ EXPORT CalcMetrics := MODULE
 						riskstr = 'The Contagion Risk is '
 						if cRisk >= .5:
 							riskscale = 'extremely high  '
-						elif cRisk >= .26:
+						elif cRisk >= .25:
 							riskscale = 'very high '
 						elif cRisk >= .15:
 							riskscale = 'high '
@@ -219,9 +219,17 @@ EXPORT CalcMetrics := MODULE
 						riskstr += 'This is the likelihood of meeting an infected person during one hundred random encounters. '
 						outstr += riskstr
 						sdString = ''
-						if sdi < -.1 and iState not in ['Recovered', 'Recovering']:
-							sdString = 'It appears that the level of social distancing is decreasing, which may result in higher levels of infection growth. '
+						sdscalestr = 'slightly'
+						if abs(sdi) > .6:
+							sdscalestr = 'dramatically'
+						elif abs(sdi) > .4:
+							sdscalestr = 'significantly'
+						if sdi < -.1 and iState not in ['Recovered']:
+							sdString = 'It appears that the level of social distancing has decreased ' + sdscalestr + ', resulting in higher levels of infection growth. '
 							outstr += sdString
+						elif sdi >= .1:
+							sdString = 'It appears that the level of social distancing has increased ' + sdscalestr + ', resulting in lower levels of infection growth. '
+							outstr += sdString 
 						if mdi < -.1:
 							mdString = 'The mortality rate is growing faster than the case rate, implying that there may be a deterioration in medical conditions, probably indicating '
 							if r >= 1.5 and active > minActive:
@@ -243,6 +251,8 @@ EXPORT CalcMetrics := MODULE
 									hiReason += 'The increase has not yet shown up in the R calculation because of a much lower growth in deaths.  See the Metrics page for details. '
 							elif mr > 1.5:
 								hiReason = ' a high increase in deaths. '
+							elif cRisk > .25:
+								hiReason = ' high risk of contagion. '
 							elif sdi < 0 or mdi < 0:
 								if sdi < mdi:
 									hiReason = ' apparent decrease in social distancing measures. '
@@ -278,7 +288,6 @@ EXPORT CalcMetrics := MODULE
 						elif immunePct > 50:
 							immunestr += 'This location is approaching herd immunity and should not see significant further spread. '
 						immunestr += 'This preliminary testing also implies an Infection Fatality Rate (IFR) of roughly ' + str(round(ifr*100, 1)) + '%. '
-
 						if immunePct > .5:
 							outstr += immunestr
 						sdistr = ''
@@ -421,7 +430,7 @@ EXPORT CalcMetrics := MODULE
             mR := IF(r.mR > 1, r.mR - 1, 0);
             mi := IF(r.medIndicator < 0, -r.medIndicator / 2.5, 0);
             sdi := IF(r.sdIndicator < 0, -r.sdIndicator / 2.5, 0);
-            SELF.heatIndex := LOG(r.active) * (MIN(cR, mR + 1) + MIN(mR, cR+1) + mi + sdi) / scaleFactor;
+            SELF.heatIndex := LOG(r.active) * (MIN(cR, mR + 1) + MIN(mR, cR+1) + mi + sdi + r.contagionRisk) / scaleFactor;
             SELF := r;          
         END;
         metrics5 := SORT(metrics4, location, -period);
