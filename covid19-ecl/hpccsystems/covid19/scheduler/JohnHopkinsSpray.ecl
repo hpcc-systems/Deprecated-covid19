@@ -10,7 +10,7 @@ IMPORT hpccsystems.covid19.file.public.JohnHopkins as jh;
 today := STD.Date.Today();
 yesterday :=  today - 1;
 tempSuperFileName := '~hpccsystems::covid19::file::raw::JohnHopkins::V2::temp';
-lzip:= '10.0.0.6';
+lzip:= '10.0.0.4';
 srcPath := '/var/lib/HPCCSystems/mydropzone/hpccsystems/covid19/file/raw/JohnHopkins/V2/';
 scopeName := '~hpccsystems::covid19::file::raw::JohnHopkins::V2::';
 l_incoming := RECORD
