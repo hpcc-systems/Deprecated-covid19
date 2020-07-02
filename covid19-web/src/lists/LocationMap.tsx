@@ -141,7 +141,7 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const makeTooltip = (name: string, row: any): string => {
-        return "<table style='background: darkslategray; color: whitesmoke; border: 1px solid black; padding: 5px'>" +
+        return "<div style='padding: 5px; border: 1px solid black; background: darkslategray'><table style='color: whitesmoke;'>" +
             "<tr>" +
             "<td colspan='2' style='font-weight: bold'>"
             + row.location +
@@ -152,7 +152,7 @@ export default function LocationMap(props: LocationMapProps) {
             "Contagion Risk:" +
             "</td>" +
             "<td>" +
-            Math.round(row.contagion_risk * 100)  +
+            Math.round(row.contagion_risk * 100) +
             "%</td>" +
             "</tr>" +
             "<tr>" +
@@ -161,6 +161,14 @@ export default function LocationMap(props: LocationMapProps) {
             "</td>" +
             "<td>" +
             row.status +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "R:" +
+            "</td>" +
+            "<td>" +
+            row.r +
             "</td>" +
             "</tr>" +
             "<tr>" +
@@ -184,7 +192,7 @@ export default function LocationMap(props: LocationMapProps) {
             + "Please click on the map for more details" +
             "</td>" +
             "</tr>" +
-            "</table>"
+            "</table></div>"
     }
 
     const formatNumber: any = (value: any) => {
@@ -217,40 +225,41 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const renderScale = () => {
+
         function contagionScale() {
             return <div style={{width: 250, paddingLeft: 10}}>
                 <tr style={{}}>
-                    <td>0 %</td>
+                    <td>LT 1 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#1a9850"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>0-5 %</td>
+                    <td>1-4 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#66bd63"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>6-15 %</td>
+                    <td>5-15 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#fee08b"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>16-25 %</td>
+                    <td>15-24 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>26-40 %</td>
+                    <td>25-50 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#d73027"}}/>
                     </td>
                 </tr>
                 <tr style={{}}>
-                    <td>> than 40 %</td>
+                    <td>GT or = 50 %</td>
                     <td>
                         <div style={{width: 20, height: 20, background: "#a50026"}}/>
                     </td>
@@ -487,11 +496,11 @@ export default function LocationMap(props: LocationMapProps) {
                     break;
                 case 'contagion_risk':
                     d = row.contagion_risk;
-                    return d >= 0.4 ? '#a50026' :
-                        d > 0.25 ? '#d73027' :
-                            d > 0.15 ? '#fdae61' :
-                                d > 0.6 ? '#fee08b' :
-                                    d > 0 ? '#66bd63' :
+                    return d >= 0.5 ? '#a50026' :
+                        d >= 0.25 ? '#d73027' :
+                            d >= 0.15 ? '#fdae61' :
+                                d >= 0.05 ? '#fee08b' :
+                                    d > 0.01 ? '#66bd63' :
                                         '#1a9850';
                 case 'status':
                     d = row.status_numb;
@@ -566,42 +575,38 @@ export default function LocationMap(props: LocationMapProps) {
                 </Descriptions>
 
             </PageHeader>
-            <Row>
-                <Col span={24}>
-                    {/*<Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}*/}
-                    {/*             value={heatMapType}>*/}
-                    {/*    <Space direction={'horizontal'}>*/}
-                    {/*        <Radio value={'contagion_risk'}>Contagion Risk</Radio>*/}
-                    {/*        <Radio value={'status'}>Infection State</Radio>*/}
-                    {/*        <Radio value={'new_cases'}>Weekly New Cases</Radio>*/}
-                    {/*        <Radio value={'new_deaths'}>Weekly New Deaths</Radio>*/}
-                    {/*        <Radio value={'cases_per_capita'}>Cases/100K</Radio>*/}
-                    {/*        <Radio value={'deaths_per_capita'}>Deaths/100K</Radio>*/}
-                    {/*        <Radio value={'cases'}>Total Cases</Radio>*/}
-                    {/*        <Radio value={'deaths'}>Total Deaths</Radio>*/}
-                    {/*        <Popover content={renderScale()} title={renderScaleTitle()}>*/}
-                    {/*            <Button type={"link"}>Legend</Button>*/}
-                    {/*        </Popover>*/}
-                    {/*    </Space>*/}
 
-                    {/*</Radio.Group>*/}
-                    <span>Color Map By: </span>
-                    <Select value={heatMapType} style={{ width: 250 }} onChange={(v) => heatMapTypeChange(v)}>
-                                <option value={'contagion_risk'}>Contagion Risk</option>
-                                <option value={'status'}>Infection State</option>
-                                <option value={'new_cases'}>Weekly New Cases</option>
-                                <option value={'new_deaths'}>Weekly New Deaths</option>
-                                <option value={'cases_per_capita'}>Cases/100K</option>
-                                <option value={'deaths_per_capita'}>Deaths/100K</option>
-                                <option value={'cases'}>Total Cases</option>
-                                <option value={'deaths'}>Total Deaths</option>
+            <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
+                         value={heatMapType} buttonStyle="solid" >
 
-                    </Select>
-                            <Popover content={renderScale()} title={renderScaleTitle()}>
-                                <Button type={"link"}>Legend</Button>
-                            </Popover>
-                </Col>
-            </Row>
+                <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
+                <Radio.Button value={'status'}>Infection State</Radio.Button>
+                <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
+                <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
+                <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>
+                <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
+                <Radio.Button value={'cases'}>Total Cases</Radio.Button>
+                <Radio.Button value={'deaths'}>Total Deaths</Radio.Button>
+                <Popover content={renderScale()} title={renderScaleTitle()}>
+                    <Button type={"link"}>Legend</Button>
+                </Popover>
+            </Radio.Group>
+            {/*<span>Color Map By: </span>*/}
+            {/*<Select value={heatMapType} style={{ width: 250 }} onChange={(v) => heatMapTypeChange(v)}>*/}
+            {/*            <option value={'contagion_risk'}>Contagion Risk</option>*/}
+            {/*            <option value={'status'}>Infection State</option>*/}
+            {/*            <option value={'new_cases'}>Weekly New Cases</option>*/}
+            {/*            <option value={'new_deaths'}>Weekly New Deaths</option>*/}
+            {/*            <option value={'cases_per_capita'}>Cases/100K</option>*/}
+            {/*            <option value={'deaths_per_capita'}>Deaths/100K</option>*/}
+            {/*            <option value={'cases'}>Total Cases</option>*/}
+            {/*            <option value={'deaths'}>Total Deaths</option>*/}
+
+            {/*</Select>*/}
+            {/*        <Popover content={renderScale()} title={renderScaleTitle()}>*/}
+            {/*            <Button type={"link"}>Legend</Button>*/}
+            {/*        </Popover>*/}
+
 
             <Popover content={renderToolTip()} title={renderToolTipHeader()}
                      placement={"rightBottom"} visible={tooltipVisible}>

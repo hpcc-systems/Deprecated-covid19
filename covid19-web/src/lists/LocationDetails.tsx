@@ -215,6 +215,11 @@ export default function LocationDetails(props: LocationDetailsProps) {
             width: '100px'
         },
         {
+            title: 'Contagion Risk',
+            dataIndex: 'contagionrisk',
+            width: '100px'
+        },
+        {
             title: 'R',
             dataIndex: 'r',
             className: 'column-number',

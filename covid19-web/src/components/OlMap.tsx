@@ -145,6 +145,7 @@ export default function OlMap(props: Props) {
                     let feature = e.selected[0];
                     if (popup.current) {
                         popup.current.innerHTML = props.toolTipHandler(feature.get(props.geoKeyField));
+                        //overlay.setPosition(feature.getGeometry().getCoordinates());
                         overlay.setPosition(e.mapBrowserEvent.coordinate);
                     }
                 } else {
