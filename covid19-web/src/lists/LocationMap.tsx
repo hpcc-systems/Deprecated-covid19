@@ -141,7 +141,7 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const makeTooltip = (name: string, row: any): string => {
-        return "<table style='background: darkslategray; color: whitesmoke; border: 1px solid black; padding: 5px'>" +
+        return "<div style='padding: 5px; border: 1px solid black; background: darkslategray'><table style='color: whitesmoke;'>" +
             "<tr>" +
             "<td colspan='2' style='font-weight: bold'>"
             + row.location +
@@ -157,18 +157,18 @@ export default function LocationMap(props: LocationMapProps) {
             "</tr>" +
             "<tr>" +
             "<td>" +
-            "R:" +
-            "</td>" +
-            "<td>" +
-            row.r +
-            "</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>" +
             "Infection State:" +
             "</td>" +
             "<td>" +
             row.status +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "R:" +
+            "</td>" +
+            "<td>" +
+            row.r +
             "</td>" +
             "</tr>" +
             "<tr>" +
@@ -192,7 +192,7 @@ export default function LocationMap(props: LocationMapProps) {
             + "Please click on the map for more details" +
             "</td>" +
             "</tr>" +
-            "</table>"
+            "</table></div>"
     }
 
     const formatNumber: any = (value: any) => {
