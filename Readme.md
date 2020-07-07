@@ -91,5 +91,26 @@ The system provides a friendly web-based interface for viewing COVID-19 data and
 
 The user interface provides several ways to navigate:
 * _Map View_ shows aspects of the infection through color codings on a map.  The map can be color coded by a number of attributes including Infection State, New Cases, New Deaths, Cases per 100K, Deaths per 100K, Total Cases and Total Deaths.
+![Map View](/docs/images/readme/map.png)
+* _Map Detail View_ is shown when you click on a location on the map. The details shows the trending of Infection Rate over time and other advanced metrics. 
+![Map Detail View](/docs/images/readme/map-detail.png)
 * _Hotspots View_ orders the locations by _Heat Index_,  showing a triage list of locations and a description of their state.  All details can be seen by clicking on any of the Hotspot locations.
+![Hotspots View](/docs/images/readme/hotspots.png)
 * _Comparison View_ allows simultaneous viewing of statistics from multiple selected locations of interest.
+![Comparison View](/docs/images/readme/compare.png)
+
+# Data Sources
+
+The main data sources are John Hopkins University (daily cases and deaths), US Census Bureau (US population), UN DESA (World population). The data lake data and the workflow can viewed using HPCC Systems Data Catalog tool Tombolo (version 0.5) at: 
+
+https://tombolo.hpccsystems.com   [please login using CovidTracker/HPCCSystems as the user  name and password]
+
+![Tombolo Intro](/docs/images/readme/tombolo_intro.png)
+
+A node in the workflow can be selected and double clicked to view the details. The following is an example of the details of a metrics file:
+
+![Tombolo File Detail](/docs/images/readme/tombolo_file_detail.png)
+
+
+
+

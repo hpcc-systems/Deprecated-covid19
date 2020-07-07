@@ -5,7 +5,7 @@ EXPORT Types := MODULE
     // Infection State Enumerated Values
     EXPORT iState_t := ENUM(Unknown = 0, Emerging = 1, Spreading = 2, Stabilizing = 3, Stabilized = 4, Recovering = 5, Recovered = 6, Regressing = 7);
     // Format for metric information
-    EXPORT metric_t := DECIMAL5_2;
+    EXPORT metric_t := DECIMAL9_2;
 		// Format for count information
 		EXPORT count_t := INTEGER8;
     // Daily Covid Record
@@ -84,6 +84,8 @@ EXPORT Types := MODULE
         count_t prevActive := 0;
         count_t recovered := 0;
         DECIMAL5_3 cfr := 0;
+        count_t adjCumCases := 0;
+        count_t adjCumDeaths := 0;
     END;
     // Population Record
     EXPORT populationRec := RECORD
