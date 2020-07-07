@@ -85,7 +85,7 @@ OUTPUT(statsData, ALL, NAMED('InputStats'));
 popData0 := DATASET(populationPath, rawPopRecord, THOR);
 popData1 := DEDUP(SORT(popData0, location, -time), location);
 popData := PROJECT(popData1, TRANSFORM(populationRec, SELF.location := LEFT.location,
-																											SELF.population := LEFT.poptotal));
+                                                      SELF.population := LEFT.poptotal));
 
 OUTPUT(popData, NAMED('PopulationData'));
 
@@ -114,9 +114,9 @@ OUTPUT(allDates0, NAMED('AllDates'));
 tempRec := {UNSIGNED asOfDate, DATASET(MetricsRec) metrics};
 
 tempRec getEvol({UNSIGNED date} datRec) := TRANSFORM
-	metr := CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections, worldCFR, datRec.date);
-	SELF.asOfDate := datRec.date;
-	SELF.metrics := metr(period = 1);
+  metr := CalcMetrics.WeeklyMetrics(statsData, popData, minSpreadingInfections, worldCFR, datRec.date);
+  SELF.asOfDate := datRec.date;
+  SELF.metrics := metr(period = 1);
 END;
 
 evol0 := PROJECT(allDates, getEvol(LEFT));
