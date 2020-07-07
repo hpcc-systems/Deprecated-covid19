@@ -98,3 +98,19 @@ The user interface provides several ways to navigate:
 ![Hotspots View](/docs/images/readme/hotspots.png)
 * _Comparison View_ allows simultaneous viewing of statistics from multiple selected locations of interest.
 ![Comparison View](/docs/images/readme/compare.png)
+
+# Data Sources
+
+The main data sources are John Hopkins University (daily cases and deaths), US Census Bureau (US population), UN DESA (World population). The data lake data and the workflow can viewed using HPCC Systems Data Catalog tool Tombolo (version 0.5) at: 
+
+https://tombolo.hpccsystems.com   [login using CovidTracker/HPCCSystems as the user  name and password]
+
+![Tombolo Intro](/docs/images/readme/tombolo_intro.png)
+
+A node in the workflow can be selected and double clicked to view the details. The following is an example of the details of a metrics file:
+
+![Tombolo File Detail](/docs/images/readme/tombolo_file_detail.png)
+
+
+
+
