@@ -73,7 +73,7 @@ export default function Hotspots(props: AllMetricsProps) {
             dataIndex: 'contagionrisk',
             width: '100px',
             // @ts-ignore
-            sorter: (a, b) => a.contagionrisk.localeCompare(b.contagionrisk)
+            sorter: (a, b) => a.contagionrisk > b.contagionrisk
         },
         {
             title: 'Status',
