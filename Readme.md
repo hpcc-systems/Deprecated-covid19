@@ -103,7 +103,7 @@ The user interface provides several ways to navigate:
 
 The main data sources are John Hopkins University (daily cases and deaths), US Census Bureau (US population), UN DESA (World population). The data lake data and the workflow can viewed using HPCC Systems Data Catalog tool Tombolo (version 0.5) at: 
 
-https://tombolo.hpccsystems.com   [login using CovidTracker/HPCCSystems as the user  name and password]
+https://tombolo.hpccsystems.com   [please login using CovidTracker/HPCCSystems as the user  name and password]
 
 ![Tombolo Intro](/docs/images/readme/tombolo_intro.png)
 
