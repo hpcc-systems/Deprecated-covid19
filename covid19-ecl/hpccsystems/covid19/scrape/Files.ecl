@@ -7,6 +7,7 @@ IMPORT STD;
 
 EXPORT Files := MODULE
   SHARED today := STD.date.TODAY();
+  SHARED yesterday := today - 1;
 
   EXPORT dailyGlobal := DATASET('~hpccsystems::covid19::file::public::metrics::daily_global.flat', Types.statsExtRec, FLAT);
   EXPORT dailyCountries := DM.countries;
@@ -28,7 +29,17 @@ EXPORT Files := MODULE
   EXPORT us_cumConfirmed         := prefix + 'us_cumulative_confirmed.csv';
   EXPORT county_cumDeaths        := prefix + 'county_cumulative_deaths.csv';
   EXPORT county_cumConfirmed     := prefix + 'county_cumulative_confirmed.csv';
+  EXPORT global_update           := prefix + 'global_' + (STRING) today + '.csv';
 
+  EXPORT rglobal := RECORD
+    UNSIGNED Date;
+    UNSIGNED Total_Cases;
+    UNSIGNED Total_Deaths;
+    UNSIGNED Total_Recovered;
+    UNSIGNED Active_Cases;
+    UNSIGNED Closed_Cases;
+END;
+  EXPORT global_update_ds := DATASET(global_update, RGLOBAL, CSV(HEADING(1)));
   EXPORT world_cumconfirmed_ds := DATASET(world_cumconfirmed, {UNSIGNED4 date, UNSIGNED confirmed}, CSV(HEADING(1)));
   EXPORT world_newCases_ds := DATASET(world_newCases, {UNSIGNED4 date, UNSIGNED newCases}, CSV(HEADING(1)));
 

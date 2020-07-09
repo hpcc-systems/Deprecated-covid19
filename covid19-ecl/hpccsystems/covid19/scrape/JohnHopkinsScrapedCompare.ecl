@@ -1,7 +1,21 @@
 IMPORT hpccsystems.covid19.scrape.Files as Files;
 
-#WORKUNIT('name', 'hpccsystems_covid19_scraped_spray');
+#WORKUNIT('name', 'hpccsystems_covid19_scraped_compare');
 
+global_cpr := ASSERT(JOIN(Files.dailyGlobal,Files.global_update_ds,
+                  LEFT.date = ( RIGHT.date - 1),
+                  TRANSFORM({RECORDOF(RIGHT), UNSIGNED cumcases,  UNSIGNED cumdeaths, UNSIGNED cdiff, UNSIGNED ddiff},
+                            SELF.date := LEFT.date,
+                            SELF.cdiff := ABS(LEFT.cumcases - RIGHT.total_cases),
+                            SELF.ddiff := ABS(LEFT.cumdeaths - RIGHT.total_deaths),
+                            SELF := LEFT,
+                            SELF := RIGHT
+                  )),
+                  cdiff <= 1000 AND ddiff <= 1000,
+                  'Warning: Gobal daily cases gap > 1,000 on '+ date) ;
+OUTPUT(global_cpr , NAMED('global_daily_compare'));
+
+/*
 world_cumConfirmed_cpr := ASSERT(JOIN(Files.dailyGlobal, Files.world_cumconfirmed_ds ,
                               LEFT.date = RIGHT.date, 
                               TRANSFORM({RECORDOF(RIGHT), UNSIGNED cumcases, INTEGER diff},
@@ -91,5 +105,4 @@ us_county_cumConfirmed_cpr           := JOIN(Files.dailyCounties_confirmed , Fil
                                     SELF.diff := ABS(LEFT.cumcases - RIGHT.confirmed),
                                     SELF := RIGHT), RIGHT ONLY);
 // OUTPUT(SORT(us_county_cumConfirmed_cpr, -diff)  , NAMED('us_county_cumConfirmed_cpr') );   
-
-/**/
+*/

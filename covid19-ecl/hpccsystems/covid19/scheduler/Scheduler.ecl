@@ -51,10 +51,10 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_metrics_period');
         RunOrPublishByName('hpccsystems_covid19_query_states_map');
         RunOrPublishByName('hpccsystems_covid19_query_location_metrics'); 
-        // RunOrPublishByName('hpccsystems_covid19_scraped_spray' , 'RUN');
-        // RunOrPublishByName('JohnHopkinsScrapedCompare' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_scraped_spray' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_scraped_compare' , 'RUN');
              
     );
 
-// thingsToDo : WHEN(CRON('59 0-23/5 * * *'));
-thingsToDo;
+thingsToDo : WHEN(CRON('59 0-23/5 * * *'));
+// thingsToDo;
