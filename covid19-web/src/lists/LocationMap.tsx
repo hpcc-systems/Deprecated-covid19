@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 
-import {Button, Col, Descriptions, Layout, PageHeader, Popover, Radio, Row, Select, Space} from "antd";
+import {Button, Col, Descriptions, Layout, PageHeader, Popover, Radio, Row} from "antd";
 import {QueryData} from "../components/QueryData";
 import OlMap from "../components/OlMap";
 import LocationDetails from "./LocationDetails";
@@ -107,11 +107,11 @@ export default function LocationMap(props: LocationMapProps) {
             }
         })
 
-        const unmount = () => {
-            console.log('unmounted')
-            // ...
-        }
-        return unmount
+        // const unmount = () => {
+        //     console.log('unmounted')
+        //     // ...
+        // }
+        // return unmount
     }
 
     useEffect((mount), []);
@@ -557,9 +557,9 @@ export default function LocationMap(props: LocationMapProps) {
     return (
         <Layout style={{padding: 5}}>
             <PageHeader title={props.title} subTitle={props.description}
-                        extra={[<Popover placement={"left"} title={"Metrics Terms"} content={<MetricsTerms/>}
+                        extra={[<Popover key={'popover_metrics_terms'} placement={"left"} title={"Metrics Terms"} content={<MetricsTerms/>}
                                          trigger={"click"}><Button>Metrics Terms</Button></Popover>,
-                            <Button type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>]}
+                            <Button key={'btn_details'} type={"primary"} onClick={() => commentaryDetailHandler()}>Details</Button>]}
 
             >
                 <Descriptions size="small" column={1} bordered>

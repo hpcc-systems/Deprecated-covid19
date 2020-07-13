@@ -54,6 +54,7 @@ export  default class ListBase extends React.Component <ListProps, ListState> {
     private renderContent() {
 
             if (this.state && this.state.listMetadata) {
+               //console.log('List metadata id: ' + this.state.listMetadata.id);
 
                 switch (this.state.listMetadata.id) {
                     // case 'us_states/trends': return <SummaryStates title={this.state.listMetadata.title} description = {this.state.listMetadata.description}/>;

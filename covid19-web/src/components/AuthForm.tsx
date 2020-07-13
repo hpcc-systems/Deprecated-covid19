@@ -1,5 +1,5 @@
-import React, {useEffect} from "react";
-import {Button, Card, Checkbox, Col, Form, Input, Layout, Row} from "antd";
+import React from "react";
+import {Button, Card,  Col, Form, Input, Layout, Row} from "antd";
 import {  UserOutlined, LockOutlined } from '@ant-design/icons';
 
 interface Props {
@@ -8,10 +8,7 @@ interface Props {
 
 
 export function AuthForm(props: Props) {
-    const layout = {
-        labelCol: { span: 4 },
-        wrapperCol: { span: 16 },
-    };
+
         const onFinish = (values:any) => {
             props.onAuthenticate(values);
         };

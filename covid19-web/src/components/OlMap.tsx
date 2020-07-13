@@ -6,7 +6,7 @@ import 'ol/ol.css';
 import GeoJSON from 'ol/format/GeoJSON';
 import VectorSource from "ol/source/Vector";
 import Select from "ol/interaction/Select";
-import {click, pointerMove} from "ol/events/condition";
+import {pointerMove} from "ol/events/condition";
 import {Style, Fill, Stroke, Text} from 'ol/style';
 import {FeatureLike} from "ol/Feature";
 import Overlay from "ol/Overlay";
@@ -174,11 +174,11 @@ export default function OlMap(props: Props) {
         }
 
 
-        const unmount = () => {
-            console.log('unmounted')
-            // ...
-        }
-        return unmount
+        // const unmount = () => {
+        //     //console.log('unmounted')
+        //     // ...
+        // }
+        // return unmount
     }
 
     useEffect((mount),[]);

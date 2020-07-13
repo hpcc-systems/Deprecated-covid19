@@ -45,9 +45,9 @@ export default function LocationTrends(props: LocationTrendsProps) {
             setLatest(queryTrends.getData('latest'));
             setSummary(queryTrends.getData('summary'));
 
-            console.log('Initialization Complete');
+            //console.log('Initialization Complete');
         });
-    }, []);
+    }, [props.typeFilter, queryTrends]);
 
     useEffect(() => {
         if (refreshData) {
@@ -66,7 +66,7 @@ export default function LocationTrends(props: LocationTrendsProps) {
 
 
         }
-    }, [refreshData]);
+    }, [locationsFilter, props.typeFilter, queryTrends, refreshData]);
 
     function setSummary(data: any) {
 
