@@ -69,13 +69,15 @@ export class App extends Component<AppProps, AppState> {
     }
 
     initModule(moduleId: string) {
+        if (this.state.selectedModule && moduleId === this.state.selectedModule.id) {
+          //No need to act as the module has not changed
+        } else {
+            this.moduleService.getModule(moduleId).then(data => {
 
-        this.moduleService.getModule(moduleId).then(data => {
-
-            console.log('module id - ' + moduleId);
-            this.setState({selectedModule: data, selectedListId: '', menuKey: moduleId});
-        });
-
+                //console.log('module id - ' + moduleId);
+                this.setState({selectedModule: data, selectedListId: '', menuKey: moduleId});
+            });
+        }
 
     }
 
