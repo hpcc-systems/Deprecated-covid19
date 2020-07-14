@@ -21,6 +21,9 @@ EXPORT Types2 := MODULE
         count_t tested := 0; // Cumulative number tested
         count_t positive := 0; // Cumulative positive tests
         count_t negative := 0; // Cumulative negative tests
+        count_t population := 0; // Location population
+        UDECIMAL11_8  latitude;  // Location Latitude
+        UDECIMAL11_8  longitude; // Location Longitude
     END;
     // Extended Stats Record
     EXPORT statsRec := RECORD(InputRec)
