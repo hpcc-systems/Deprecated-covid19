@@ -6,6 +6,22 @@ import OlMap from "../components/OlMap";
 import LocationDetails from "./LocationDetails";
 import MetricsTerms from "./MetricsTerms";
 
+import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import { ReactPlugin, withAITracking } from '@microsoft/applicationinsights-react-js';
+import { createBrowserHistory } from "history";
+
+const browserHistory = createBrowserHistory({ });
+var reactPlugin = new ReactPlugin();
+var appInsights = new ApplicationInsights({
+    config: {
+        instrumentationKey: 'ee051789-4912-4b8d-bcce-771c1cb2943c',
+        extensions: [reactPlugin],
+        extensionConfig: {
+          [reactPlugin.identifier]: { history: browserHistory }
+        }
+    }
+});
+appInsights.loadAppInsights();
 
 interface LocationMapProps {
     title: string;
@@ -49,7 +65,7 @@ function useStateRef(initialValue: any) {
     return [value, setValue, ref];
 }
 
-export default function LocationMap(props: LocationMapProps) {
+const LocationMap = (props: LocationMapProps) => {
     const queryLocationsMap = useRef<QueryData>(new QueryData('hpccsystems_covid19_query_countries_map'));
     const [summaryDataState, setSummaryData, summaryData] = useStateRef(new SummaryData());
     const mapData = useRef<Map<string, any>>(new Map());
@@ -626,3 +642,5 @@ export default function LocationMap(props: LocationMapProps) {
 
         </Layout>);
 }
+
+export default withAITracking(reactPlugin, LocationMap);
