@@ -38,6 +38,10 @@ EXPORT CalcStats := MODULE
     statsRecE calc7dma(statsRecE le, statsRecE ri) := TRANSFORM
       newCases := IF(le.location = ri.location AND ri.cumCases > le.cumCases, ri.cumCases - le.cumCases, 0);
       cases7dma := IF(le.location != ri.location OR COUNT(le.casesHistory) = 0, 0, AVE(le.casesHistory));
+      // Calculate adjusted cases and deaths tp remove large dumps of cases or deaths as follows:
+      // - If the new value is > 2.25 * 7 day moving average (implying R > 10)
+      //    limit new cases / deaths it to 2.25 * 7 day average
+      // - Calculate new cumulative values by adding up adjusted new values.
       adjNewCases := IF(cases7dma > 0 AND newCases > 2.25 * cases7dma, cases7dma * 2.25, newCases);
       casesHist := IF(le.location != ri.location, ri.casesHistory, [adjNewCases] + le.casesHistory)[..7];
       SELF.casesHistory := casesHist;
@@ -88,9 +92,11 @@ EXPORT CalcStats := MODULE
     stats5 := smoothData(stats4);
     // Go infectionPeriod days back to see how many have recovered and how many are still active per SIR model
     stats6 := JOIN(stats5, stats5, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod, TRANSFORM(RECORDOF(LEFT),
-                        SELF.active := IF (LEFT.cumCases >= RIGHT.cumCases, LEFT.cumCases - RIGHT.cumCases, 0),
-                        SELF.recovered := IF(RIGHT.cumCases < LEFT.cumDeaths, 0, RIGHT.cumCases - LEFT.cumDeaths),
-                        SELF.prevActive := IF(LEFT.prevCases >= RIGHT.prevCases, LEFT.prevCases - RIGHT.prevCases, 0),
+                        // Use adjusted case and death counts to calculate SIR attributes.  Spurious dumps are not time synchronized,
+                        // so should not be considered for SIR calculations, which are time dependent
+                        SELF.active := IF (LEFT.adjCumCases >= RIGHT.adjCumCases, LEFT.adjCumCases - RIGHT.adjCumCases, 0),
+                        SELF.recovered := IF(RIGHT.adjCumCases < LEFT.adjCumDeaths, 0, RIGHT.adjCumCases - LEFT.adjCumDeaths),
+                        SELF.prevActive := IF(LEFT.adjPrevCases >= RIGHT.adjPrevCases, LEFT.adjPrevCases - RIGHT.adjPrevCases, 0),
                         SELF.cfr := LEFT.adjCumDeaths / RIGHT.adjCumCases,
                         SELF := LEFT), LEFT OUTER);
     RETURN stats6;

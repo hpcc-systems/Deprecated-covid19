@@ -5,20 +5,20 @@ IMPORT $.USPopulationFiles as pop;
 IMPORT $.Types2 AS Types;
 IMPORT $.CalcMetrics2 AS CalcMetrics;
 IMPORT $ AS COVID19;
+IMPORT COVID19.Paths;
 
 statsRec := Types.statsRec;
 metricsRec := Types.metricsRec;
-
 
 L1MinSpreadingInfections := 2000;
 L2MinSpreadingInfections := 500;
 L3MinSpreadingInfections := 100;
 
 // Read Stats and produce Metrics
-L0Stats := DATASET('~hpccsystems::covid19::file::public::stats::Level0.flat', statsRec, THOR);
-L1Stats := DATASET('~hpccsystems::covid19::file::public::stats::Level1.flat', statsRec, THOR);
-L2Stats := DATASET('~hpccsystems::covid19::file::public::stats::Level2.flat', statsRec, THOR);
-L3Stats := DATASET('~hpccsystems::covid19::file::public::stats::Level3.flat', statsRec, THOR);
+L0Stats := DATASET(Paths.StatsLevel0, statsRec, THOR);
+L1Stats := DATASET(Paths.StatsLevel1, statsRec, THOR);
+L2Stats := DATASET(Paths.StatsLevel2, statsRec, THOR);
+L3Stats := DATASET(Paths.StatsLevel3, statsRec, THOR);
 
 L0Metrics := CalcMetrics.WeeklyMetrics(L0Stats, L1MinSpreadingInfections);
 worldCFR := L0Metrics(period=1)[1].cfr;
@@ -26,7 +26,7 @@ L1Metrics := CalcMetrics.WeeklyMetrics(L1Stats, L1MinSpreadingInfections, worldC
 L2Metrics := CalcMetrics.WeeklyMetrics(L2Stats, L2MinSpreadingInfections, worldCFR);
 L3Metrics := CalcMetrics.WeeklyMetrics(L3Stats, L3MinSpreadingInfections, worldCFR);
 
-OUTPUT(L0Metrics, , '~hpccsystems::covid19::file::public::metrics::Level0.flat', Thor, OVERWRITE);
-OUTPUT(L1Metrics, , '~hpccsystems::covid19::file::public::metrics::Level1.flat', Thor, OVERWRITE);
-OUTPUT(L2Metrics, , '~hpccsystems::covid19::file::public::metrics::Level2.flat', Thor, OVERWRITE);
-OUTPUT(L3Metrics, , '~hpccsystems::covid19::file::public::metrics::Level3.flat', Thor, OVERWRITE);
+OUTPUT(L0Metrics, , Paths.MetricsLevel0, Thor, OVERWRITE);
+OUTPUT(L1Metrics, , Paths.MetricsLevel1, Thor, OVERWRITE);
+OUTPUT(L2Metrics, , Paths.MetricsLevel2, Thor, OVERWRITE);
+OUTPUT(L3Metrics, , Paths.MetricsLevel3, Thor, OVERWRITE);
