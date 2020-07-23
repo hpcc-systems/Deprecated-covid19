@@ -103,7 +103,7 @@ L3InputDat1 := JOIN(L3InputDat0, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RE
                                                                 SELF := LEFT),
 																																				LEFT OUTER, LOOKUP);
 L3InputDat := SORT(L3InputDat1, Country, Level2, Level3, -date);
-OUTPUT(L3InputDat, ,Paths.JHLevel3, Thor, OVERWRITE);
+out3 := OUTPUT(L3InputDat, ,Paths.JHLevel3, Thor, OVERWRITE);
 
 //OUTPUT(L3InputDat[..10000], ALL, NAMED('L3InputData'));
 
@@ -138,7 +138,7 @@ L2InputDat1 := JOIN(L2InputDat0, statePopData, LEFT.Country = 'US' AND LEFT.Leve
                                 SELF.population := RIGHT.population,
                                 SELF := LEFT), LEFT OUTER);
 L2InputDat := SORT(L2InputDat1, Country, Level2, -date);
-OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
+out2 := OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
 ///OUTPUT(L2InputDat[ .. 10000], ALL, NAMED('L2InputData'));
 
 countryMetrics := DATASET(countryMetricsPath, metricsRec, THOR);
@@ -167,5 +167,16 @@ countryInputDat := JOIN(countryData3, countryPopData, LEFT.Country = RIGHT.locat
                                             SELF.negative := 0,
                                             SELF.population := RIGHT.poptotal), LEFT OUTER);
 //OUTPUT(countryPopData, NAMED('CountryPopulationData'));
-OUTPUT(CountryInputDat, ,Paths.JHLevel1, Thor, OVERWRITE);
+out1 := OUTPUT(CountryInputDat, ,Paths.JHLevel1, Thor, OVERWRITE);
 
+SEQUENTIAL(
+    Std.File.RemoveSuperFile(Paths.InputLevel1, Paths.JHLevel1),
+    Std.File.RemoveSuperFile(Paths.InputLevel2, Paths.JHLevel2),
+    Std.File.RemoveSuperFile(Paths.InputLevel3, Paths.JHLevel3),
+    out1,
+    out2,
+    out3,
+    Std.File.AddSuperfile(Paths.InputLevel1, Paths.JHLevel1),
+    Std.File.AddSuperfile(Paths.InputLevel2, Paths.JHLevel2),
+    Std.File.AddSuperfile(Paths.InputLevel3, Paths.JHLevel3),
+    );

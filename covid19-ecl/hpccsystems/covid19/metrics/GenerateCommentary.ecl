@@ -44,6 +44,8 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
     currIFR = rec[39]
     ifr = rec[40]
     cRisk = rec[42] # Contagion Risk
+    asOfDate = time.strptime(str(endDate), '%Y%m%d')
+    asOfDateStr = time.strftime('%b %d, %Y', asOfDate)
     if r < 1:
       if r == 0:
         sev = 1.0
@@ -75,15 +77,16 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
       article = 'an '
     else:
       article = 'a '
+    outstr = 'As of ' + asOfDateStr + ', '
     if iStateNum == prevStateNum:
       if iState == prevState:	
-        outstr = location + ' remains in ' + article + iState + ' state. '
+        outstr += location + ' remains in ' + article + iState + ' state. '
       else:
-        outstr = location + ' is currently in ' + article + iState + ' state. '
+        outstr += location + ' is currently in ' + article + iState + ' state. '
     elif iStateNum > prevStateNum:
-      outstr = location + ' has worsened to ' + article + iState + ' state from a previous state of ' + prevState + '. '
+      outstr += location + ' has worsened to ' + article + iState + ' state from a previous state of ' + prevState + '. '
     else:
-      outstr = location + ' has improved to ' + article + iState + ' state from a previous state of ' + prevState + '. '
+      outstr += location + ' has improved to ' + article + iState + ' state from a previous state of ' + prevState + '. '
     if r > 0:
       rstr = 'The infection is ' + implstr + ' (R = ' + str(r) + '). '
     else:
@@ -136,9 +139,9 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
         ord = 'nd'
       elif infCount == 3:
         ord = 'rd'
-      surgedat = time.strptime(str(surgeStart), '%Y%m%d')
-      surgedatstr = time.strftime('%b %d, %Y', surgedat)
-      infstr = 'This is the ' + str(infCount) + ord + ' surge in infections, which started on the week of ' + surgedatstr + '. '
+      surgedate = time.strptime(str(surgeStart), '%Y%m%d')
+      surgedatestr = time.strftime('%b %d, %Y', surgedate)
+      infstr = 'This is the ' + str(infCount) + ord + ' surge in infections, which started on the week of ' + surgedatestr + '. '
     outstr += infstr
     peakstr = ''
     if infCount == 1:

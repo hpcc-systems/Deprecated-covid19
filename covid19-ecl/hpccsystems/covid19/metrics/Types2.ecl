@@ -91,6 +91,9 @@ EXPORT Types2 := MODULE
     DECIMAL5_3 currIFR := 0; // Current (non-cumulative) IFR
     DECIMAL5_3 contagionRisk := 0; // Risk of catching the disease
     count_t population :=0;
+    STRING Country;
+    STRING Level2;  // State / Region, etc.  Can be blank for Country level inputs
+    STRING Level3; // County, District, etc.  Can be blank for State / Country level inputs
   END;
   EXPORT metricsEvolRec := RECORD(metricsRec)
     UNSIGNED asOfDate;
