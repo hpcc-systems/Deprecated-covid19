@@ -3,7 +3,7 @@ import {Layout, Space} from "antd";
 import './App.css';
 import LevelDetail from "./lists/LevelDetail";
 
-const LevelApp = () => {
+const App = () => {
     return (
         <Layout style={{height: "100vh"}}>
             <Layout.Header style={{paddingLeft: 0, height: 50, background: '#3a3939'}}>
@@ -23,4 +23,4 @@ const LevelApp = () => {
     );
 }
 
-export default LevelApp;
+export default App;

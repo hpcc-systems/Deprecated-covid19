@@ -9,6 +9,18 @@ export type CountriesType = {
 
 export default class Catalog {
 
+    static initMaps() {
+        let maps: Map<string, any> = new Map<string, any>();
+        maps.set('THE WORLD', {file:'countries.geojson', secondaryFile: '', geoKeyField: 'name' ,lat:0,long:0,zoom:2});
+        maps.set('THE WORLD-US', {file:'us-states.geojson', secondaryFile: '', geoKeyField: 'name', lat:38.2,long:-98.6,zoom:4.5});
+        maps.set('THE WORLD-US-GEORGIA', {file:'us-counties.geojson', secondaryFile: 'us-states.geojson', geoKeyField: 'GEOID', lat:31.9,long:-84.3,zoom:7.5});
+        maps.set('THE WORLD-US-TEXAS', {file:'us-counties.geojson', secondaryFile: 'us-states.geojson', geoKeyField: 'GEOID', lat:31.9,long:-99.9,zoom:7.5});
+        return maps;
+    }
+
+    static maps: Map<string, any> = Catalog.initMaps();
+
+
     static us_states: StatesType[] = [{name: 'ALABAMA', code: 'AL'},
         {name: 'ALASKA', code: 'AK'},
         {name: 'ARIZONA', code: 'AZ'},

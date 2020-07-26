@@ -1,31 +1,38 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Layout} from "antd";
+import {Button, Descriptions, Layout, PageHeader, Row} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
+import SummaryMeasures from "./components/SummaryMeasures";
+import HotList from "./components/HotList";
 
 
-
-export default function LevelDetail(props) {
+const LevelDetail = () => {
     const query = useRef(new QueryData('hpccsystems_covid19_query_location_map'));
 
-    const [location, setLocation] = useState({code: '', level: 0});
-    const locationStack = useRef([]);
+    const [location, setLocation] = useState<string>('');
+    const locationStack = useRef<any>([]);
 
     //Data
-    const [summaryData, setSummaryData] = useState([]);
-    const [maxData, setMaxData] = useState([]);
-    const [listData, setListData] = useState(new Map());
+    const [summaryData, setSummaryData] = useState<any>([]);
+    const [maxData, setMaxData] = useState<any>([]);
+    const [listData, setListData] = useState<any>(new Map());
+    const [hotListData, setHotListData] = useState<any>([]);
 
     useEffect(() => {
-        function toMapData(data) {
+        function toMapData(data: any) {
             let mapData = new Map();
 
             if (data) {
-                data.forEach(item => {
-                    mapData.set(item.location, item);
-                    //console.log('map - '+ item.location)
-                })
+                data.forEach((item: any) => {
+                    let locations: string;
+                    if (item.location_code) {
+                        locations = item.location_code.split('-');
+                    } else {
+                        locations = item.location.split('-');
+                    }
 
+                    mapData.set(locations[locations.length - 1], item);
+                })
             }
             return mapData;
         }
@@ -34,7 +41,7 @@ export default function LevelDetail(props) {
         let filters = new Map();
         filters.set('level', locationStack.current.length + 1);
         if (locationStack.current.length >= 1)
-           filters.set('level1_location', locationStack.current[0]);
+            filters.set('level1_location', locationStack.current[0]);
         if (locationStack.current.length >= 2)
             filters.set('level2_location', locationStack.current[1]);
         query.current.initData(filters).then(() => {
@@ -42,7 +49,7 @@ export default function LevelDetail(props) {
 
             if (summary.length > 0) {
 
-                summary.forEach(item => {
+                summary.forEach((item: any) => {
                     setSummaryData(item);
                 });
 
@@ -52,39 +59,77 @@ export default function LevelDetail(props) {
 
             if (max.length > 0) {
 
-                max.forEach(item => {
+                max.forEach((item: any) => {
                     setMaxData(item);
                 });
 
             }
 
             let list = query.current.getData('list');
-            let mapData  = toMapData(list);
+            let mapData = toMapData(list);
             setListData(mapData);
 
-            console.log('map data size - ' + mapData.size)
+            //console.log('map data size - ' + mapData.size)
 
+            setHotListData(query.current.getData('hot_list'));
 
         })
 
     }, [location]);
 
-    const pushLocation = (location) => {
+    const pushLocation = (location: any) => {
         locationStack.current.push(location);
         setLocation(location);
     }
 
     const popLocation = () => {
-        setLocation(locationStack.current.pop());
+        locationStack.current.pop();
+        setLocation(locationStack.current[locationStack.current.length - 1]);
     }
 
+    function olSelectHandler(name: string) {
+        pushLocation(name);
+        console.log('location selection ' + name);
+    }
+
+    function locationUUID() {
+        let uuid: string = 'THE WORLD';
+        if (locationStack.current.length >= 1) {
+            uuid += '-' + locationStack.current[0];
+        }
+        if (locationStack.current.length >= 2) {
+            uuid += '-' + locationStack.current[1];
+        }
+        return uuid;
+    }
 
     return (
-        <Layout width={'100vw'}>
-            <LevelMap level={location.level} location={location.code} locationAlias={''} listData={listData} maxData={maxData}>
-            </LevelMap>
+        <Layout style={{overflow: 'auto'}}>
+            <PageHeader title={summaryData.location}
+                        extra={[locationStack.current.length>0 ? (<Button key={'Close'} style={{width: 70}} onClick={() => popLocation()}
+                                        type={"primary"}>Close</Button>) : '']}
+
+            >
+                <Descriptions size="small" column={1} bordered>
+                    <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
+                </Descriptions>
+            </PageHeader>
+            <Row>
+                <LevelMap listData={listData} maxData={maxData} locationAlias={''}
+                          selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
+            </Row>
+            <Row>
+                <SummaryMeasures summaryData={summaryData}/>
+            </Row>
+            <Row>
+                <HotList data={hotListData}/>
+            </Row>
+
         </Layout>
     );
 
 
 }
+
+export default LevelDetail;
+

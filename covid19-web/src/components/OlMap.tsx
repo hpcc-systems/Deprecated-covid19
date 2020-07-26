@@ -11,6 +11,7 @@ import {Style, Fill, Stroke, Text} from 'ol/style';
 import {FeatureLike} from "ol/Feature";
 import Overlay from "ol/Overlay";
 import {fromLonLat} from "ol/proj";
+import {defaults as defaultInteractions} from 'ol/interaction.js'
 
 
 interface Props {
@@ -27,8 +28,8 @@ interface Props {
 }
 
 export default function OlMap(props: Props) {
-    const container = useRef<HTMLElement|null>(null);
-    const popup = useRef<HTMLElement|null>(null);
+    const container = useRef<HTMLElement | null>(null);
+    const popup = useRef<HTMLElement | null>(null);
 
 
     function selectFunction(feature: FeatureLike) {
@@ -67,13 +68,7 @@ export default function OlMap(props: Props) {
         }
     });
 
-    const map = useRef<Map>(new Map({
-        overlays: [overlay],
-        view: new View({
-            center: [0, 0],
-            zoom: 2
-        })
-    }));
+    const map = useRef<Map | null>(null);
 
     function colorLayer(geoJsonFileName: string,
                         geoKeyField: string,
@@ -83,14 +78,13 @@ export default function OlMap(props: Props) {
                         showLabel: boolean) {
         return new VectorLayer({
             source: new VectorSource({
-                // url: 'us-states.json',
                 url: geoJsonFileName,
                 format: new GeoJSON()
             }),
             style: function (feature) {
                 const style = new Style({
                     fill: new Fill({
-                        color: fillColor===''? props.colorHandler(feature.get(geoKeyField)): fillColor,
+                        color: fillColor === '' ? props.colorHandler(feature.get(geoKeyField)) : fillColor,
                     }),
                     stroke: new Stroke({
                         color: borderColor,
@@ -108,15 +102,31 @@ export default function OlMap(props: Props) {
                     }),
                 });
 
-                style.getText().setText(showLabel? feature.get('name').toUpperCase(): '');
+                style.getText().setText(showLabel ? feature.get('name').toUpperCase() : '');
                 return style;
             },
         });
     }
 
-    const mount = () => {
+    const initMap = () => {
+        if (map.current !== null)
+            map.current.dispose();
 
-        if (container.current && popup.current) {
+
+        map.current = new Map({
+            overlays: [overlay],
+            view: new View({
+                center: [0, 0],
+                zoom: 2
+            }),
+            interactions: defaultInteractions({
+                doubleClickZoom: false,
+                dragPan: true,
+                mouseWheelZoom: false
+            }),
+        });
+
+        if (container.current && popup.current && map.current !== null) {
 
             let layer: VectorLayer = colorLayer(props.geoFile, props.geoKeyField, '#319FD3', 1, '', true);
             map.current.addLayer(layer);
@@ -140,12 +150,12 @@ export default function OlMap(props: Props) {
                 condition: pointerMove,
                 style: selectFunction
             });
-            selectMouseMove.on('select', function(e:any) {
+
+            selectMouseMove.on('select', function (e: any) {
                 if (e.selected.length > 0) {
                     let feature = e.selected[0];
                     if (popup.current) {
                         popup.current.innerHTML = props.toolTipHandler(feature.get(props.geoKeyField));
-                        //overlay.setPosition(feature.getGeometry().getCoordinates());
                         overlay.setPosition(e.mapBrowserEvent.coordinate);
                     }
                 } else {
@@ -158,14 +168,17 @@ export default function OlMap(props: Props) {
 
             map.current.addInteraction(selectMouseMove);
 
-            map.current.on('singleclick', function(evt) {
-                 map.current.forEachFeatureAtPixel(evt.pixel,
-                    function(feature, l) {
-                        if (l === layer) {
-                            props.selectHandler(feature.get(props.geoKeyField));
-                            return [feature, layer];
-                        }
-                    });
+
+            map.current.on('singleclick', function (evt) {
+                if (map.current !== null) {
+                    map.current.forEachFeatureAtPixel(evt.pixel,
+                        function (feature, l) {
+                            if (l === layer) {
+                                props.selectHandler(feature.get(props.geoKeyField));
+                                return [feature, layer];
+                            }
+                        });
+                }
             });
 
 
@@ -173,28 +186,23 @@ export default function OlMap(props: Props) {
             map.current.render();
         }
 
+   }
 
-        // const unmount = () => {
-        //     //console.log('unmounted')
-        //     // ...
-        // }
-        // return unmount
-    }
-
-    useEffect((mount),[]);
+    useEffect((initMap), [props]);
 
     useEffect(() => {
-
-        map.current.getLayers().forEach((layer) => {
-            (layer as VectorLayer).getSource().changed();
-        })
+        if (map.current !== null) {
+            map.current.getLayers().forEach((layer) => {
+                (layer as VectorLayer).getSource().changed();
+            })
+        }
 
     })
 //background: '#2b2b2b',
     return (
         <div>
-        <div style={{background: '#2b2b2b', height:props.height}} ref={(e) => (container.current= e)} />
-        <div ref={(e) => (popup.current= e)}/>
+            <div style={{background: '#2b2b2b', height: props.height}} ref={(e) => (container.current = e)}/>
+            <div ref={(e) => (popup.current = e)}/>
         </div>
 
     )
