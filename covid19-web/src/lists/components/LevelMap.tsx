@@ -71,7 +71,6 @@ const LevelMap = (props: LevelMapProps) => {
                     break;
                 case 'cases_per_capita':
                     d = row.cases_per_capita / Math.max(1, maxData.current.cases_per_capita_max);
-                    console.log('cases per capita')
                     break;
                 case 'deaths_per_capita':
                     d = row.deaths_per_capita / Math.max(1, maxData.current.deaths_per_capita_max);
