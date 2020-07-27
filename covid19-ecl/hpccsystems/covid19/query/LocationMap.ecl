@@ -110,11 +110,11 @@ OUTPUT(summary,ALL,NAMED('summary'));//This should be exactly one record
 listStats := CASE(_level , 1 => measures.level1_stats(date=latestDate), 
                            2 => measures.level2_stats(country=_level1_location and date=latestDate), 
                            3 => measures.level3_stats(country=_level1_location and level2 = _level2_location and date=latestDate),
-                           4 => measures.level3_stats(country=_level1_location and level2 = _level2_location and level3 = _level3_location and date=latestDate));
+                           DATASET([], RECORDOF(measures.level3_stats)));
 listMetrics := CASE(_level , 1 => measures.level1_metrics(period=1), 
                              2 => measures.level2_metrics(country=_level1_location and period=1), 
-                             3 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and period=1),
-                             4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and level3 = _level3_location and period=1));
+                             3 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and period=1), 
+                             DATASET([], RECORDOF(measures.level3_metrics)));
 
 list := JOIN(listStats, listMetrics,
           LEFT.location=RIGHT.location,
