@@ -393,7 +393,8 @@ const LevelMap = (props: LevelMapProps) => {
                        colorHandler={(name) => olColorHandler(name)}
                        selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
                        zoom={geoFileInfo.zoom}
-                       geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} geoKeyField={geoFileInfo.geoKeyField}
+                       geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}
+                       selectKeyField={geoFileInfo.selectKeyField}
                        secondaryGeoFile={geoFileInfo.secondaryFile}
                        height={'800px'}/>
 

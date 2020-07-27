@@ -44,6 +44,8 @@ const LevelDetail = () => {
             filters.set('level1_location', locationStack.current[0]);
         if (locationStack.current.length >= 2)
             filters.set('level2_location', locationStack.current[1]);
+        if (locationStack.current.length >= 3)
+            filters.set('level3_location', locationStack.current[2]);//NOTE: This is the max level supported. For US, it is the county level
         query.current.initData(filters).then(() => {
             let summary = query.current.getData('summary');
 
@@ -89,7 +91,7 @@ const LevelDetail = () => {
 
     function olSelectHandler(name: string) {
         pushLocation(name);
-        //console.log('location selection ' + name);
+        console.log('location selection ' + name);
     }
 
     function locationUUID() {

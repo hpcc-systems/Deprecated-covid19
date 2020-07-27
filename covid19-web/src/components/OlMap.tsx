@@ -22,7 +22,8 @@ interface Props {
     secondaryGeoFile?: string;
     geoLat: number;
     geoLong: number;
-    geoKeyField: string;
+    selectKeyField: string;
+    colorKeyField: string;
     zoom: number;
     height: string;
 }
@@ -58,7 +59,7 @@ export default function OlMap(props: Props) {
     }
 
     function getColor(feature: any) {
-        return props.colorHandler(feature.get(props.geoKeyField));
+        return props.colorHandler(feature.get(props.colorKeyField));
     }
 
     const overlay = new Overlay({
@@ -128,7 +129,7 @@ export default function OlMap(props: Props) {
 
         if (container.current && popup.current && map.current !== null) {
 
-            let layer: VectorLayer = colorLayer(props.geoFile, props.geoKeyField, '#319FD3', 1, '', true);
+            let layer: VectorLayer = colorLayer(props.geoFile, props.colorKeyField, '#319FD3', 1, '', true);
             map.current.addLayer(layer);
 
             if (props.secondaryGeoFile) {
@@ -155,7 +156,7 @@ export default function OlMap(props: Props) {
                 if (e.selected.length > 0) {
                     let feature = e.selected[0];
                     if (popup.current) {
-                        popup.current.innerHTML = props.toolTipHandler(feature.get(props.geoKeyField));
+                        popup.current.innerHTML = props.toolTipHandler(feature.get(props.colorKeyField));
                         overlay.setPosition(e.mapBrowserEvent.coordinate);
                     }
                 } else {
@@ -174,7 +175,7 @@ export default function OlMap(props: Props) {
                     map.current.forEachFeatureAtPixel(evt.pixel,
                         function (feature, l) {
                             if (l === layer) {
-                                props.selectHandler(feature.get(props.geoKeyField));
+                                props.selectHandler(feature.get(props.selectKeyField));
                                 return [feature, layer];
                             }
                         });

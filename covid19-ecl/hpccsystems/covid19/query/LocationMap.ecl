@@ -6,6 +6,7 @@ IMPORT STD;
 _level := 1:STORED('level'); //1-country , 2-state and 3-county
 _level1_location := 'US':STORED('level1_location');
 _level2_location := 'GEORGIA':STORED('level2_location');
+_level3_location := 'GEORGIA':STORED('level3_location');
 
 latestDate := MAX(measures.level1_stats, date);
 
@@ -50,8 +51,15 @@ END;
 
 
 //Summary will be 1 level below the detail
-summaryStats := CASE(_level , 1 => measures.level0_stats(date=latestDate), 2 => measures.level1_stats(country=_level1_location and date=latestDate), 3 => measures.level2_stats(country=_level1_location and level2 = _level2_location and date=latestDate));
-summaryMetrics := CASE(_level , 1 => measures.level0_metrics(period=1), 2 => measures.level1_metrics(country=_level1_location and period=1), 3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location and period=1));
+summaryStats := CASE(_level , 1 => measures.level0_stats(date=latestDate), 
+                              2 => measures.level1_stats(country=_level1_location and date=latestDate), 
+                              3 => measures.level2_stats(country=_level1_location and level2 = _level2_location and date=latestDate),
+                              4 => measures.level3_stats(country=_level1_location and level2 = _level2_location and level3 = _level3_location and date=latestDate));
+summaryMetrics := CASE(_level , 1 => measures.level0_metrics(period=1), 
+                              2 => measures.level1_metrics(country=_level1_location and period=1), 
+                              3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location and period=1),
+                              4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and fips = _level3_location and period=1));
+
 summary := JOIN(summaryStats, summaryMetrics,
           LEFT.location=RIGHT.location,
           TRANSFORM (MeasuresSummaryLayout,
@@ -162,3 +170,4 @@ hotList := TOPN(listMetrics,  10, -heatindex);
 
 OUTPUT(TABLE(hotList, {location, commentary}),,NAMED('hot_list'));  
 
+metricsWeeklyTrend := CASE(_level , 1 => measures.level0_metrics, 2 => measures.level1_metrics(country=_level1_location), 3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location));
