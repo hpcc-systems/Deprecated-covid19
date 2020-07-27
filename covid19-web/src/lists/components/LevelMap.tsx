@@ -36,9 +36,13 @@ const LevelMap = (props: LevelMapProps) => {
         listData.current = props.listData;
         maxData.current = props.maxData;
 
+   }, [props.listData, props.maxData]);
+
+    useEffect(() => {
         setGeoFileInfo(Catalog.maps.get(props.location));
-        console.log('Props change ' + props.location);
-    }, [props]);
+
+        console.log('Location change ' + props.location);
+    }, [props.location]);
 
     function olToolTipHandler(name: string) {
         let row = props.listData.get(name.toUpperCase());
