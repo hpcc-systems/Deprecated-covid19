@@ -89,7 +89,7 @@ const LevelDetail = () => {
 
     function olSelectHandler(name: string) {
         pushLocation(name);
-        console.log('location selection ' + name);
+        //console.log('location selection ' + name);
     }
 
     function locationUUID() {
