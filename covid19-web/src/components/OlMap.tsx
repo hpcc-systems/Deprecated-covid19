@@ -189,7 +189,7 @@ export default function OlMap(props: Props) {
 
    }
 
-    useEffect((initMap), [props]);
+    useEffect((initMap), [props.geoFile]);
 
     useEffect(() => {
         if (map.current !== null) {

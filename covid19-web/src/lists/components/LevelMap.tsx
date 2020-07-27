@@ -56,7 +56,7 @@ const LevelMap = (props: LevelMapProps) => {
     function olColorHandler(name: string) {
         if (!name) return '#a1a080';
 
-        let row = props.listData.get(name.toUpperCase());
+        let row = listData.current.get(name.toUpperCase());
 
         if (row) {
             let d = 0;
@@ -369,7 +369,7 @@ const LevelMap = (props: LevelMapProps) => {
 
     //console.log(props.location + ' - ' + props.listData.size );
 
-    if (props.listData.size !== 0 && geoFileInfo) {
+    if (listData.current.size !== 0 && geoFileInfo) {
         return (
 
             <Layout style={{padding: 10}}>
