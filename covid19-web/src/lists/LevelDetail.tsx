@@ -102,6 +102,9 @@ const LevelDetail = () => {
         if (locationStack.current.length >= 2) {
             uuid += '-' + locationStack.current[1];
         }
+        if (locationStack.current.length >= 3) {
+            uuid += '-' + locationStack.current[2];
+        }
         return uuid;
     }
 

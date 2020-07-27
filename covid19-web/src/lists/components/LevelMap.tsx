@@ -37,7 +37,7 @@ const LevelMap = (props: LevelMapProps) => {
         maxData.current = props.maxData;
 
         setGeoFileInfo(Catalog.maps.get(props.location));
-        //console.log('Props change ' + props.location);
+        console.log('Props change ' + props.location);
     }, [props]);
 
     function olToolTipHandler(name: string) {
