@@ -1,6 +1,6 @@
 {
   "name": "covid19-tracker",
-  "version": "1.5",
+  "version": "1.5.0",
   "private": true,
   "dependencies": {
     "@antv/g2plot": "^1.0.3",

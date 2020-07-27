@@ -4,6 +4,7 @@ import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
 import HotList from "./components/HotList";
+import PeriodTrends from "./components/PeriodTrends";
 
 
 const LevelDetail = () => {
@@ -16,6 +17,8 @@ const LevelDetail = () => {
     const [summaryData, setSummaryData] = useState<any>([]);
     const [maxData, setMaxData] = useState<any>([]);
     const [listData, setListData] = useState<any>(new Map());
+    const [periodTrendsColumnData, setPeriodTrendsColumnData] = useState<any>([]);
+    const [periodTrendsGroupedData, setPeriodTrendsGroupedData] = useState<any>([]);
     const [hotListData, setHotListData] = useState<any>([]);
 
     useEffect(() => {
@@ -71,6 +74,8 @@ const LevelDetail = () => {
             let mapData = toMapData(list);
             setListData(mapData);
 
+            setPeriodTrendsColumnData(query.current.getData('period_trend_column'));
+            setPeriodTrendsGroupedData(query.current.getData('period_trend_grouped'));
             //console.log('map data size - ' + mapData.size)
 
             setHotListData(query.current.getData('hot_list'));
@@ -127,6 +132,9 @@ const LevelDetail = () => {
             </Row>
             <Row>
                 <SummaryMeasures summaryData={summaryData}/>
+            </Row>
+            <Row>
+                <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData} />
             </Row>
             <Row>
                 <HotList data={hotListData}/>

@@ -8,6 +8,9 @@ _level1_location := 'US':STORED('level1_location');
 _level2_location := 'GEORGIA':STORED('level2_location');
 _level3_location := 'GEORGIA':STORED('level3_location');
 
+_trendPeriods := 10:STORED('trend_periods');
+
+
 latestDate := MAX(measures.level1_stats, date);
 
 
@@ -178,10 +181,23 @@ hotList := TOPN(listMetrics,  10, -heatindex);
 OUTPUT(TABLE(hotList, {location, commentary}),,NAMED('hot_list'));  
 
 
-metricsWeeklyTrend := CASE(_level , 1 => measures.level0_metrics, 
+periodTrend := CASE(_level , 1 => measures.level0_metrics, 
                            2 => measures.level1_metrics(country=_level1_location), 
                            3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location),
                            4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and level3 = _level3_location));
 
-OUTPUT(TABLE(metricsWeeklyTrend, {STRING period_string := Std.Date.DateToString(startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(enddate , '%B %e, %Y'), 
-                                  r, newcases, newdeaths}),,NAMED('metrics_weekly_trend'));                             
+periodTrendSelect := SORT(CHOOSEN(periodTrend, _trendPeriods),-period);
+OUTPUT(TABLE(periodTrendSelect, {STRING period_string := Std.Date.DateToString(startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(enddate , '%B %e, %Y'), 
+                                  r, REAL8 new_cases := newcases, REAL8 new_deaths := newdeaths}),,NAMED('period_trend_column'));       
+
+
+periodTrendGrouped := NORMALIZE(periodTrendSelect, 2, TRANSFORM (
+      {STRING period_string,
+       STRING measure,
+       REAL value},
+       SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
+       SELF.measure := CASE (COUNTER, 1 => 'New Cases', 2 => 'New Deaths', 'Unknown'),
+       SELF.value := CASE (COUNTER, 1 => LEFT.newcases, 2 => LEFT.newdeaths, 0)
+));
+
+OUTPUT(periodTrendGrouped,ALL,NAMED('period_trend_grouped'));

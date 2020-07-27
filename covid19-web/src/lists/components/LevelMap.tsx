@@ -45,7 +45,10 @@ const LevelMap = (props: LevelMapProps) => {
     }, [props.location]);
 
     function olToolTipHandler(name: string) {
-        let row = props.listData.get(name.toUpperCase());
+
+        //console.log('Tooltip Location ' + name.toUpperCase());
+
+        let row = listData.current.get(name.toUpperCase());
         if (row) {
             return makeTooltip(name, row);
         } else {
