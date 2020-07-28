@@ -48,5 +48,10 @@ jobs:
           - task: CmdLine@2
             inputs:
               script: 'pm2 start Covid19-Web'
+          - task: DeleteFiles@1
+            inputs:
+              SourceFolder: '/home/hpcclabs/azagent/_work/1/covid19/s/covid19-web'
+              Contents: '*'
+              
 
 

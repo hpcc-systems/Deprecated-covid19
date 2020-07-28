@@ -21,14 +21,14 @@ export function Chart(props: Props) {
     })
 
     useEffect(() => {
-        if(container != null) {
+        if(!plot && container != null) {
             const chart = new props.chart(container, props.config);
 
             chart.render();
             setPlot(chart);
         }
 
-    },[container]);
+    },[container, plot, props.chart, props.config]);
 
 
     return (
