@@ -43,10 +43,6 @@ jobs:
               OverWrite: true
           - task: CmdLine@2
             inputs:
-              script: 'git clean -d -f'
-              workingDirectory: '/home/hpcclabs/covid19/covid19/covid19-web'    
-          - task: CmdLine@2
-            inputs:
               script: 'npm install'
               workingDirectory: '/home/hpcclabs/covid19/covid19/covid19-web'
           - task: CmdLine@2
