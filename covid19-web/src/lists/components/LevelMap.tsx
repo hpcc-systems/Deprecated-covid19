@@ -36,7 +36,7 @@ const LevelMap = (props: LevelMapProps) => {
         listData.current = props.listData;
         maxData.current = props.maxData;
 
-   }, [props.listData, props.maxData]);
+    }, [props.listData, props.maxData]);
 
     useEffect(() => {
         setGeoFileInfo(Catalog.maps.get(props.location));
@@ -114,7 +114,7 @@ const LevelMap = (props: LevelMapProps) => {
                         d > 0.2 ? '#fee08b' :
                             d > 0.1 ? '#66bd63' :
                                 '#1a9850';
-        } else return '#1a9850';
+        } else return '#2b2b2b';
     }
 
     function olSelectHandler(name: string) {
@@ -376,36 +376,36 @@ const LevelMap = (props: LevelMapProps) => {
         return (
 
             <Layout style={{padding: 10}}>
+                <Layout.Content>
 
+                    <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
+                                 value={heatMapType} buttonStyle="outline" style={{fontSize: 11, fontWeight: "bold"}}>
 
-                <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
-                             value={heatMapType} buttonStyle="outline" style={{fontSize:11,fontWeight:"bold"}}>
+                        <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
+                        <Radio.Button value={'status'}>Infection State</Radio.Button>
+                        <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
+                        <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
+                        <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>
+                        <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
+                        <Radio.Button value={'cases'}>Cases</Radio.Button>
+                        <Radio.Button value={'deaths'}>Deaths</Radio.Button>
+                        <Popover content={renderScale()} title={renderScaleTitle()}>
+                            <Button type={"link"}>Legend</Button>
+                        </Popover>
+                    </Radio.Group>
 
-                    <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
-                    <Radio.Button value={'status'}>Infection State</Radio.Button>
-                    <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
-                    <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
-                    <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>
-                    <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
-                    <Radio.Button value={'cases'}>Cases</Radio.Button>
-                    <Radio.Button value={'deaths'}>Deaths</Radio.Button>
-                    <Popover content={renderScale()} title={renderScaleTitle()}>
-                        <Button type={"link"}>Legend</Button>
-                    </Popover>
-                </Radio.Group>
+                    <div style={{height: 5}}/>
 
-                <div style={{height:5}}/>
+                    <OlMap toolTipHandler={(name) => olToolTipHandler(name)}
+                           colorHandler={(name) => olColorHandler(name)}
+                           selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
+                           zoom={geoFileInfo.zoom}
+                           geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}
+                           selectKeyField={geoFileInfo.selectKeyField}
+                           secondaryGeoFile={geoFileInfo.secondaryFile}
+                           height={'800px'}/>
 
-                <OlMap toolTipHandler={(name) => olToolTipHandler(name)}
-                       colorHandler={(name) => olColorHandler(name)}
-                       selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
-                       zoom={geoFileInfo.zoom}
-                       geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}
-                       selectKeyField={geoFileInfo.selectKeyField}
-                       secondaryGeoFile={geoFileInfo.secondaryFile}
-                       height={'800px'}/>
-
-
+                </Layout.Content>
             </Layout>
 
         )

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Descriptions, Layout, PageHeader, Row} from "antd";
+import {Button, Descriptions, Layout, PageHeader} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
@@ -117,29 +117,26 @@ const LevelDetail = () => {
 
     return (
         <Layout style={{overflow: 'auto'}}>
+
             <PageHeader title={summaryData.location}
-                        extra={[locationStack.current.length>0 ? (<Button key={'Close'} style={{width: 70}} onClick={() => popLocation()}
-                                        type={"primary"}>Close</Button>) : '']}
+                        extra={[locationStack.current.length > 0 ? (
+                            <Button key={'Close'} style={{width: 70}} onClick={() => popLocation()}
+                                    type={"primary"}>Close</Button>) : '']}
 
             >
                 <Descriptions size="small" column={1} bordered>
                     <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
                 </Descriptions>
             </PageHeader>
-            <Row>
+
+            <Layout.Content>
+
                 <LevelMap listData={listData} maxData={maxData} locationAlias={''}
                           selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
-            </Row>
-            <Row>
                 <SummaryMeasures summaryData={summaryData}/>
-            </Row>
-            <Row>
-                <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData} />
-            </Row>
-            <Row>
+                <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
                 <HotList data={hotListData}/>
-            </Row>
-
+            </Layout.Content>
         </Layout>
     );
 
