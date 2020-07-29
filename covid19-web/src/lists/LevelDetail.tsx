@@ -120,8 +120,8 @@ const LevelDetail = () => {
 
             <PageHeader title={summaryData.location}
                         extra={[locationStack.current.length > 0 ? (
-                            <Button key={'Close'} style={{width: 70}} onClick={() => popLocation()}
-                                    type={"primary"}>Close</Button>) : '']}
+                            <Button key={'Back'} style={{width: 70}} onClick={() => popLocation()}
+                                    type={"primary"}>Back</Button>) : '']}
 
             >
                 <Descriptions size="small" column={1} bordered>
