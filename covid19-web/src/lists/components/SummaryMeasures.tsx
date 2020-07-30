@@ -67,7 +67,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
     }
 
     return (
-        <Layout style={{padding:10}}>
+        <Layout >
             <Row>
                 <Col span={12}>
                     <b>Daily Stats - {props.summaryData.date_string}</b>

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Descriptions, Layout, PageHeader} from "antd";
+import {Anchor, Button, Descriptions, Layout, PageHeader} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
@@ -116,27 +116,45 @@ const LevelDetail = () => {
     }
 
     return (
-        <Layout style={{overflow: 'auto'}}>
+        <Layout style={{background: 'lightgray'}}>
+            <div style={{textAlign:"right"}}>
+                <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
+                <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
+                <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
+                <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
+                <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
+            </div>
 
-            <PageHeader title={summaryData.location}
-                        extra={[locationStack.current.length > 0 ? (
-                            <Button key={'Back'} style={{width: 70}} onClick={() => popLocation()}
-                                    type={"primary"}>Back</Button>) : '']}
+            <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
 
-            >
-                <Descriptions size="small" column={1} bordered>
-                    <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
-                </Descriptions>
-            </PageHeader>
+                <div id={"commentary"}/>
 
-            <Layout.Content>
+                <PageHeader title={summaryData.location}
+                            extra={[locationStack.current.length > 0 ? (
+                                <Button key={'Back'} style={{width: 70}} onClick={() => popLocation()}
+                                        type={"primary"}>Back</Button>) : '']}
 
-                <LevelMap listData={listData} maxData={maxData} locationAlias={''}
-                          selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
-                <SummaryMeasures summaryData={summaryData}/>
-                <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
-                <HotList data={hotListData}/>
-            </Layout.Content>
+                >
+                    <Descriptions size="small" column={1} bordered>
+                        <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
+                    </Descriptions>
+
+                </PageHeader>
+
+
+                <Layout.Content>
+                    <div id={"map"}/>
+                    <LevelMap listData={listData} maxData={maxData} locationAlias={''}
+                              selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
+                    <div id={"summary_stats"} style={{height: 10}}/>
+                    <SummaryMeasures summaryData={summaryData}/>
+
+                    <div id={"trends"} style={{height: 10}}/>
+                    <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
+                    <div id={"hot_spots"} style={{height: 10}}/>
+                    <HotList data={hotListData}/>
+                </Layout.Content>
+            </Layout>
         </Layout>
     );
 
