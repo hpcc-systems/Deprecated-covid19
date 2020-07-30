@@ -117,7 +117,7 @@ const LevelDetail = () => {
 
     return (
         <Layout >
-            <div style={{textAlign:"right"}}>
+            <div style={{textAlign:"center"}}>
                 <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
                 <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
