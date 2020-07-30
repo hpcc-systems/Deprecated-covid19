@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Anchor, Button, Descriptions, Layout, PageHeader} from "antd";
+import {Button, Descriptions, Layout, PageHeader} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
@@ -116,7 +116,7 @@ const LevelDetail = () => {
     }
 
     return (
-        <Layout style={{background: 'lightgray'}}>
+        <Layout >
             <div style={{textAlign:"right"}}>
                 <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
                 <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
