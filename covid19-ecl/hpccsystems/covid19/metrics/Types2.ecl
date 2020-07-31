@@ -44,6 +44,8 @@ EXPORT Types2 := MODULE
     count_t adjCumDeaths := 0; // Alternate cumDeaths based on smoothed data
     count_t adjPrevCases := 0; // Previous day's adjCumCases
     count_t adjPrevDeaths := 0; // Previous day's adjCumDeaths
+    INTEGER caseAdjustment := 0;  // The amount by which cases were adjusted
+    INTEGER deathsAdjustment := 0; // The amount by which cases were adjusted
   END;
   // Metrics Record
   EXPORT metricsRec := RECORD
