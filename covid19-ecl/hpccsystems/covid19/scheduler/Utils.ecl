@@ -159,12 +159,15 @@ EXPORT Utils := MODULE
   EXPORT KafkaUtils := MODULE
 
       EXPORT applicationId:= '029d69e4-4a24-439a-a1da-42dfc9575eab';
+      EXPORT DataflowId_v2 := '6e8ed8f9-ab3b-42e4-bec5-b2c5208f2f80';
+      EXPORT DataflowId_v1 := 'dfd51c4b-90b1-4ee8-af72-01b56173f002';
       EXPORT guidFilePath := '~covid19::kafka::guid';
       EXPORT defaultGUID :=  DATASET(guidFilePath, {STRING s}, FLAT)[1].s;
       EXPORT defaultTopic := 'Dataflow';
       EXPORT defaultBroker := '10.0.0.4:19092';
       EXPORT l_json := RECORD
         STRING applicationid;
+        STRING dataflowId;
         STRING wuid;
         STRING instanceId;
         STRING msg;
@@ -180,12 +183,13 @@ EXPORT Utils := MODULE
                     STRING broker = defaultBroker,
                     STRING topic = defaultTopic,
                     STRING appID = applicationId,
+                    STRING dataflowid = Dataflowid_v1,
                     STRING wuid = WORKUNIT,
                     STRING instanceid = defaultGUID,
                     STRING msg = '') := FUNCTION
 
 
-      j :=  '{' + TOJSON(ROW({appID, wuid, instanceid, msg},l_json)) + '}';
+      j :=  '{' + TOJSON(ROW({appID, dataflowId, wuid, instanceid, msg},l_json)) + '}';
       kafkaMsg := DATASET([{j}], {STRING line});
 
       p := kafka.KafkaPublisher( topic, broker );
