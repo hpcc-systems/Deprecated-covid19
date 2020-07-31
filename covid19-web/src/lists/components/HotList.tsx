@@ -16,8 +16,8 @@ const HotList = (props: HotListProps) => {
     ];
     if (props.data.length > 0) {
         return (
-            <Table rowKey={(record)=>record.location} style={{padding: 10}} dataSource={props.data} columns={columns}
-                   size={'small'}/>
+            <Table rowKey={(record)=>record.location} dataSource={props.data} columns={columns}
+                   size={'small'} />
         )
     } else {
         return null;

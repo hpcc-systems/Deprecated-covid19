@@ -7,10 +7,15 @@
   width: 100px;
 }
 
+.anchor-btn {
+   font-size: 10px;
+   font-weight: bold;
+}
+
 .logo {
-  width: 190px;
-  height: 60px;
-  background-image: url("logo.png");
+  width: 150px;
+  height: 30px;
+  background-image: url("logo_white.png");
   background-repeat: no-repeat;
   float: left;
 }
