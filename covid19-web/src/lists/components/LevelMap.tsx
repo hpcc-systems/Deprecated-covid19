@@ -61,6 +61,8 @@ const LevelMap = (props: LevelMapProps) => {
 
         let row = listData.current.get(name.toUpperCase());
 
+        //console.log('Color location: ' + name.toUpperCase() +  ' -- ' + name.length + '  ' + row);
+
         if (row) {
             let d = 0;
             switch (heatMapTypeRef.current) {
@@ -118,7 +120,9 @@ const LevelMap = (props: LevelMapProps) => {
     }
 
     function olSelectHandler(name: string) {
+
         return props.selectHandler(name.toUpperCase());
+
     }
 
     const formatNumber: any = (value: any) => {
@@ -375,7 +379,7 @@ const LevelMap = (props: LevelMapProps) => {
     if (listData.current.size !== 0 && geoFileInfo) {
         return (
 
-            <Layout style={{padding: 10}}>
+            <Layout>
                 <Layout.Content>
 
                     <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}

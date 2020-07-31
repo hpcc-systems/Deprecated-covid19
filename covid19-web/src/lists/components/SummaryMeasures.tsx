@@ -23,7 +23,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
         }
     }
     const chartModelData = [{"name": "Short Term Indicator", "value": props.summaryData.sti},
-        {"name": "Heat Index", "value": props.summaryData.heatindex},
+        {"name": "Heat Index", "value": props.summaryData.heat_index},
         {"name": "Case Fatality Rate", "value": props.summaryData.cfr},
         {"name": "Medical Indicator", "value": props.summaryData.med_indicator},
         {"name": "Social Distance Indicator", "value": props.summaryData.sd_indicator},
@@ -67,7 +67,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
     }
 
     return (
-        <Layout style={{padding:10}}>
+        <Layout >
             <Row>
                 <Col span={12}>
                     <b>Daily Stats - {props.summaryData.date_string}</b>

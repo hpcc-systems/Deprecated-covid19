@@ -12,7 +12,7 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
     const RTrend = {
         padding: '100',
         title: {
-            text: 'Rate of Infection (Week to Week Progress)',
+            text: 'Rate of Infection',
             visible: true,
             style: {fontSize: 14}
         },
@@ -45,7 +45,7 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
     const NewCasesTrend = {
         padding: '100',
         title: {
-            text: 'New Cases and New Deaths (Week to Week Progress)',
+            text: 'New Cases and New Deaths',
             visible: true,
             style: {fontSize: 14}
         },
@@ -76,7 +76,7 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
     return (
         <Layout>
             <Layout.Content>
-                <Row style={{width: "100%", padding: 10}}>
+                <Row style={{width: "100%"}}>
                     <Col flex={2}>
                         <Chart chart={Column} config={RTrend} data={props.columnData}
                                height={'600px'}/>
