@@ -36,30 +36,35 @@ EXPORT CalcStats := MODULE
     recs3 := PROJECT(recs2, TRANSFORM(statsRecE, SELF := LEFT));
     // Smooth data and calculate basic inter-period stats while we're at it.
     statsRecE calc7dma(statsRecE le, statsRecE ri) := TRANSFORM
-      newCases := IF(le.location = ri.location AND ri.cumCases > le.cumCases, ri.cumCases - le.cumCases, 0);
-      cases7dma := IF(le.location != ri.location OR COUNT(le.casesHistory) = 0, 0, AVE(le.casesHistory));
+      newCases := IF(le.location = ri.location, ri.cumCases - le.cumCases, ri.cumCases);
+      //newCases := IF(le.location = ri.location AND ri.cumCases > le.cumCases, ri.cumCases - le.cumCases, 0);
+      REAL cases7dma := IF(le.location != ri.location OR COUNT(le.casesHistory) = 0, 0, AVE(le.casesHistory));
       // Calculate adjusted cases and deaths tp remove large dumps of cases or deaths as follows:
       // - If the new value is > 2.25 * 7 day moving average (implying R > 10)
       //    limit new cases / deaths it to 2.25 * 7 day average
       // - Calculate new cumulative values by adding up adjusted new values.
-      adjNewCases := IF(cases7dma > 0 AND newCases > 2.25 * cases7dma, cases7dma * 2.25, newCases);
+      REAL adjNewCases := IF(cases7dma > 10 AND newCases > 2.25 * cases7dma, cases7dma * 2.25, MAX(newCases, 0));
       casesHist := IF(le.location != ri.location, ri.casesHistory, [adjNewCases] + le.casesHistory)[..7];
       SELF.casesHistory := casesHist;
-      SELF.cases7dma := cases7dma;
-      SELF.newCases := adjNewCases;
+      SELF.cases7dma := ROUND(cases7dma);
+      SELF.newCases := ROUND(adjNewCases);
       SELF.prevCases := IF(le.location = ri.location, le.cumCases, 0);
       SELF.adjPrevCases := IF(le.location = ri.location, le.adjCumCases, 0);
-      SELF.adjCumCases := SELF.adjPrevCases + adjNewCases;
-      newDeaths := IF(le.location = ri.location AND ri.cumDeaths > le.cumDeaths, ri.cumDeaths - le.cumDeaths, 0);
-      deaths7dma := IF(le.location != ri.location OR COUNT(le.deathsHistory) = 0, 0, AVE(le.deathsHistory));
-      adjNewDeaths := IF(deaths7dma > 0 AND newDeaths > 2.25 * deaths7dma, deaths7dma * 2.25, newDeaths);
+      SELF.adjCumCases := SELF.adjPrevCases + ROUND(adjNewCases);
+      SELF.caseAdjustment := ROUND(adjNewCases - newCases);
+      newDeaths := IF(le.location = ri.location, ri.cumDeaths - le.cumDeaths, ri.cumDeaths);
+      //newDeaths := IF(le.location = ri.location AND ri.cumDeaths > le.cumDeaths, ri.cumDeaths - le.cumDeaths, 0);
+      REAL deaths7dma := IF(le.location != ri.location OR COUNT(le.deathsHistory) = 0, 0, AVE(le.deathsHistory));
+      REAL adjNewDeaths := IF(deaths7dma > 10 AND newDeaths > 2.25 * deaths7dma, deaths7dma * 2.25, MAX(newDeaths, 0));
       deathsHist := IF(le.location != ri.location, ri.deathsHistory, [adjNewDeaths] + le.deathsHistory)[..7];
       SELF.deathsHistory := deathsHist;
-      SELF.deaths7dma := deaths7dma;
-      SELF.newDeaths := adjNewDeaths;
+      SELF.deaths7dma := ROUND(deaths7dma);
+      SELF.newDeaths := ROUND(adjNewDeaths);
       SELF.prevDeaths := IF(le.location = ri.location, le.cumDeaths, 0);
       SELF.adjPrevDeaths := IF(le.location = ri.location, le.adjCumDeaths, 0);
-      SELF.adjCumDeaths := SELF.adjPrevDeaths + adjNewDeaths;
+      SELF.adjCumDeaths := SELF.adjPrevDeaths + ROUND(adjNewDeaths);
+      SELF.deathsAdjustment := ROUND(adjNewDeaths - newDeaths);
+      SELF.population := ri.population;
       SELF := ri;
     END;
     recs4 := ITERATE(recs3, calc7dma(LEFT, RIGHT), LOCAL);
@@ -94,10 +99,10 @@ EXPORT CalcStats := MODULE
     stats6 := JOIN(stats5, stats5, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod, TRANSFORM(RECORDOF(LEFT),
                         // Use adjusted case and death counts to calculate SIR attributes.  Spurious dumps are not time synchronized,
                         // so should not be considered for SIR calculations, which are time dependent
-                        SELF.active := IF (LEFT.adjCumCases >= RIGHT.adjCumCases, LEFT.adjCumCases - RIGHT.adjCumCases, 0),
-                        SELF.recovered := IF(RIGHT.adjCumCases < LEFT.adjCumDeaths, 0, RIGHT.adjCumCases - LEFT.adjCumDeaths),
-                        SELF.prevActive := IF(LEFT.adjPrevCases >= RIGHT.adjPrevCases, LEFT.adjPrevCases - RIGHT.adjPrevCases, 0),
-                        SELF.cfr := LEFT.adjCumDeaths / RIGHT.adjCumCases,
+                        SELF.active := IF(LEFT.cumCases >= RIGHT.cumCases, LEFT.cumCases - RIGHT.cumCases, 0),
+                        SELF.recovered := IF(RIGHT.cumCases < LEFT.cumDeaths, 0, RIGHT.cumCases - LEFT.cumDeaths),
+                        SELF.prevActive := IF(LEFT.prevCases >= RIGHT.prevCases, LEFT.prevCases - RIGHT.prevCases, 0),
+                        SELF.cfr := LEFT.cumDeaths / RIGHT.cumCases,
                         SELF := LEFT), LEFT OUTER);
     RETURN stats6;
   END;  // Daily Stats
@@ -135,8 +140,10 @@ EXPORT CalcStats := MODULE
       SELF.adjCumDeaths := SUM(children, adjCumDeaths);
       SELF.adjPrevCases := SUM(children, adjPrevCases);
       SELF.adjPrevDeaths := SUM(children, adjPrevDeaths);
-      // We need to do population-weighted average for CFR
-      SELF.cfr := SUM(children, (REAL8)cfr * population / SELF.population);
+      SELF.caseAdjustment := SUM(children, caseAdjustment);
+      SELF.deathsAdjustment := SUM(children, deathsAdjustment);
+      // CFR will be calculated later.
+      SELF.cfr := 0;
     END;
     statsRolled := ROLLUP(statsG, GROUP, doRollup(LEFT, ROWS(LEFT)));
     RETURN SORT(statsRolled, location, -date);
@@ -145,12 +152,21 @@ EXPORT CalcStats := MODULE
     // Favor the rolled up record if it exists, otherwise take the source record
     // But if the source record exist, take fips, lat and long from the source, since the rollup
     // can't determine those.
-    merged := JOIN(rollupRecs, sourceRecs, LEFT.location = RIGHT.location AND LEFT.date = RIGHT.date,
+    merged0 := JOIN(rollupRecs, sourceRecs, LEFT.location = RIGHT.location AND LEFT.date = RIGHT.date,
                     TRANSFORM(RECORDOF(LEFT),
                               SELF.fips := RIGHT.fips,
                               SELF.latitude := RIGHT.latitude,
                               SELF.longitude := RIGHT.longitude,
+                              SELF.population := IF(LEFT.population > 1, LEFT.population, RIGHT.population),
                               SELF := IF(LEFT.location != '', LEFT, RIGHT)), FULL OUTER);
-    RETURN SORT(merged, location, -date);
+    merged1 := SORT(merged0, location, -date);
+    // Recalculate CFR in case some of the lower level locations don't have population data.
+    // Add record id
+    merged2 := PROJECT(merged1, TRANSFORM(RECORDOF(LEFT), SELF.id := COUNTER, SELF := LEFT));
+    merged := JOIN(merged2, merged2, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod, TRANSFORM(RECORDOF(LEFT),
+                        SELF.cfr := LEFT.adjCumDeaths / RIGHT.adjCumCases,
+                        SELF := LEFT), LEFT OUTER);
+    RETURN merged;
+
   END;
 END; // CalcStats

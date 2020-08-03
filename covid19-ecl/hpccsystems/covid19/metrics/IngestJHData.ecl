@@ -7,26 +7,25 @@ IMPORT $ AS COVID19;
 IMPORT COVID19.Paths;
 
 inputRec := Types.inputRec;
-statsRec := Types.statsRec;
-metricsRec := Types.metricsRec;
 populationRec := Types.populationRec;
-CalcMetrics := COVID19.CalcMetrics;
-CalcStats := COVID19.CalcStats;
 
-minSpreadingInfections := 500;
-
-
-// For US County and State level
-USFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
-countyPopulationPath := '~hpccsystems::covid19::file::public::uscountypopulation::population.flat';
-countryMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat';
-
-// For country level
+// For L1 level
 countryFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';
 worldMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_global.flat';
 
 countryPopulationPath := '~hpccsystems::covid19::file::public::worldpopulation::population_gender.flat';
 
+// For L2 level
+indiaStatePopPath := '~hpccsystems::covid19::file::public::indiapopulation::population.flat';
+australiaStatePopPath := '~hpccsystems::covid19::file::public::australiapopulation::v1::population.flat';
+ukStatePopPath := '~hpccsystems::covid19::file::public::ukpopulation::v1::population.flat';
+
+// For L3 level
+USFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
+countyPopulationPath := '~hpccsystems::covid19::file::public::uscountypopulation::population.flat';
+countryMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_by_country.flat';
+
+// Various input record formats
 scRecord := RECORD
   string50 fips;
   string admin2;
@@ -60,6 +59,34 @@ countyPopRecord := RECORD
   string popestimate2018;
   string popestimate2019;
 END;
+
+indiaStatePopRec := RECORD
+  string4 state;
+  string area_name;
+  unsigned8 total_persons;
+  unsigned8 total_males;
+  unsigned8 total_females;
+  unsigned8 rural_persons;
+  unsigned8 rural_males;
+  unsigned8 rural_females;
+  unsigned8 urban_persons;
+  unsigned8 urban_males;
+  unsigned8 urban_females;
+ END;
+
+australiaStatePopRec := RECORD
+  string state_and_territory;
+  unsigned8 population;
+  integer8 change_over_previous_year;
+  decimal5_2 change_over_previous_year_percentage;
+ END;
+
+ukStatePopRec := RECORD
+  string code;
+  string name;
+  string geography1;
+  unsigned8 all_ages;
+ END;
 
 countryPopRecord := RECORD
 	string locid;
@@ -126,34 +153,55 @@ L2InputDat0 := PROJECT(L2DatIn, TRANSFORM(inputRec,
                                             SELF.negative := 0));
 
 
-statePopDatIn := pop.clean;
-statePopData := PROJECT(statePopDatIn, TRANSFORM(populationRec,
+usStatePopDatIn := pop.clean;
+usstatePopData := PROJECT(usStatePopDatIn, TRANSFORM(populationRec,
                                     SELF.location := LEFT.state,
                                     SELF.population := LEFT.pop_2018));
-
+indiaStatePopData0 := DATASET(indiaStatePopPath, indiaStatePopRec, THOR);
+indiaStatePopData := PROJECT(indiaStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := LEFT.area_name,
+                                    SELF.population := LEFT.total_persons));
+australiaStatePopData0 := DATASET(australiaStatePopPath, australiaStatePopRec, THOR);
+australiaStatePopData := PROJECT(australiaStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := LEFT.state_and_territory,
+                                    SELF.population := LEFT.population));
+ukStatePopData0 := DATASET(ukStatePopPath, ukStatePopRec, THOR);
+ukStatePopData := PROJECT(ukStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := LEFT.name,
+                                    SELF.population := LEFT.all_ages));
 //OUTPUT(statePopData, NAMED('StatePopulationData'));
 
-L2InputDat1 := JOIN(L2InputDat0, statePopData, LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location,
+L2InputDat1 := JOIN(L2InputDat0, usStatePopData, LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location,
                                 TRANSFORM(RECORDOF(LEFT),
                                 SELF.population := RIGHT.population,
                                 SELF := LEFT), LEFT OUTER);
-L2InputDat := SORT(L2InputDat1, Country, Level2, -date);
+L2InputDat2 := JOIN(L2InputDat1, indiaStatePopData, LEFT.Country = 'INDIA' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+L2InputDat3 := JOIN(L2InputDat2, australiaStatePopData, LEFT.Country = 'AUSTRALIA' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+L2InputDat4 := JOIN(L2InputDat3, ukStatePopData, LEFT.Country = 'UNITED KINGDOM' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+L2InputDat := SORT(L2InputDat4, Country, Level2, -date);
 out2 := OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
 ///OUTPUT(L2InputDat[ .. 10000], ALL, NAMED('L2InputData'));
-
-countryMetrics := DATASET(countryMetricsPath, metricsRec, THOR);
-countryCFR := countryMetrics(location = 'US' AND period=1)[1].cfr;
-//OUTPUT(countryCFR, NAMED('US_CFR'));
 
 // Prepare Country Level Input
 countryData1 := SORT(countryData0, country, update_date);
 countryData2 := DEDUP(countryData1, country, update_date);
 
 // Filter out bad country info
-countryData3 := countryData2(country != '' AND state = '' and admin2 = '' AND update_date != 0);
+// Note: We want at least one record per country so we can get population data.
+countryData3 := countryData2(country != '' AND update_date != 0);
+countryData4 := DEDUP(countryData3, country, update_date);
 countryPopData0 := DATASET(countryPopulationPath, countryPopRecord, THOR);
 countryPopData := DEDUP(SORT(countryPopData0, location, -time), location);
-countryInputDat := JOIN(countryData3, countryPopData, LEFT.Country = RIGHT.location, TRANSFORM(inputRec,
+countryInputDat := JOIN(countryData4, countryPopData, LEFT.Country = RIGHT.location, TRANSFORM(inputRec,
                                             SELF.fips := LEFT.fips,
                                             SELF.country := Std.Str.CleanSpaces(LEFT.country),
                                             SELF.Level2 := '',

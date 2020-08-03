@@ -29,7 +29,7 @@ L2Stats := CalcStats.DailyStats(L2InputDat, 2);
 
 // Rollup the L3 stats to L2
 L2Rollup := CalcStats.RollupStats(L3Stats, 2);
-//OUTPUT(L2Rollup[..10000], ALL, NAMED('L2Rollup'));
+//OUTPUT(L2Rollup(Country = 'INDIA'), ALL, NAMED('L2Rollup'));
 
 // Merge the L2 Stats and the L2 Rollup.  Favor the rollup stats
 // when there are overlaps.
@@ -39,10 +39,10 @@ OUTPUT(L2Merged, , Paths.StatsLevel2, Thor, OVERWRITE);
 
 // Calculate L1 Stats from L1 source data
 L1Stats := CalcStats.DailyStats(L1InputDat, 1);
-
+OUTPUT(L1Stats, ALL, NAMED('L1Stats'));
 // Also rollup the merged L2 to produce a L1 Rollup.
 L1Rollup := CalcStats.RollupStats(L2Merged, 1);
-//OUTPUT(L1Rollup, ALL, NAMED('L1Rollup'));
+OUTPUT(L1Rollup, ALL, NAMED('L1Rollup'));
 
 // Merge the L1 Stats and the L1 Rollup.  Favor the rollup stats
 // when things overlap
@@ -50,5 +50,7 @@ L1Merged := CalcStats.MergeStats(L1Rollup, L1Stats, 1);
 OUTPUT(L1Merged, , Paths.StatsLevel1, Thor, OVERWRITE);
 
 // Rollup the L1 Stats to L0 (The World).
-L0Stats := CalcStats.RollupStats(L1Merged, 0);
+L0Stats0 := CalcStats.RollupStats(L1Merged, 0);
+// Call merge, even though there's nothing to merge with, since some stats get recomputed there.
+L0Stats := CalcStats.MergeStats(L0Stats0, DATASET([], statsRec), 0);
 OUTPUT(L0Stats, , Paths.StatsLevel0, Thor, OVERWRITE);

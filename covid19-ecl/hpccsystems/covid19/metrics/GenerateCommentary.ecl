@@ -44,6 +44,7 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
     currIFR = rec[39]
     ifr = rec[40]
     cRisk = rec[42] # Contagion Risk
+    population = rec[43] # Location population
     asOfDate = time.strptime(str(endDate), '%Y%m%d')
     asOfDateStr = time.strftime('%b %d, %Y', asOfDate)
     if r < 1:
@@ -176,7 +177,8 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
     riskscale += 'at ' + str(round(cRisk * 100, 1)) + '%. '
     riskstr += riskscale
     riskstr += 'This is the likelihood of meeting an infected person during one hundred random encounters. '
-    outstr += riskstr
+    if population > 1:
+      outstr += riskstr
     sdString = ''
     sdscalestr = 'slightly'
     if abs(sdi) > .6:
@@ -237,7 +239,7 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
         if cfrRatio > 3 or cfrRatio < 1/3.0:
           cfrstr += 'It is likely that ' + location + ' uses a different reporting protocol than its peers.  '
       outstr += cfrstr
-    immunestr = 'Preliminary antibody testing suggests that ' + str(round(immunePct)) + '% of the population may have been infected and are presumed immune. '
+    immunestr = 'Preliminary estimates suggest that ' + str(round(immunePct)) + '% of the population may have been infected and are presumed immune. '
     if immunePct < 10:
       immunestr += 'This is not enough to significantly slow the spread of the virus. '
     elif immunePct < 25:
@@ -246,8 +248,8 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
       immunestr += 'This should significantly suppress the spread of the virus. '
     elif immunePct > 50:
       immunestr += 'This location is approaching herd immunity and should not see significant further spread. '
-    immunestr += 'This preliminary testing also implies an Infection Fatality Rate (IFR) of roughly ' + str(round(ifr*100, 1)) + '%. '
-    if immunePct > .5:
+    immunestr += 'This preliminary estimation also implies an Infection Fatality Rate (IFR) of roughly ' + str(round(ifr*100, 1)) + '%. '
+    if population > 1 and immunePct > .5:
       outstr += immunestr
     stistr = ''
     if sti < -.1:
