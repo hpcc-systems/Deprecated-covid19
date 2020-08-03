@@ -54,7 +54,7 @@ export default function OlMap(props: Props) {
             }),
         });
 
-        style.getText().setText(feature.get('name').toUpperCase());
+        style.getText().setText(feature.get(props.selectKeyField).toUpperCase());
         return style;
     }
 
@@ -103,7 +103,7 @@ export default function OlMap(props: Props) {
                     }),
                 });
 
-                style.getText().setText(showLabel ? feature.get('name').toUpperCase() : '');
+                style.getText().setText(showLabel ? feature.get(props.selectKeyField).toUpperCase() : '');
                 return style;
             },
         });
