@@ -1,4 +1,4 @@
-EXPORT obilityApple := MODULE
+EXPORT MobilityApple := MODULE
 
 EXPORT filepath := '~hpccsystems::covid19::file::public::mobility::apple::daily.flat';
 EXPORT layout := RECORD
