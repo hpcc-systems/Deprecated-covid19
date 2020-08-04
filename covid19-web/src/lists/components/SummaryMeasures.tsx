@@ -36,7 +36,8 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
     const chartModel = {
         padding: 'auto',
         title: {
-            visible: false,
+            text: 'Weekly Metrics ' + props.summaryData.period_string,
+            visible: true,
         },
         forceFit: true,
         label: {
@@ -68,84 +69,72 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
     return (
         <Layout >
-            <Row>
-                <Col span={12}>
-                    <b>Daily Stats - {props.summaryData.date_string}</b>
-                </Col>
-                <Col span={12} style={{paddingLeft: 25}}>
-                    <b>Weekly Stats and Metrics - {props.summaryData.period_string}</b>
-                </Col>
-            </Row>
+
 
             <Row>
                 <Col span={12}>
                     <Card>
                         <Statistic
-                            title="New Cases"
+                            title={"New Cases on " + props.summaryData.date_string}
                             value={props.summaryData.new_cases}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                     <Card>
                         <Statistic
-                            title="New Deaths"
+                            title={"New Deaths on " + props.summaryData.date_string}
                             value={props.summaryData.new_deaths}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                     <Card>
                         <Statistic
-                            title="Active Cases"
+                            title={"Total Active as of " + props.summaryData.date_string}
                             value={props.summaryData.active}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                     <Card>
                         <Statistic
-                            title="Recovered Cases"
+                            title={"Total Recovered as of " + props.summaryData.date_string}
                             value={props.summaryData.recovered}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                     <Card>
                         <Statistic
-                            title="Total Cases"
+                            title={"Total Cases as of " + props.summaryData.date_string}
                             value={renderCommaFormattedValue(props.summaryData.cases) + renderOptionalValue(props.summaryData.cases_per_capita)}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                     <Card>
                         <Statistic
-                            title="Total Deaths"
+                            title={"Total Deaths as of " + props.summaryData.date_string}
                             value={renderCommaFormattedValue(props.summaryData.deaths) + renderOptionalValue(props.summaryData.deaths_per_capita)}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                    <Card>
+                        <Statistic
+                            title={"Weekly New Cases - " + props.summaryData.period_string }
+                            value={props.summaryData.period_new_cases}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                    <Card>
+                        <Statistic
+                            title={"Weekly New Deaths - " + props.summaryData.period_string }
+                            value={props.summaryData.period_new_deaths}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                 </Col>
                 <Col span={12} style={{paddingLeft: 25}}>
+
                     <Row>
                         <Col span={24}>
-
-                            <Card>
-                                <Statistic
-                                    title="Weekly New Cases"
-                                    value={props.summaryData.period_new_cases}
-                                    valueStyle={{color: '#cf1322'}}
-                                />
-                            </Card>
-                            <Card>
-                                <Statistic
-                                    title="Weekly New Deaths"
-                                    value={props.summaryData.period_new_deaths}
-                                    valueStyle={{color: '#cf1322'}}
-                                />
-                            </Card>
-                        </Col>
-
-                    </Row>
-                    <Row>
-                        <Col span={24}>
-                            <Chart chart={Bar} config={chartModel} data={chartModelData} height={'400px'}/>
+                            <Chart chart={Bar} config={chartModel} data={chartModelData} />
                         </Col>
                     </Row>
 

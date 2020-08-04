@@ -207,11 +207,16 @@ L2InputDat5 := JOIN(L2InputDat4, mexicoStatePopData, LEFT.Country = 'MEXICO' AND
                                 TRANSFORM(RECORDOF(LEFT),
                                 SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
                                 SELF := LEFT), LEFT OUTER);
-L2InputDat6 := JOIN(L2InputDat5, brazilStatePopData, LEFT.Country = 'MEXICO' AND LEFT.Level2 = RIGHT.location,
+L2InputDat6 := JOIN(L2InputDat5, brazilStatePopData, LEFT.Country = 'BRAZIL' AND LEFT.Level2 = RIGHT.location,
                                 TRANSFORM(RECORDOF(LEFT),
                                 SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
                                 SELF := LEFT), LEFT OUTER);
-L2InputDat := SORT(L2InputDat6, Country, Level2, -date);
+L2InputDat7 := JOIN(L2InputDat6, canadaStatePopData, LEFT.Country = 'CANADA' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+
+L2InputDat := SORT(L2InputDat7, Country, Level2, -date);
 
 
 
