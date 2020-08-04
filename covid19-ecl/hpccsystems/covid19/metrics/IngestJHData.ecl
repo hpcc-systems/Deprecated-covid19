@@ -2,6 +2,7 @@
 
 IMPORT Std;
 IMPORT $.USPopulationFiles as pop;
+IMPORT $.^.file.public as file;
 IMPORT $.Types2 AS Types;
 IMPORT $ AS COVID19;
 IMPORT COVID19.Paths;
@@ -16,9 +17,12 @@ worldMetricsPath := '~hpccsystems::covid19::file::public::metrics::weekly_global
 countryPopulationPath := '~hpccsystems::covid19::file::public::worldpopulation::population_gender.flat';
 
 // For L2 level
-indiaStatePopPath := '~hpccsystems::covid19::file::public::indiapopulation::population.flat';
+indiaStatePopPath := '~hpccsystems::covid19::file::public::indiapopulation::v1::population.flat';
 australiaStatePopPath := '~hpccsystems::covid19::file::public::australiapopulation::v1::population.flat';
 ukStatePopPath := '~hpccsystems::covid19::file::public::ukpopulation::v1::population.flat';
+canadaStatePopPath := '~hpccsystems::covid19::file::public::canadapopulation::v1::population.flat';
+mexicoStatePopPath := '~hpccsystems::covid19::file::public::mexicopopulation::v1::population.flat';
+brazilStatePopPath := '~hpccsystems::covid19::file::public::brazilpopulation::v1::population.flat';
 
 // For L3 level
 USFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
@@ -169,6 +173,18 @@ ukStatePopData0 := DATASET(ukStatePopPath, ukStatePopRec, THOR);
 ukStatePopData := PROJECT(ukStatePopData0, TRANSFORM(populationRec,
                                     SELF.location := LEFT.name,
                                     SELF.population := LEFT.all_ages));
+mexicoStatePopData0 := DATASET(mexicoStatePopPath, file.mexicopopulation.layout, THOR);
+mexicoStatePopData := PROJECT(mexicoStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := LEFT.state,
+                                    SELF.population := LEFT.total));
+canadaStatePopData0 := DATASET(canadaStatePopPath, file.canadapopulation.layout, THOR);
+canadaStatePopData := PROJECT(canadaStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := LEFT.geography,
+                                    SELF.population := LEFT.pop_2019));
+brazilStatePopData0 := DATASET(brazilStatePopPath, file.brazilpopulation.layout, THOR);
+brazilStatePopData := PROJECT(brazilStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := LEFT.state,
+                                    SELF.population := LEFT.population));
 //OUTPUT(statePopData, NAMED('StatePopulationData'));
 
 L2InputDat1 := JOIN(L2InputDat0, usStatePopData, LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location,
@@ -187,9 +203,20 @@ L2InputDat4 := JOIN(L2InputDat3, ukStatePopData, LEFT.Country = 'UNITED KINGDOM'
                                 TRANSFORM(RECORDOF(LEFT),
                                 SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
                                 SELF := LEFT), LEFT OUTER);
-L2InputDat := SORT(L2InputDat4, Country, Level2, -date);
+L2InputDat5 := JOIN(L2InputDat4, mexicoStatePopData, LEFT.Country = 'MEXICO' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+L2InputDat6 := JOIN(L2InputDat5, brazilStatePopData, LEFT.Country = 'MEXICO' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+L2InputDat := SORT(L2InputDat6, Country, Level2, -date);
+
+
+
 out2 := OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
-///OUTPUT(L2InputDat[ .. 10000], ALL, NAMED('L2InputData'));
+OUTPUT(L2InputDat[ .. 10000], ALL, NAMED('L2InputData'));
 
 // Prepare Country Level Input
 countryData1 := SORT(countryData0, country, update_date);
