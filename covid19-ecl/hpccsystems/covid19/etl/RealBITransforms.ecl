@@ -19,7 +19,7 @@ stats_top_temp := TABLE(stats_top, {country, INTEGER rank := 0});
 
  
 country_ranking := ITERATE(stats_top_temp, 
-                           TRANSFORM(
+                           TRANSFORM(   
                                     {stats_top_temp},
                                     SELF.rank := LEFT.rank + 1,
                                     SELF.country := RIGHT.country)

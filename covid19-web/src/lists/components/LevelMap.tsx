@@ -91,7 +91,7 @@ const LevelMap = (props: LevelMapProps) => {
                             d >= 0.15 ? '#fdae61' :
                                 d >= 0.05 ? '#fee08b' :
                                     d > 0 ? '#66bd63' :
-                                        '#2b2b2b';
+                                        '#1a9850';
                 case 'status':
                     d = row.status_numb;
                     if (d >= 6) {
