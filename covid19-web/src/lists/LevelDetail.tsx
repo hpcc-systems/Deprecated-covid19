@@ -5,6 +5,7 @@ import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
 import HotList from "./components/HotList";
 import PeriodTrends from "./components/PeriodTrends";
+import { LeftOutlined } from '@ant-design/icons';
 
 
 const LevelDetail = () => {
@@ -125,8 +126,8 @@ const LevelDetail = () => {
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
                 <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
                 <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
-                <Button  onClick={() => popLocation()} style={{height: 25}}
-                         type={"primary"} className={"anchor-btn"} disabled={locationStack.current.length === 0}>{"BACK"}</Button>
+                <Button  onClick={() => popLocation()} style={{height: 25}} icon={<LeftOutlined />}
+                      shape={"round"}   type={"primary"} className={"anchor-btn"} disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
 
             <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
