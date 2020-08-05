@@ -1,5 +1,12 @@
 /*@import '~antd/dist/antd.dark.min.css';*/
-@import '~antd/dist/antd.compact.css';
+@import '~antd/dist/antd.compact.min.css';
+
+.ant-descriptions-item-content {
+  display: table-cell;
+  color: rgba(0,0,0,.65);
+  font-size: 14px;
+  line-height: 1.66667;
+}
 
 
 .ant-dropdown-button {

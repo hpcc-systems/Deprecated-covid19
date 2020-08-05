@@ -11,13 +11,13 @@ const HotList = (props: HotListProps) => {
         {
             title: 'Top 10 Hot Spots',
             dataIndex: 'commentary',
-            render: (text: any, record: any) => <div><b>{record.location}</b><br/>{record.commentary}</div>
+            render: (text: any, record: any) => <div style={{fontSize:14}}><b>{record.location}</b><br/>{record.commentary}</div>
         }
     ];
     if (props.data.length > 0) {
         return (
             <Table rowKey={(record)=>record.location} dataSource={props.data} columns={columns}
-                   size={'small'} />
+                   size={'large'} />
         )
     } else {
         return null;

@@ -118,11 +118,15 @@ const LevelDetail = () => {
     return (
         <Layout >
             <div style={{textAlign:"center"}}>
+
+
                 <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
                 <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
                 <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
                 <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
+                <Button  onClick={() => popLocation()} style={{height: 25}}
+                         type={"primary"} className={"anchor-btn"} disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
 
             <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
@@ -130,10 +134,6 @@ const LevelDetail = () => {
                 <div id={"commentary"}/>
 
                 <PageHeader title={summaryData.location}
-                            extra={[locationStack.current.length > 0 ? (
-                                <Button key={'Back'} style={{width: 70}} onClick={() => popLocation()}
-                                        type={"primary"}>Back</Button>) : '']}
-
                 >
                     <Descriptions size="small" column={1} bordered>
                         <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>

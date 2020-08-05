@@ -10,11 +10,11 @@ interface PeriodTrendsProps {
 
 const PeriodTrends = (props: PeriodTrendsProps) => {
     const RTrend = {
-        padding: '100',
+        padding: 'auto',
         title: {
             text: 'Rate of Infection',
             visible: true,
-            style: {fontSize: 14}
+            style: {fontSize: 14, fontWeight: 'bold'}
         },
         forceFit: true,
         label: {
@@ -43,18 +43,19 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
     }
 
     const NewCasesTrend = {
-        padding: '100',
+        padding: 'auto',
         title: {
             text: 'New Cases and New Deaths',
             visible: true,
-            style: {fontSize: 14}
+            style: {fontSize: 14, fontWeight: 'bold'}
         },
         forceFit: true,
         label: {
             visible: true
         },
         legend: {
-            visible: true
+            visible: true,
+            position: "right"
         },
         color: ['#fee08b', '#d73027',],
         colorField: 'measure',
@@ -79,11 +80,11 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
                 <Row style={{width: "100%"}}>
                     <Col flex={2}>
                         <Chart chart={Column} config={RTrend} data={props.columnData}
-                               height={'600px'}/>
+                               />
                     </Col>
                     <Col flex={3}>
                         <Chart chart={Column} config={NewCasesTrend} data={props.groupedData}
-                               height={'600px'}/>
+                               />
                     </Col>
                 </Row>
             </Layout.Content>

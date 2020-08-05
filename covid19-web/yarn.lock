@@ -2384,7 +2384,7 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
     "@types/color-name" "^1.1.1"
     color-convert "^2.0.1"
 
-antd@^4.1.1:
+antd@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/antd/-/antd-4.5.2.tgz#0551b2999d5c9827d996b860e827974d50d87ed9"
   integrity sha512-XDI4ywKpj2LfvvQjHxkdItzLH0zlVvm3wKHyko03BoSzYVinZ9MWap3PXraclb8xBKH8d/14BRJSGmIsvxzkfg==
@@ -9628,10 +9628,10 @@ react-error-overlay@^6.0.7:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.7.tgz#1dcfb459ab671d53f660a991513cb2f0a0553108"
   integrity sha512-TAv1KJFh3RhqxNvhzxj6LeT5NWklP6rDr2a0jaTfsZ5wSZWHOGeqQyejUp3xxLfPt2UpyJEcVQB/zyPcmonNFA==
 
-react-g2plot@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/react-g2plot/-/react-g2plot-0.1.1.tgz#539523f1cbd794147ac7c129d820a6c80ab3c55a"
-  integrity sha512-0TWEXVjhLv3pFic1iReV0LBq9ZPt6aSOZAo8YRh3a2PeRKH8dRzZKzt9ig8+T+EyEjlWIA3r6gsvu2D1gyHHSA==
+react-g2plot@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/react-g2plot/-/react-g2plot-0.2.1.tgz#b433d3bf7b242402949a1b91ca13aa710989c898"
+  integrity sha512-Nhc4VXozt39Uw+UEV+ykL5iM4E7ucwV/BfpsHAB0SABzGWXmI70tLVHrDto/Dg4KulsizRyk68DMCrbgmXq9sA==
 
 react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.1"
