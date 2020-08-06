@@ -119,6 +119,46 @@ const LevelMap = (props: LevelMapProps) => {
         } else return '#2b2b2b';
     }
 
+    function olMeasureHandler(name: string) {
+        if (!name) return '';
+
+        let row = listData.current.get(name.toUpperCase());
+
+        //console.log('Color location: ' + name.toUpperCase() +  ' -- ' + name.length + '  ' + row);
+
+        if (row) {
+            let d = '';
+            switch (heatMapTypeRef.current) {
+                case 'cases':
+                    d = formatNumber(row.cases);
+                    break;
+                case 'new_cases':
+                    d = formatNumber(row.period_new_cases);
+                    break;
+                case 'deaths':
+                    d = formatNumber(row.deaths);
+                    break;
+                case 'new_deaths':
+                    d = formatNumber(row.period_new_deaths);
+                    break;
+                case 'cases_per_capita':
+                    d = formatNumber(row.cases_per_capita);
+                    break;
+                case 'deaths_per_capita':
+                    d = formatNumber(row.deaths_per_capita);
+                    break;
+                case 'contagion_risk':
+                    d = Math.round(row.contagion_risk * 100) +
+                        "%";
+                    break;
+                case 'status': d = row.status;
+            }
+
+            return d;
+        } else return '';
+    }
+
+
     function olSelectHandler(name: string) {
 
         return props.selectHandler(name.toUpperCase());
@@ -402,6 +442,7 @@ const LevelMap = (props: LevelMapProps) => {
 
                     <OlMap toolTipHandler={(name) => olToolTipHandler(name)}
                            colorHandler={(name) => olColorHandler(name)}
+                           measureHandler={(name) => olMeasureHandler(name)}
                            selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
                            zoom={geoFileInfo.zoom}
                            geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}

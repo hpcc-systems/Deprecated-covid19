@@ -18,6 +18,7 @@ interface Props {
     toolTipHandler: (name: string) => string;
     colorHandler: (name: string) => string;
     selectHandler: (name: string) => void;
+    measureHandler: (name: string) => void;
     geoFile: string;
     secondaryGeoFile?: string;
     geoLat: number;
@@ -43,7 +44,7 @@ export default function OlMap(props: Props) {
                 width: 3,
             }),
             text: new Text({
-                font: '11px Calibri,sans-serif',
+                font: '9px Calibri,sans-serif',
                 fill: new Fill({
                     color: '#000',
                 }),
@@ -54,7 +55,7 @@ export default function OlMap(props: Props) {
             }),
         });
 
-        style.getText().setText(feature.get(props.selectKeyField).toUpperCase());
+        style.getText().setText(feature.get(props.selectKeyField).toUpperCase() + ' ' + props.measureHandler(feature.get(props.colorKeyField)));
         return style;
     }
 
@@ -92,7 +93,7 @@ export default function OlMap(props: Props) {
                         width: borderWidth,
                     }),
                     text: new Text({
-                        font: '11px Calibri,sans-serif',
+                        font: '9px Calibri,sans-serif',
                         fill: new Fill({
                             color: '#000',
                         }),
@@ -103,7 +104,7 @@ export default function OlMap(props: Props) {
                     }),
                 });
 
-                style.getText().setText(showLabel ? feature.get(props.selectKeyField).toUpperCase() : '');
+                style.getText().setText(showLabel ? feature.get(props.selectKeyField).toUpperCase() + ' ' + props.measureHandler(feature.get(props.colorKeyField)) : '');
                 return style;
             },
         });

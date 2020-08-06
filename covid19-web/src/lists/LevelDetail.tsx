@@ -6,6 +6,7 @@ import SummaryMeasures from "./components/SummaryMeasures";
 import HotList from "./components/HotList";
 import PeriodTrends from "./components/PeriodTrends";
 import { LeftOutlined } from '@ant-design/icons';
+import LevelList from "./components/LevelList";
 
 
 const LevelDetail = () => {
@@ -17,12 +18,14 @@ const LevelDetail = () => {
     //Data
     const [summaryData, setSummaryData] = useState<any>([]);
     const [maxData, setMaxData] = useState<any>([]);
-    const [listData, setListData] = useState<any>(new Map());
+    const [listData, setListData] = useState<any>([]);
+    const [mapData, setMapData] = useState<any>(new Map());
     const [periodTrendsColumnData, setPeriodTrendsColumnData] = useState<any>([]);
     const [periodTrendsGroupedData, setPeriodTrendsGroupedData] = useState<any>([]);
     const [hotListData, setHotListData] = useState<any>([]);
 
     useEffect(() => {
+
         function toMapData(data: any) {
             let mapData = new Map();
 
@@ -72,8 +75,9 @@ const LevelDetail = () => {
             }
 
             let list = query.current.getData('list');
+            setListData(list);//The list only shown if there is no map
             let mapData = toMapData(list);
-            setListData(mapData);
+            setMapData(mapData);
 
             setPeriodTrendsColumnData(query.current.getData('period_trend_column'));
             setPeriodTrendsGroupedData(query.current.getData('period_trend_grouped'));
@@ -145,8 +149,9 @@ const LevelDetail = () => {
 
                 <Layout.Content>
                     <div id={"map"}/>
-                    <LevelMap listData={listData} maxData={maxData} locationAlias={''}
+                    <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
                               selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
+                    <LevelList data={listData} location={locationUUID()}/>
                     <div id={"summary_stats"} style={{height: 10}}/>
                     <SummaryMeasures summaryData={summaryData}/>
 
