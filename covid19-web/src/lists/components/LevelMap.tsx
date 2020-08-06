@@ -62,6 +62,7 @@ const LevelMap = (props: LevelMapProps) => {
         let row = listData.current.get(name.toUpperCase());
 
         //console.log('Color location: ' + name.toUpperCase() +  ' -- ' + name.length + '  ' + row);
+        console.log('MAX: ' + maxData.current.cases_per_capita_max);
 
         if (row) {
             let d = 0;
@@ -79,10 +80,10 @@ const LevelMap = (props: LevelMapProps) => {
                     d = row.period_new_deaths / Math.max(1, maxData.current.new_deaths_max);
                     break;
                 case 'cases_per_capita':
-                    d = row.cases_per_capita / Math.max(1, maxData.current.cases_per_capita_max);
+                    d = row.cases_per_capita / Math.max(1, 1000);
                     break;
                 case 'deaths_per_capita':
-                    d = row.deaths_per_capita / Math.max(1, maxData.current.deaths_per_capita_max);
+                    d = row.deaths_per_capita / Math.max(1, 60);
                     break;
                 case 'contagion_risk':
                     d = row.contagion_risk;
@@ -404,9 +405,9 @@ const LevelMap = (props: LevelMapProps) => {
             case 'new_deaths':
                 return statsScale(maxData.current.new_deaths_max, 'New Deaths');
             case 'cases_per_capita':
-                return statsScale(maxData.current.cases_per_capita_max, 'Cases/100K');
+                return statsScale(1000, 'Cases/100K');
             case 'deaths_per_capita':
-                return statsScale(maxData.current.deaths_per_capita_max, 'Deaths/100K');
+                return statsScale(60, 'Deaths/100K');
             case 'status':
                 return statusScale()
             case 'contagion_risk':
