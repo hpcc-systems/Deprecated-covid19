@@ -124,8 +124,6 @@ const LevelDetail = () => {
     return (
         <Layout >
             <div style={{textAlign:"center"}}>
-
-
                 <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
                 <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
@@ -148,7 +146,7 @@ const LevelDetail = () => {
                     <div id={"map"}/>
                     <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
                               selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
-                    <LevelList data={listData} location={locationUUID()}/>
+                    <LevelList data={listData} location={locationUUID()} selectHandler={(name) => olSelectHandler(name)} />
                     <div id={"summary_stats"} style={{height: 10}}/>
                     <SummaryMeasures summaryData={summaryData}/>
 

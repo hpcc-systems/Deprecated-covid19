@@ -1,9 +1,10 @@
-import {Layout, Progress, Table} from "antd";
+import {Button, Layout, Progress, Table} from "antd";
 import React from "react";
 
 interface LevelListProps {
     data: any;
     location: string;
+    selectHandler: (name: string) => void;
 }
 
 const LevelList = (props: LevelListProps) => {
@@ -37,14 +38,24 @@ const LevelList = (props: LevelListProps) => {
         }
     }
 
+    const getLocation = (location: string, location_code: string) => {
+        let locations: string[]
+        if (location_code) {
+            locations = location_code.split('-');
+        } else {
+            locations = location.split('-');
+        }
+        return locations[locations.length - 1];
+    }
+
     const layout = [
         {
             title: 'Location',
             dataIndex: 'location',
-            render: (text: any, record: any) => <span>{text}</span>,
+            render: (text: any, record: any) =>
+                <Button type={"link"} onClick={()=>props.selectHandler(getLocation(record.location, record.location_code))}>{text}</Button>,
             sorter: (a: any, b: any) => a.location.localeCompare(b.location),
         },
-
         {
             title: 'Contagion Risk',
             dataIndex: 'contagion_risk',
