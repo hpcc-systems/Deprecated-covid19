@@ -1,11 +1,11 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Descriptions, Layout, PageHeader} from "antd";
+import {Button, Descriptions, Layout} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
 import HotList from "./components/HotList";
 import PeriodTrends from "./components/PeriodTrends";
-import { LeftOutlined } from '@ant-design/icons';
+import {LeftOutlined} from '@ant-design/icons';
 import LevelList from "./components/LevelList";
 
 
@@ -137,15 +137,11 @@ const LevelDetail = () => {
 
             <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
 
-                <div id={"commentary"}/>
+                <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID()}</div>
 
-                <PageHeader title={summaryData.location}
-                >
-                    <Descriptions size="small" column={1} bordered>
-                        <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
-                    </Descriptions>
-
-                </PageHeader>
+                <Descriptions size="small" column={1} bordered>
+                    <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
+                </Descriptions>
 
 
                 <Layout.Content>

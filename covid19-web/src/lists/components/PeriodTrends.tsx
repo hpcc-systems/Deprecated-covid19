@@ -77,6 +77,7 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
     return (
         <Layout>
             <Layout.Content>
+                <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Trends of Infection Rate, Weekly New Cases and Weekly New Deaths</div>
                 <Row style={{width: "100%"}}>
                     <Col flex={2}>
                         <Chart chart={Column} config={RTrend} data={props.columnData}

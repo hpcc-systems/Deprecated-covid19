@@ -70,7 +70,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
     return (
         <Layout >
-
+            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Summary Statistics and Metrics</div>
 
             <Row>
                 <Col span={12}>

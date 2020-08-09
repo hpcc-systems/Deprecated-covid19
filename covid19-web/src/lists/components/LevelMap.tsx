@@ -437,6 +437,7 @@ const LevelMap = (props: LevelMapProps) => {
 
             <Layout>
                 <Layout.Content>
+                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10}}>Interactive Map. Zoom to view more details or click on a location to view details.</div>
 
                     <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
                                  value={heatMapType} buttonStyle="outline" style={{fontSize: 11, fontWeight: "bold"}}>
