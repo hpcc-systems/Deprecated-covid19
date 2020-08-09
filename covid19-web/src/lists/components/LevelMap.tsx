@@ -35,8 +35,8 @@ const LevelMap = (props: LevelMapProps) => {
     useEffect(() => {
         listData.current = props.listData;
         maxData.current = props.maxData;
-
-    }, [props.listData, props.maxData]);
+        setHeatMapType('contagion_risk');
+    }, [setHeatMapType,props.listData, props.maxData]);
 
     useEffect(() => {
         setGeoFileInfo(Catalog.maps.get(props.location));
@@ -62,7 +62,6 @@ const LevelMap = (props: LevelMapProps) => {
         let row = listData.current.get(name.toUpperCase());
 
         //console.log('Color location: ' + name.toUpperCase() +  ' -- ' + name.length + '  ' + row);
-        console.log('MAX: ' + maxData.current.cases_per_capita_max);
 
         if (row) {
             let d = 0;
@@ -222,11 +221,27 @@ const LevelMap = (props: LevelMapProps) => {
             "</td>" +
             "</tr>" +
             "<tr>" +
+            "<td>" +
+            "Total Cases:" +
+            "</td>" +
+            "<td>" +
+            formatNumber(row.cases) + '  (' + row.cases_per_capita + ' per 100K)' +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Total Deaths:" +
+            "</td>" +
+            "<td>" +
+            formatNumber(row.deaths) + '  (' + row.deaths_per_capita + ' per 100K)' +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
             "<td colspan='2' style='font-style: italic;color: black'>"
             + "Please click on the map for more details" +
             "</td>" +
             "</tr>" +
-            "</table></div>"
+        "</table></div>"
     }
 
 

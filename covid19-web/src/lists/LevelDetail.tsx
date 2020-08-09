@@ -97,6 +97,7 @@ const LevelDetail = () => {
     const popLocation = () => {
         locationStack.current.pop();
         setLocation(locationStack.current[locationStack.current.length - 1]);
+
     }
 
     function olSelectHandler(name: string) {

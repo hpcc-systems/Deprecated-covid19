@@ -55,7 +55,8 @@ export default function OlMap(props: Props) {
             }),
         });
 
-        style.getText().setText(feature.get(props.selectKeyField).toUpperCase() + ' ' + props.measureHandler(feature.get(props.colorKeyField)));
+        let text = feature.get(props.selectKeyField).toUpperCase();
+        style.getText().setText(text + ' ' + props.measureHandler(feature.get(props.colorKeyField)));
         return style;
     }
 
@@ -104,7 +105,8 @@ export default function OlMap(props: Props) {
                     }),
                 });
 
-                style.getText().setText(showLabel ? feature.get(props.selectKeyField).toUpperCase() + ' ' + props.measureHandler(feature.get(props.colorKeyField)) : '');
+                let text = feature.get(props.selectKeyField).toUpperCase();
+                style.getText().setText(showLabel ?  text + ' ' + props.measureHandler(feature.get(props.colorKeyField)) : '');
                 return style;
             },
         });
