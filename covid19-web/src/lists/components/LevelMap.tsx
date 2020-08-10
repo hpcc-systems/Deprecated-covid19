@@ -35,8 +35,8 @@ const LevelMap = (props: LevelMapProps) => {
     useEffect(() => {
         listData.current = props.listData;
         maxData.current = props.maxData;
-
-    }, [props.listData, props.maxData]);
+        setHeatMapType('contagion_risk');
+    }, [setHeatMapType,props.listData, props.maxData]);
 
     useEffect(() => {
         setGeoFileInfo(Catalog.maps.get(props.location));
@@ -79,10 +79,10 @@ const LevelMap = (props: LevelMapProps) => {
                     d = row.period_new_deaths / Math.max(1, maxData.current.new_deaths_max);
                     break;
                 case 'cases_per_capita':
-                    d = row.cases_per_capita / Math.max(1, maxData.current.cases_per_capita_max);
+                    d = row.cases_per_capita / Math.max(1, 1000);
                     break;
                 case 'deaths_per_capita':
-                    d = row.deaths_per_capita / Math.max(1, maxData.current.deaths_per_capita_max);
+                    d = row.deaths_per_capita / Math.max(1, 60);
                     break;
                 case 'contagion_risk':
                     d = row.contagion_risk;
@@ -91,7 +91,7 @@ const LevelMap = (props: LevelMapProps) => {
                             d >= 0.15 ? '#fdae61' :
                                 d >= 0.05 ? '#fee08b' :
                                     d > 0 ? '#66bd63' :
-                                        '#2b2b2b';
+                                        '#1a9850';
                 case 'status':
                     d = row.status_numb;
                     if (d >= 6) {
@@ -118,6 +118,46 @@ const LevelMap = (props: LevelMapProps) => {
                                 '#1a9850';
         } else return '#2b2b2b';
     }
+
+    function olMeasureHandler(name: string) {
+        if (!name) return '';
+
+        let row = listData.current.get(name.toUpperCase());
+
+        //console.log('Color location: ' + name.toUpperCase() +  ' -- ' + name.length + '  ' + row);
+
+        if (row) {
+            let d = '';
+            switch (heatMapTypeRef.current) {
+                case 'cases':
+                    d = formatNumber(row.cases);
+                    break;
+                case 'new_cases':
+                    d = formatNumber(row.period_new_cases);
+                    break;
+                case 'deaths':
+                    d = formatNumber(row.deaths);
+                    break;
+                case 'new_deaths':
+                    d = formatNumber(row.period_new_deaths);
+                    break;
+                case 'cases_per_capita':
+                    d = formatNumber(row.cases_per_capita);
+                    break;
+                case 'deaths_per_capita':
+                    d = formatNumber(row.deaths_per_capita);
+                    break;
+                case 'contagion_risk':
+                    d = Math.round(row.contagion_risk * 100) +
+                        "%";
+                    break;
+                case 'status': d = row.status;
+            }
+
+            return d;
+        } else return '';
+    }
+
 
     function olSelectHandler(name: string) {
 
@@ -181,11 +221,27 @@ const LevelMap = (props: LevelMapProps) => {
             "</td>" +
             "</tr>" +
             "<tr>" +
+            "<td>" +
+            "Total Cases:" +
+            "</td>" +
+            "<td>" +
+            formatNumber(row.cases) + '  (' + row.cases_per_capita + ' per 100K)' +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Total Deaths:" +
+            "</td>" +
+            "<td>" +
+            formatNumber(row.deaths) + '  (' + row.deaths_per_capita + ' per 100K)' +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
             "<td colspan='2' style='font-style: italic;color: black'>"
             + "Please click on the map for more details" +
             "</td>" +
             "</tr>" +
-            "</table></div>"
+        "</table></div>"
     }
 
 
@@ -364,9 +420,9 @@ const LevelMap = (props: LevelMapProps) => {
             case 'new_deaths':
                 return statsScale(maxData.current.new_deaths_max, 'New Deaths');
             case 'cases_per_capita':
-                return statsScale(maxData.current.cases_per_capita_max, 'Cases/100K');
+                return statsScale(1000, 'Cases/100K');
             case 'deaths_per_capita':
-                return statsScale(maxData.current.deaths_per_capita_max, 'Deaths/100K');
+                return statsScale(60, 'Deaths/100K');
             case 'status':
                 return statusScale()
             case 'contagion_risk':
@@ -381,6 +437,7 @@ const LevelMap = (props: LevelMapProps) => {
 
             <Layout>
                 <Layout.Content>
+                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10}}>Interactive Map. Zoom to view more details or click on a location to view details.</div>
 
                     <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
                                  value={heatMapType} buttonStyle="outline" style={{fontSize: 11, fontWeight: "bold"}}>
@@ -402,6 +459,7 @@ const LevelMap = (props: LevelMapProps) => {
 
                     <OlMap toolTipHandler={(name) => olToolTipHandler(name)}
                            colorHandler={(name) => olColorHandler(name)}
+                           measureHandler={(name) => olMeasureHandler(name)}
                            selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
                            zoom={geoFileInfo.zoom}
                            geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}
