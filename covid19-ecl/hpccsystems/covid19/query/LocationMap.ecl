@@ -176,7 +176,8 @@ maxDs := TABLE(list, {date,
 
 OUTPUT(maxDs,ALL,NAMED('max'));        
 
-hotList := TOPN(listMetrics,  10, -heatindex);
+//hotList := TOPN(listMetrics,  10, -heatindex);
+hotList := listMetrics( heatindex >= 1);
 
 OUTPUT(TABLE(hotList, {location, commentary}),,NAMED('hot_list'));  
 
