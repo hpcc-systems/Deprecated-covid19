@@ -38,6 +38,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
         title: {
             text: 'Weekly Metrics ' + props.summaryData.period_string,
             visible: true,
+            style: {fontSize: 14, fontWeight: 'bold'}
         },
         forceFit: true,
         label: {
@@ -69,7 +70,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
     return (
         <Layout >
-
+            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Summary Statistics and Metrics</div>
 
             <Row>
                 <Col span={12}>
@@ -134,7 +135,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
                     <Row>
                         <Col span={24}>
-                            <Chart chart={Bar} config={chartModel} data={chartModelData} />
+                            <Chart chart={Bar} config={chartModel} data={chartModelData}  />
                         </Col>
                     </Row>
 

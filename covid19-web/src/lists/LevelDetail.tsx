@@ -1,10 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Descriptions, Layout, PageHeader} from "antd";
+import {Button, Descriptions, Layout} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
 import HotList from "./components/HotList";
 import PeriodTrends from "./components/PeriodTrends";
+import {LeftOutlined} from '@ant-design/icons';
+import LevelList from "./components/LevelList";
 
 
 const LevelDetail = () => {
@@ -16,12 +18,14 @@ const LevelDetail = () => {
     //Data
     const [summaryData, setSummaryData] = useState<any>([]);
     const [maxData, setMaxData] = useState<any>([]);
-    const [listData, setListData] = useState<any>(new Map());
+    const [listData, setListData] = useState<any>([]);
+    const [mapData, setMapData] = useState<any>(new Map());
     const [periodTrendsColumnData, setPeriodTrendsColumnData] = useState<any>([]);
     const [periodTrendsGroupedData, setPeriodTrendsGroupedData] = useState<any>([]);
     const [hotListData, setHotListData] = useState<any>([]);
 
     useEffect(() => {
+
         function toMapData(data: any) {
             let mapData = new Map();
 
@@ -71,8 +75,9 @@ const LevelDetail = () => {
             }
 
             let list = query.current.getData('list');
+            setListData(list);//The list only shown if there is no map
             let mapData = toMapData(list);
-            setListData(mapData);
+            setMapData(mapData);
 
             setPeriodTrendsColumnData(query.current.getData('period_trend_column'));
             setPeriodTrendsGroupedData(query.current.getData('period_trend_grouped'));
@@ -92,6 +97,7 @@ const LevelDetail = () => {
     const popLocation = () => {
         locationStack.current.pop();
         setLocation(locationStack.current[locationStack.current.length - 1]);
+
     }
 
     function olSelectHandler(name: string) {
@@ -123,29 +129,24 @@ const LevelDetail = () => {
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
                 <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
                 <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
+                <Button  onClick={() => popLocation()} style={{height: 25}} icon={<LeftOutlined />}
+                      shape={"round"}   type={"primary"} className={"anchor-btn"} disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
 
             <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
 
-                <div id={"commentary"}/>
+                <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID()}</div>
 
-                <PageHeader title={summaryData.location}
-                            extra={[locationStack.current.length > 0 ? (
-                                <Button key={'Back'} style={{width: 70}} onClick={() => popLocation()}
-                                        type={"primary"}>Back</Button>) : '']}
-
-                >
-                    <Descriptions size="small" column={1} bordered>
-                        <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
-                    </Descriptions>
-
-                </PageHeader>
+                <Descriptions size="small" column={1} bordered>
+                    <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
+                </Descriptions>
 
 
                 <Layout.Content>
                     <div id={"map"}/>
-                    <LevelMap listData={listData} maxData={maxData} locationAlias={''}
+                    <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
                               selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
+                    <LevelList data={listData} location={locationUUID()} selectHandler={(name) => olSelectHandler(name)} />
                     <div id={"summary_stats"} style={{height: 10}}/>
                     <SummaryMeasures summaryData={summaryData}/>
 

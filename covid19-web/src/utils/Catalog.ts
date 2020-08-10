@@ -12,14 +12,14 @@ export default class Catalog {
     static initMaps() {
         let maps: Map<string, any> = new Map<string, any>();
         maps.set('THE WORLD', {file:'countries.geojson', secondaryFile: '', colorKeyField: 'name' , selectKeyField: 'name' ,lat:0,long:0,zoom:0});
-        maps.set('THE WORLD-US', {file:'us-states.geojson', secondaryFile: '', colorKeyField: 'name', selectKeyField: 'name' ,lat:38.2,long:-98.6,zoom:4.5});
-        //maps.set('THE WORLD-US-GEORGIA', {file:'us-counties.geojson', secondaryFile: 'us-states.geojson', colorKeyField: 'GEOID', selectKeyField: 'name' ,lat:33,long:-82.3,zoom:7.5});
-        maps.set('THE WORLD-US-GEORGIA', {file:'us-counties-georgia.geojson', secondaryFile: '', colorKeyField: 'GEOID10', selectKeyField: 'NAME10' ,lat:33,long:-82.3,zoom:7.5});
-        maps.set('THE WORLD-US-FLORIDA', {file:'us-counties-florida.geojson', secondaryFile: '', colorKeyField: 'COUNTY', selectKeyField: 'COUNTYNAME' ,lat:28,long:-83.5,zoom:7.5});
+        maps.set('THE WORLD-US', {file:'us-states.geojson', secondaryFile: '', colorKeyField: 'name', selectKeyField: 'name' ,lat:37.2,long:-98.6,zoom:5});
+        maps.set('THE WORLD-US-GEORGIA', {file:'us-counties-georgia.geojson', secondaryFile: '', colorKeyField: 'GEOID10', selectKeyField: 'NAME10' ,lat:33,long:-83.3,zoom:8.0});
+        maps.set('THE WORLD-US-FLORIDA', {file:'us-counties-florida.geojson', secondaryFile: '', colorKeyField: 'COUNTY', selectKeyField: 'COUNTYNAME' ,lat:28,long:-83.5,zoom:8.0});
         maps.set('THE WORLD-US-TEXAS', {file:'us-counties.geojson', secondaryFile: 'us-states.geojson', colorKeyField: 'GEOID', selectKeyField: 'name' ,lat:31.9,long:-97,zoom:7});
         maps.set('THE WORLD-AUSTRALIA', {file:'australia-states.geojson', secondaryFile: '', colorKeyField: 'STATE_NAME', selectKeyField: 'STATE_NAME' ,lat:-25.27,long:133.77,zoom:5.0});
         maps.set('THE WORLD-INDIA', {file:'india-states.geojson', secondaryFile: '', colorKeyField: 'NAME_1', selectKeyField: 'NAME_1' ,lat:20.5,long:79,zoom:5.0});
         maps.set('THE WORLD-BRAZIL', {file:'brazil-states.geojson', secondaryFile: '', colorKeyField: 'NAME_1', selectKeyField: 'NAME_1' ,lat:-14.2,long:-51.9,zoom:4.5});
+        maps.set('THE WORLD-UNITED KINGDOM', {file:'uk-countries.geojson', secondaryFile: '', colorKeyField: 'ctry19nm', selectKeyField: 'ctry19nm' ,lat:55.37,long:-2.07,zoom:6.0});
         return maps;
     }
 
