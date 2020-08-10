@@ -38,7 +38,7 @@ const LevelList = (props: LevelListProps) => {
         }
     }
 
-    const getLocation = (location: string, location_code: string) => {
+    const getLocation = (location: string, location_code: string | undefined) => {
         let locations: string[]
         if (location_code) {
             locations = location_code.split('-');
@@ -53,7 +53,7 @@ const LevelList = (props: LevelListProps) => {
             title: 'Location',
             dataIndex: 'location',
             render: (text: any, record: any) =>
-                <Button type={"link"} onClick={()=>props.selectHandler(getLocation(record.location, record.location_code))}>{text}</Button>,
+                <Button type={"link"} onClick={()=>props.selectHandler(getLocation(record.location, record.location_code))}>{getLocation(text, undefined)}</Button>,
             sorter: (a: any, b: any) => a.location.localeCompare(b.location),
         },
         {
