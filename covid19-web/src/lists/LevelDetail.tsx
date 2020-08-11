@@ -37,7 +37,7 @@ const LevelDetail = () => {
                     } else {
                         locations = item.location.split('-');
                     }
-
+                    //console.log(locations[locations.length - 1] + ' length ' + locations[locations.length - 1].length);
                     mapData.set(locations[locations.length - 1], item);
                 })
             }
