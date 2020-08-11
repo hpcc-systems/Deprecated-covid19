@@ -143,7 +143,7 @@ L2WorldDatIn := countryData0(country != '' AND state != '' AND admin2 = '' AND u
 USStateDatIn := USDatIn0(state != '' AND admin2 = '' AND update_date != 0);
 L2DatIn := SORT(L2WorldDatIn + USStateDatIn, country, state, update_date);
 
-L2InputDat0 := PROJECT(L2DatIn, TRANSFORM(inputRec,
+L2InputDat0 := PROJECT(DEDUP(L2DatIn, country, state, update_date), TRANSFORM(inputRec,
                                             SELF.fips := LEFT.fips,
                                             SELF.country := Std.Str.CleanSpaces(LEFT.country),
                                             SELF.Level2 := Std.Str.CleanSpaces(LEFT.state),
@@ -155,7 +155,6 @@ L2InputDat0 := PROJECT(L2DatIn, TRANSFORM(inputRec,
                                             SELF.tested := 0,
                                             SELF.positive := 0,
                                             SELF.negative := 0));
-
 
 usStatePopDatIn := pop.clean;
 usstatePopData := PROJECT(usStatePopDatIn, TRANSFORM(populationRec,
@@ -221,7 +220,7 @@ L2InputDat := SORT(L2InputDat7, Country, Level2, -date);
 
 
 out2 := OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
-OUTPUT(L2InputDat[ .. 10000], ALL, NAMED('L2InputData'));
+//OUTPUT(L2InputDat(date > 20200629), ALL, NAMED('L2InputData'));
 
 // Prepare Country Level Input
 countryData1 := SORT(countryData0, country, update_date);
