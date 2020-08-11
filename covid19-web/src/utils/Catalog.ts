@@ -13,6 +13,7 @@ export default class Catalog {
         let maps: Map<string, any> = new Map<string, any>();
         maps.set('THE WORLD', {file:'countries.geojson', secondaryFile: '', colorKeyField: 'name' , selectKeyField: 'name' ,lat:0,long:0,zoom:0});
         maps.set('THE WORLD-US', {file:'us-states.geojson', secondaryFile: '', colorKeyField: 'name', selectKeyField: 'name' ,lat:37.2,long:-98.6,zoom:5});
+        maps.set('THE WORLD-CANADA', {file:'canada-states.geojson', secondaryFile: '', colorKeyField: 'PRENAME', selectKeyField: 'PRENAME' ,lat:56.2,long:-106.6,zoom:4});
         maps.set('THE WORLD-US-GEORGIA', {file:'us-counties-georgia.geojson', secondaryFile: '', colorKeyField: 'GEOID10', selectKeyField: 'NAME10' ,lat:33,long:-83.3,zoom:8.0});
         maps.set('THE WORLD-US-FLORIDA', {file:'us-counties-florida.geojson', secondaryFile: '', colorKeyField: 'COUNTY', selectKeyField: 'COUNTYNAME' ,lat:28,long:-83.5,zoom:8.0});
         maps.set('THE WORLD-US-TEXAS', {file:'us-counties.geojson', secondaryFile: 'us-states.geojson', colorKeyField: 'GEOID', selectKeyField: 'name' ,lat:31.9,long:-97,zoom:7});

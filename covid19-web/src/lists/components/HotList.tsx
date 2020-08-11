@@ -18,7 +18,7 @@ const getLocation = (location: string, location_code: string | undefined) => {
 const HotList = (props: HotListProps) => {
 
     const columns = [
-        {
+        {   
             dataIndex: 'commentary',
             render: (text: any, record: any) => <div style={{fontSize:14}}><b>{getLocation(record.location, undefined)}</b><br/>{record.commentary}</div>
         }
