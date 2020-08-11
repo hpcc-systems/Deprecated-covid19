@@ -16,6 +16,7 @@ minSpreadingInfections := 500;
 // Read Input Superfiles
 L1InputDat := DATASET(Paths.InputLevel1, inputRec, THOR);
 L2InputDat := DATASET(Paths.InputLevel2, inputRec, THOR);
+//OUTPUT(L2InputDat(date > 20200629), ALL, NAMED('L2Input'));
 L3InputDat := DATASET(Paths.InputLevel3, inputRec, THOR);
 
 // Start with the Level 3 Stats
@@ -25,7 +26,7 @@ OUTPUT(L3Stats, , Paths.StatsLevel3, Thor, OVERWRITE);
 
 // Now the Level 2 Stats based on L2 input
 L2Stats := CalcStats.DailyStats(L2InputDat, 2);
-//OUTPUT(L2Stats[..10000], ALL, NAMED('L2Stats'));
+//OUTPUT(L2Stats(date > 20200629), ALL, NAMED('L2Stats'));
 
 // Rollup the L3 stats to L2
 L2Rollup := CalcStats.RollupStats(L3Stats, 2);
@@ -39,10 +40,10 @@ OUTPUT(L2Merged, , Paths.StatsLevel2, Thor, OVERWRITE);
 
 // Calculate L1 Stats from L1 source data
 L1Stats := CalcStats.DailyStats(L1InputDat, 1);
-OUTPUT(L1Stats, ALL, NAMED('L1Stats'));
+//OUTPUT(L1Stats, ALL, NAMED('L1Stats'));
 // Also rollup the merged L2 to produce a L1 Rollup.
 L1Rollup := CalcStats.RollupStats(L2Merged, 1);
-OUTPUT(L1Rollup, ALL, NAMED('L1Rollup'));
+//OUTPUT(L1Rollup, ALL, NAMED('L1Rollup'));
 
 // Merge the L1 Stats and the L1 Rollup.  Favor the rollup stats
 // when things overlap
