@@ -11,7 +11,6 @@ RETURN CASE(s,
             'ASTURIAS PRINCIPADO DE' => 'ASTURIAS' ,
             'BALEARS ILLES' => 'BALEARES' ,
             'CASTILLA Y LE N' => 'CASTILLA Y LEON' ,
-            'CASTILLA LA MANCHA' => 'CASTILLA - LA MANCHA' ,
             'CATALU A' => 'CATALONIA' ,
             'COMUNITAT VALENCIANA' => 'C. VALENCIANA' ,
             'MADRID COMUNIDAD DE' => 'MADRID' ,
@@ -38,6 +37,3 @@ cleanedPop := PROJECT
     );       
 
 OUTPUT(cleanedPop, , popclean.filePath, THOR, COMPRESSED, OVERWRITE);
-
-OUTPUT(popRaw.ds);
-OUTPUT(cleanedPop);
