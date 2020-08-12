@@ -13,8 +13,8 @@ EXPORT Utils := MODULE
   */
   EXPORT SOAPUtils  := MODULE
 
-      EXPORT username := 'xulili01';
-      EXPORT userPW := 'Q4dRtHRF';
+      EXPORT username := '';
+      EXPORT userPW := '';
       SHARED CreateAuthHeaderValue(STRING username, STRING userPW) := IF
           (
               TRIM(username, ALL) != '',
