@@ -16,6 +16,7 @@ export default class Catalog {
         maps.set('THE WORLD-CANADA', {file:'canada-states.geojson', secondaryFile: '', colorKeyField: 'PRENAME', selectKeyField: 'PRENAME' ,lat:56.2,long:-106.6,zoom:4});
         maps.set('THE WORLD-SPAIN', {file:'spain-states.geojson', secondaryFile: '', colorKeyField: 'NAME_1', selectKeyField: 'NAME_1' ,lat:39.4,long:-3.7,zoom:6.5});
         maps.set('THE WORLD-ITALY', {file:'italy-states.geojson', secondaryFile: '', colorKeyField: 'NAME_1', selectKeyField: 'NAME_1' ,lat:41.8,long:12.57,zoom:6.5});
+        maps.set('THE WORLD-GERMANY', {file:'germany-states.geojson', secondaryFile: '', colorKeyField: 'NAME_1', selectKeyField: 'NAME_1' ,lat:51.2,long:10.45,zoom:6.5});
         maps.set('THE WORLD-US-GEORGIA', {file:'us-counties-georgia.geojson', secondaryFile: '', colorKeyField: 'GEOID10', selectKeyField: 'NAME10' ,lat:33,long:-83.3,zoom:8.0});
         maps.set('THE WORLD-US-FLORIDA', {file:'us-counties-florida.geojson', secondaryFile: '', colorKeyField: 'COUNTY', selectKeyField: 'COUNTYNAME' ,lat:28,long:-83.5,zoom:8.0});
         maps.set('THE WORLD-US-TEXAS', {file:'us-counties.geojson', secondaryFile: 'us-states.geojson', colorKeyField: 'GEOID', selectKeyField: 'name' ,lat:31.9,long:-97,zoom:7});
