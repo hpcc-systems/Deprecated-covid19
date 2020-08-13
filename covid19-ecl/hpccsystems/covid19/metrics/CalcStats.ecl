@@ -40,10 +40,10 @@ EXPORT CalcStats := MODULE
       //newCases := IF(le.location = ri.location AND ri.cumCases > le.cumCases, ri.cumCases - le.cumCases, 0);
       REAL cases7dma := IF(le.location != ri.location OR COUNT(le.casesHistory) = 0, 0, AVE(le.casesHistory));
       // Calculate adjusted cases and deaths tp remove large dumps of cases or deaths as follows:
-      // - If the new value is > 2.25 * 7 day moving average (implying R > 10)
-      //    limit new cases / deaths it to 2.25 * 7 day average
+      // - If the new value is > 2.24 * 7 day moving average (implying R > 10)
+      //    limit new cases / deaths it to 2.24 * 7 day average
       // - Calculate new cumulative values by adding up adjusted new values.
-      REAL adjNewCases := IF(cases7dma > 10 AND newCases > 2.25 * cases7dma, cases7dma * 2.25, MAX(newCases, 0));
+      REAL adjNewCases := IF(cases7dma > 10 AND newCases > 2.24 * cases7dma, cases7dma * 2.24, MAX(newCases, 0));
       casesHist := IF(le.location != ri.location, ri.casesHistory, [adjNewCases] + le.casesHistory)[..7];
       SELF.casesHistory := casesHist;
       SELF.cases7dma := ROUND(cases7dma);
@@ -96,14 +96,25 @@ EXPORT CalcStats := MODULE
     // compute basic delta stats between latest period and previous period
     stats5 := smoothData(stats4);
     // Go infectionPeriod days back to see how many have recovered and how many are still active per SIR model
-    stats6 := JOIN(stats5, stats5, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod, TRANSFORM(RECORDOF(LEFT),
-                        // Use adjusted case and death counts to calculate SIR attributes.  Spurious dumps are not time synchronized,
-                        // so should not be considered for SIR calculations, which are time dependent
-                        SELF.active := IF(LEFT.cumCases >= RIGHT.cumCases, LEFT.cumCases - RIGHT.cumCases, 0),
-                        SELF.recovered := IF(RIGHT.cumCases < LEFT.cumDeaths, 0, RIGHT.cumCases - LEFT.cumDeaths),
-                        SELF.prevActive := IF(LEFT.prevCases >= RIGHT.prevCases, LEFT.prevCases - RIGHT.prevCases, 0),
-                        SELF.cfr := LEFT.cumDeaths / RIGHT.cumCases,
-                        SELF := LEFT), LEFT OUTER);
+    statsRec calcSIR(statsRec curr, statsRec prev) := TRANSFORM
+      // Use adjusted case and death counts to calculate SIR attributes.  Spurious dumps are not time synchronized,
+      // so should not be considered for SIR calculations, which are time dependent      INTEGER case_adjustment := curr.adjCumCases - curr.cumCases;
+      INTEGER death_adjustment := curr.adjCumDeaths - curr.cumDeaths;
+      // Total deaths and cases should reflect actual reported totals, and we must maintain the equality:
+      // cumCases = Active + Recovered + cumDeaths.  Active must filter out untimely reporting.  Untimely cases
+      // are allocated to Recovered.  Untimely deaths are ignored for the purpose of these calculations.
+      INTEGER newDeaths := curr.adjCumDeaths - prev.adjCumDeaths;
+      INTEGER active := curr.adjCumCases - prev.adjCumCases;
+      INTEGER prevActive := curr.adjCumCases - prev.adjCumCases;
+      INTEGER recovered := curr.cumCases - active - curr.cumDeaths;
+      SELF.recovered := IF(recovered > 0, recovered, 0);
+      SELF.active := IF(active > 0, active, 0);
+      SELF.prevActive := IF(prevActive > 0, prevActive, 0);
+      SELF.cfr := curr.adjCumDeaths / prev.adjCumCases;
+      SELF := curr;
+    END;
+    stats6 := JOIN(stats5, stats5, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod,
+                        calcSIR(LEFT, RIGHT));
     RETURN stats6;
   END;  // Daily Stats
   EXPORT statsRec RollupStats(DATASET(statsRec) stats, UNSIGNED rollupLevel) := FUNCTION

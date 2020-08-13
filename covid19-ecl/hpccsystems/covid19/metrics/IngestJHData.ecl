@@ -24,6 +24,8 @@ canadaStatePopPath := '~hpccsystems::covid19::file::public::canadapopulation::v1
 mexicoStatePopPath := '~hpccsystems::covid19::file::public::mexicopopulation::v1::population.flat';
 brazilStatePopPath := '~hpccsystems::covid19::file::public::brazilpopulation::v1::population.flat';
 spainStatePopPath := '~hpccsystems::covid19::file::public::spainpopulation::v1::population.flat';
+italyStatePopPath := '~hpccsystems::covid19::file::public::italypopulation::v1::population.flat';
+germanyStatePopPath := '~hpccsystems::covid19::file::public::germanypopulation::v1::population.flat';
 
 // For L3 level
 USFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
@@ -98,6 +100,18 @@ spainStatePopRec := RECORD
   unsigned8 total;
   unsigned8 males;
   unsigned8 females;
+ END;
+
+italyStatePopRec := RECORD
+  string territory;
+  unsigned8 value;
+END;
+
+germanyStatePopRec := RECORD
+  string location;
+  string code;
+  string name;
+  unsigned8 total;
  END;
 
 countryPopRecord := RECORD
@@ -198,6 +212,14 @@ spainStatePopData0 := DATASET(spainStatePopPath, spainStatePopRec, THOR);
 spainStatePopData := PROJECT(spainStatePopData0, TRANSFORM(populationRec,
                                     SELF.location := cleanupLocation(LEFT.location),
                                     SELF.population := LEFT.total));
+italyStatePopData0 := DATASET(italyStatePopPath, italyStatePopRec, THOR);
+italyStatePopData := PROJECT(italyStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := cleanupLocation(LEFT.territory),
+                                    SELF.population := LEFT.value));
+germanyStatePopData0 := DATASET(germanyStatePopPath, germanyStatePopRec, THOR);
+germanyStatePopData := PROJECT(germanyStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := cleanupLocation(LEFT.name),
+                                    SELF.population := LEFT.total));
 //OUTPUT(statePopData, NAMED('StatePopulationData'));
 
 L2InputDat1 := JOIN(L2InputDat0, usStatePopData, LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location,
@@ -232,10 +254,15 @@ L2InputDat8 := JOIN(L2InputDat7, spainStatePopData, LEFT.Country = 'SPAIN' AND L
                                 TRANSFORM(RECORDOF(LEFT),
                                 SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
                                 SELF := LEFT), LEFT OUTER);
-
-L2InputDat := SORT(L2InputDat8, Country, Level2, -date);
-
-
+L2InputDat9 := JOIN(L2InputDat8, italyStatePopData, LEFT.Country = 'ITALY' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+L2InputDat10 := JOIN(L2InputDat9, germanyStatePopData, LEFT.Country = 'GERMANY' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
+L2InputDat := SORT(L2InputDat10, Country, Level2, -date);
 
 out2 := OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
 //OUTPUT(L2InputDat(date > 20200629), ALL, NAMED('L2InputData'));
