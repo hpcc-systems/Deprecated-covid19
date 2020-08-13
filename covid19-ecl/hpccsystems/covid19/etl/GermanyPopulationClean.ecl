@@ -11,7 +11,8 @@ cleanedPop := PROJECT
             location0 := REGEXREPLACE('[^A-Za-z]', LEFT.location, '');
             SELF.location := STD.Str.ToUpperCase(TRIM(location0, LEFT, RIGHT));
             name0 := REGEXREPLACE('[^A-Za-z-]', LEFT.name, '');
-            SELF.name := STD.Str.ToUpperCase(TRIM(name0, LEFT, RIGHT)),
+            name1 := STD.Str.ToUpperCase(TRIM(name0, LEFT, RIGHT));
+            SELF.name := IF( name1 = 'BADEN-WRTTEMBERG','BADEN-WURTTEMBERG' , name1),
             SELF := LEFT;
        ) 
     );   
