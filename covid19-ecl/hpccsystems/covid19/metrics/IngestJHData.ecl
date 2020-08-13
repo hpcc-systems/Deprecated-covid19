@@ -23,6 +23,7 @@ ukStatePopPath := '~hpccsystems::covid19::file::public::ukpopulation::v1::popula
 canadaStatePopPath := '~hpccsystems::covid19::file::public::canadapopulation::v1::population.flat';
 mexicoStatePopPath := '~hpccsystems::covid19::file::public::mexicopopulation::v1::population.flat';
 brazilStatePopPath := '~hpccsystems::covid19::file::public::brazilpopulation::v1::population.flat';
+spainStatePopPath := '~hpccsystems::covid19::file::public::spainpopulation::v1::population.flat';
 
 // For L3 level
 USFilePath := '~hpccsystems::covid19::file::public::johnhopkins::us.flat';
@@ -92,6 +93,13 @@ ukStatePopRec := RECORD
   unsigned8 all_ages;
  END;
 
+spainStatePopRec := RECORD
+  string location;
+  unsigned8 total;
+  unsigned8 males;
+  unsigned8 females;
+ END;
+
 countryPopRecord := RECORD
 	string locid;
 	string location;
@@ -101,6 +109,8 @@ countryPopRecord := RECORD
 	unsigned8 popfemale;
 	unsigned8 poptotal;
 END;
+
+STRING cleanupLocation(STRING location) := Std.Str.CleanSpaces(Std.Str.FindReplace(location, '-', ' '));
 
 // Country Data contains some L2 and L3 data as well for certain countries.  Combine that with
 // US County and State data to produce L2 and L3 inputs.
@@ -145,8 +155,8 @@ L2DatIn := SORT(L2WorldDatIn + USStateDatIn, country, state, update_date);
 
 L2InputDat0 := PROJECT(DEDUP(L2DatIn, country, state, update_date), TRANSFORM(inputRec,
                                             SELF.fips := LEFT.fips,
-                                            SELF.country := Std.Str.CleanSpaces(LEFT.country),
-                                            SELF.Level2 := Std.Str.CleanSpaces(LEFT.state),
+                                            SELF.country := cleanupLocation(LEFT.country),
+                                            SELF.Level2 := cleanupLocation(LEFT.state),
                                             SELF.Level3 := '',
                                             SELF.date := LEFT.update_date,
                                             SELF.cumCases := LEFT.confirmed,
@@ -184,6 +194,10 @@ brazilStatePopData0 := DATASET(brazilStatePopPath, file.brazilpopulation.layout,
 brazilStatePopData := PROJECT(brazilStatePopData0, TRANSFORM(populationRec,
                                     SELF.location := LEFT.state,
                                     SELF.population := LEFT.population));
+spainStatePopData0 := DATASET(spainStatePopPath, spainStatePopRec, THOR);
+spainStatePopData := PROJECT(spainStatePopData0, TRANSFORM(populationRec,
+                                    SELF.location := cleanupLocation(LEFT.location),
+                                    SELF.population := LEFT.total));
 //OUTPUT(statePopData, NAMED('StatePopulationData'));
 
 L2InputDat1 := JOIN(L2InputDat0, usStatePopData, LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location,
@@ -214,8 +228,12 @@ L2InputDat7 := JOIN(L2InputDat6, canadaStatePopData, LEFT.Country = 'CANADA' AND
                                 TRANSFORM(RECORDOF(LEFT),
                                 SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
                                 SELF := LEFT), LEFT OUTER);
+L2InputDat8 := JOIN(L2InputDat7, spainStatePopData, LEFT.Country = 'SPAIN' AND LEFT.Level2 = RIGHT.location,
+                                TRANSFORM(RECORDOF(LEFT),
+                                SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
+                                SELF := LEFT), LEFT OUTER);
 
-L2InputDat := SORT(L2InputDat7, Country, Level2, -date);
+L2InputDat := SORT(L2InputDat8, Country, Level2, -date);
 
 
 
