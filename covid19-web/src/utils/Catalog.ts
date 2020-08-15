@@ -24,7 +24,8 @@ export default class Catalog {
         maps.set('THE WORLD-INDIA', {file:'india-states.geojson', secondaryFile: '', colorKeyField: 'NAME_1', selectKeyField: 'NAME_1' ,lat:20.5,long:79,zoom:5.0});
         maps.set('THE WORLD-BRAZIL', {file:'brazil-states.geojson', secondaryFile: '', colorKeyField: 'NAME_1', selectKeyField: 'NAME_1' ,lat:-14.2,long:-51.9,zoom:4.5});
         maps.set('THE WORLD-UNITED KINGDOM', {file:'uk-countries.geojson', secondaryFile: '', colorKeyField: 'ctry19nm', selectKeyField: 'ctry19nm' ,lat:55.37,long:-2.07,zoom:6.0});
-        maps.set('THE WORLD-US-WASHINGTON', {file:'us-counties-washington.geojson', secondaryFile: '', colorKeyField: 'JURISDIC_5', selectKeyField: 'JURISDIC_2', lat: 47.0, long: -120.0, zoom: 7.5,});
+        maps.set('THE WORLD-US-WASHINGTON', {file:'us-counties-washington.geojson', secondaryFile: '', colorKeyField: 'JURISDIC_5', selectKeyField: 'JURISDIC_2', lat: 47.0, long: -120.0, zoom: 7.5});
+        maps.set('THE WORLD-US-OREGON', {file:'us-counties-oregon.geojson', secondaryFile: '', colorKeyField: 'instcode', selectKeyField': 'altname', lat: 43.7, long: -120.0, zoom: 7.1});
         return maps;
     }
 
