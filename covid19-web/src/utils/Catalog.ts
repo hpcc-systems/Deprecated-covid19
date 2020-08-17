@@ -27,7 +27,7 @@ export default class Catalog {
         maps.set('THE WORLD-US-WASHINGTON', {file:'us-counties-washington.geojson', secondaryFile: '', colorKeyField: 'JURISDIC_5', selectKeyField: 'JURISDIC_2', lat: 47.0, long: -120.0, zoom: 7.5});
         maps.set('THE WORLD-US-OREGON', {file:'us-counties-oregon.geojson', secondaryFile: '', colorKeyField: 'instcode', selectKeyField: 'altname', lat: 43.7, long: -120.0, zoom: 7.1});
         maps.set('THE WORLD-US-NEVADA', {file:'us-counties-nevada.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 39.0, long: -116.0, zoom: 6.5});
-        maps.set('THE WORLD-US-ARIZONA', {file: 'us-counties-arizona.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -116.0, long: 39.0, zoom: 7.5});
+        maps.set('THE WORLD-US-ARIZONA', {file: 'us-counties-arizona.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 34.04, long: -111.0, zoom: 6.5});
         return maps;
     }
 
