@@ -48,12 +48,21 @@ const LevelList = (props: LevelListProps) => {
         return locations[locations.length - 1];
     }
 
+    // const percentToStatus= (percent: any) => {
+    //     switch(percent) {
+    //         case 10: return 'Emerging';
+    //         case 20: return 'Recovered';
+    //         case 30: return 'Stabelized';
+    //         default: return 'Spreading';
+    //     }
+    // }
+
     const layout = [
         {
             title: 'Location',
             dataIndex: 'location',
             render: (text: any, record: any) =>
-                <Button type={"link"} onClick={()=>props.selectHandler(getLocation(record.location, record.location_code))}>{getLocation(text, undefined)}</Button>,
+                <Button type={"link"} onClick={()=>props.selectHandler(getLocation(record.location, undefined))}>{getLocation(text, undefined)}</Button>,
             sorter: (a: any, b: any) => a.location.localeCompare(b.location),
         },
         {
@@ -66,6 +75,7 @@ const LevelList = (props: LevelListProps) => {
         {
             title: 'Infection State',
             dataIndex: 'status',
+            // render: (text: any, record: any) => <Progress percent={Math.trunc(record.status_numb * 100/6)} steps={5} format={(percent)=> percentToStatus(percent)}/>,
             sorter: (a: any, b: any) => a.status_numb - b.status_numb
 
         },

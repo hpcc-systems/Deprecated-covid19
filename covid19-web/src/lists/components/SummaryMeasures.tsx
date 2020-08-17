@@ -68,9 +68,13 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
     }
 
-    return (
-        <Layout >
-            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Summary Statistics and Metrics</div>
+
+
+        return (
+        <Layout>
+            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Summary Statistics and
+                Metrics
+            </div>
 
             <Row>
                 <Col span={12}>
@@ -118,14 +122,14 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                     </Card>
                     <Card>
                         <Statistic
-                            title={"Weekly New Cases - " + props.summaryData.period_string }
+                            title={"Weekly New Cases - " + props.summaryData.period_string}
                             value={props.summaryData.period_new_cases}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
                     <Card>
                         <Statistic
-                            title={"Weekly New Deaths - " + props.summaryData.period_string }
+                            title={"Weekly New Deaths - " + props.summaryData.period_string}
                             value={props.summaryData.period_new_deaths}
                             valueStyle={{color: '#cf1322'}}
                         />
@@ -135,7 +139,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
                     <Row>
                         <Col span={24}>
-                            <Chart chart={Bar} config={chartModel} data={chartModelData}  />
+                            <Chart chart={Bar} config={chartModel} data={chartModelData}/>
                         </Col>
                     </Row>
 
@@ -145,6 +149,8 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
         </Layout>
     );
+
+
 }
 
 export default SummaryMeasures;
