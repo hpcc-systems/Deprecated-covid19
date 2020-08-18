@@ -111,6 +111,135 @@ A node in the workflow can be selected and double clicked to view the details. T
 
 ![Tombolo File Detail](/docs/images/readme/tombolo_file_detail.png)
 
+# Calculations
+
+The specific calculations used for Metrics are described below:
+
+## Constants
+
+These constants can be changed as better information becomes available.
+- Infection Period(IP) -- The average length of time during which an individual remains infections.  This is currently set to 10 days.
+- Infection Case Ratio(ICR) -- The average ratio of Actual infections to cases.  This is a gross estimate of the ratio of all infections (Asymptomatic, Subclinical, Clinical) to Confirmed Cases.  Although this is treated as a constant for rough estimation, it is known that this number varies over time as well as location, based on testing availability.  This is currently set to 3.0 based on estimates by Penn State [ref]
+- Metric Window (MW) -- The number of days over which growth metrics are calculated.  This is currently set to 7.
+- minActiveThreshold -- The minimum fraction of the population with active infections in a location to be considered beyond containment.  This is currently set to 0.0003.
+- hiScaleFactor -- A scaling factor for Heat Index that provides a threshold for the Hot Spots list.  This is calibrated such that Heat Index >= 1.0 identifies locations requiring attention.  This is currently set to 5.0.
+
+## Input Statistics
+These statistics are available as input to the metrics.  Each forms a time series.
+
+- Cases -- Cumulative cases for a given location.
+- Deaths -- Cumulative deaths for a given location.
+- Hospitalizations -- Cumulative hospitalizations for a given location.
+- Positive -- Cumulative number of positive tests for a given location.
+- Negative -- Cumulative number of negative tests for a given location.
+- Population -- The number of individuals living in a given location.
+
+## Adjusted Cases and Deaths
+Various locations will occasionally produce anachronous data.  That is, data that is not arriving in correct time sequence.  This typically occurs when there is a change in reporting policy for the location, or when errors were found in the reporting process and corrections are applied retroactively.  In these cases, it is common for large batches of cases or deaths to be suddently dumped into a single days reporting.  Likewise, downward corrections are occasionally seen, that can cause the cumulative values to become non monotonic.  These occurances can dramatically distort resulting metrics, especially those that depend on the difference in cumulative totals among periods, such as growth rate computations.
+To compensate for this, we subject the source data to a smoothing filter.
+This produces a set of alternate inputs that have removed thes spikes and reversals.  These alternate values can then be used to caclutate more consistent differential values.
+
+This filter is applied to the incoming data, both Cases and Deaths.  It limits any daily change to 2.24 * the MW-day moving average of the series, and reconstructs a new adjusted time series based on these limited changes.  A change > 2.24 from weekly midpoint to week end implies a growth rate(R) of 10, which is larger than any expected growth rate, yet often much smaller than would be implied by the anachronous spike.  At the same time, the filter removes any negative changes.
+
+newCases(T) := MAX(Cases(T) - Cases(T-1), 0);
+
+casesMA(T) := SUM(newCases(T-1), newCases(T-2),  ... newCases(T-MW)) / MW;
+
+adjustedNewCases(T) := IF(newCases(T) > 2.24 * casesMA(T), 2.24 * casesMA(T), newCases(T));
+
+adjustedCases(T) := SUM(adjustedNewCases(1), adjustedNewCases(2), ... adjustedNewCases(T));
+
+newDeaths(T) := MAX(Deaths(T) - Deaths(T-1), 0);
+
+deathsMA(T) := SUM(newDeaths(T-1), newDeaths(T-2),  ... newDeaths(T-MW)) / MW;
+
+adjustedNewDeaths(T) := IF(newDeaths(T) > 2.24 * deathsMA(T), 2.24 * deathsMA(T), 
+
+newDeaths(T));
+
+adjustedDeaths(T) := SUM(adjustedNewDeaths(1), adjustedNewDeaths(2), ... adjustedNewDeaths(T));
+
+## Metrics
+
+These are calculated based on an MW (e.g. 7) day sliding window.  T refers to the current day, while T-MW refers to MW days previous.
+- cR -- The effective case growth rate.  
+
+  cR := POWER(Cases(T) - Cases(T-MW), MW/IP);
+- mR -- The effective mortality growth rate;  
+
+  mR := POWER(Deaths(T) - Deaths(T-MW), MW/IP);
+- R -- Estimate of the effective reproductive rate.  This is based on a geometric mean of cR and mR.  Some constraints are placed on the values to reduce the effect of very noisy data.  
+
+  R := SQRT(MIN(cR, mR + 1.0) * MIN(mR, cR + 1.0));
+
+- Active -- The estimated number of active (i.e. infectious) cases.  
+
+  Active := adjCases(T) - adjCases(T-MW);
+
+- Recovered -- The number of cases that are considered recovered.
+
+  Recovered := Cases - Active - Deaths;
+
+- ContagionRisk -- The likelihood of encountering at least one infected person during 100 random encounters.  
+
+  ContagionRisk := 1-(POWER((1-(Active / Population), 100));
+- Case Fatality Rate (CFR) -- The likelihood of dying given a positive test result.
+
+    CFR := Cases(T-MW) / Deaths(T);
+- Infection Fatality Rate (IFR) -- The likelihood of dying, having acquired an infection.  This is a gross approximation assuming a constant ICR.
+
+  IFR := CFR * ICR;
+
+- immunePct -- The fraction of the population that has recovered from the infection and are considered immunune.
+
+  immunePct := Recovered * ICR / Population;
+
+- Infection State (IState) -- A qualitative metric that models the state of the infection. It will assign one of the following states to the infection within a location: 1) INITIAL, 2)RECOVERED, 3) RECOVERING, 4) STABILIZED, 5) STABILIZING, 6) EMERGING, 7) SPREADING.  These are assigned based on a series of cascading predicate tests.  The first true predicate assigns the state.
+prevState := IF(not EXISTS(Istate(T-1), SetStat(1)
+
+      IState := MAP(
+        R > 1.5 and Active / Population < minActiveThreshold => EMERGING,
+        R > 1.5 => SPREADING,
+        R > 1.1, STABILIZING,
+        R > .9, STABILIZED,
+        R > .1 OR Active / population > minActiveThreshold, RECOVERING,
+        Cases > 0, RECOVERED,
+        INITIAL);
+
+- HeatIndex(HI) -- A composite metric that takes into account scale, growth rate, social distancing, medical conditions, and Contagion Risk.  This metric is scaled such that values >= 1.0 are considered Hot Spots needing attention.
+
+Heat Index := LOG(Active) * (MIN(cR, mR + 1) + MIN(mR, cR+1) + MI + SDI + ContagionRisk) / hiScaleFactor;
+
+Note: See below for definitions of SDI and MI
+
+## Indicators
+
+Indicators are zero based, with negative numbers indicating negative outcomes, and positive numbers positive outcomes.
+
+- Social Distance Indicator (SDI) -- Based on the ratio of the current cR to the previous cR.  dcR := cR(T) / cR(T-MW);  
+
+  SDI := IF(dcR > 1, 1-dcR, 1 / dcR - 1);.
+- Medical Indicator (MI) -- Based on the ratio of case growth (cR) to mortality growth (mR).  
+
+  cmRatio := cR / mR;  
+  MI := IF(cmRatio > 1,  cmRatio - 1, 1 - 1 / cmRatio);
+- Short-term Indicator (STI) -- A short term directional predictor (period 2-3 days) of case and death growth.
+  
+  cSTI := newCases(T) / (SUM(newCases(T-MW), mewCases(T-MW+1), ..., newCases(T)) / MW);
+  
+  mSTI := newDeaths(T) / (SUM(newDeaths(T-MW), mewDeaths(T-MW+1), ..., newDeaths(T)) / MW);
+  
+  STI0 := (cSTI + mSTI) / 2;
+
+  STI := IF(STI0 > 1, 1-STI0, 1 / STI0 - 1);
+
+- Early Waning Indicator (EWI) -- EWI is a pseudo-predictor.  It uses predictable changes in the ratio of newCases to newDeaths to detect major inflections.  It generates a positive signal when R (as computed above) is likely to transition from above one to below one within one to two weeks.  It generates a negative signal in advance of R transition from below one to greaater than one.  It is not a true predictor in that it detects that the inflection has already occurred, but did not show up in the computed R because of its lagging mR component.
+EWI0 := SDI - MI;
+
+  EWI := IF(SDI < -.2 AND MI > .2, EWI0, IF(SDI > .2 AND MI < -.2, EWI0, 0));
+
+
+
 
 
 
