@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Descriptions, Layout} from "antd";
+import {Button, Descriptions, Layout, Spin} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
@@ -23,6 +23,8 @@ const LevelDetail = () => {
     const [periodTrendsColumnData, setPeriodTrendsColumnData] = useState<any>([]);
     const [periodTrendsGroupedData, setPeriodTrendsGroupedData] = useState<any>([]);
     const [hotListData, setHotListData] = useState<any>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
 
     useEffect(() => {
 
@@ -43,6 +45,15 @@ const LevelDetail = () => {
             }
             return mapData;
         }
+
+        setLoading(true);
+
+        setSummaryData([]);
+        setMaxData([]);
+        setMaxData(new Map());
+        setPeriodTrendsColumnData([]);
+        setPeriodTrendsGroupedData([]);
+        setHotListData([]);
 
         //Get the data
         let filters = new Map();
@@ -85,6 +96,8 @@ const LevelDetail = () => {
 
             setHotListData(query.current.getData('hot_list'));
 
+            setLoading(false);
+
         })
 
     }, [location]);
@@ -121,42 +134,47 @@ const LevelDetail = () => {
         return uuid;
     }
 
-    return (
-        <Layout >
-            <div style={{textAlign:"center"}}>
-                <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
-                <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
-                <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
-                <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
-                <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
-                <Button  onClick={() => popLocation()} style={{height: 25}} icon={<LeftOutlined />}
-                      shape={"round"}   type={"primary"} className={"anchor-btn"} disabled={locationStack.current.length === 0}>{"BACK"}</Button>
-            </div>
+    const container = ( <Layout >
+        <div style={{textAlign:"center"}}>
+            <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
+            <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
+            <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
+            <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
+            <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
+            <Button  onClick={() => popLocation()} style={{height: 25}} icon={<LeftOutlined />}
+                     shape={"round"}   type={"primary"} className={"anchor-btn"} disabled={locationStack.current.length === 0}>{"BACK"}</Button>
+        </div>
 
-            <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
+        <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
 
-                <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID()}</div>
+            <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID()}</div>
 
-                <Descriptions size="small" column={1} bordered>
-                    <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
-                </Descriptions>
+            <Descriptions size="small" column={1} bordered>
+                <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
+            </Descriptions>
 
 
-                <Layout.Content>
-                    <div id={"map"}/>
-                    <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
-                              selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
-                    <LevelList data={listData} location={locationUUID()} selectHandler={(name) => olSelectHandler(name)} />
-                    <div id={"summary_stats"} style={{height: 10}}/>
-                    <SummaryMeasures summaryData={summaryData}/>
+            <Layout.Content>
+                <div id={"map"}/>
+                <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
+                          selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
+                <LevelList data={listData} location={locationUUID()} selectHandler={(name) => olSelectHandler(name)} />
+                <div id={"summary_stats"} style={{height: 10}}/>
+                <SummaryMeasures summaryData={summaryData}/>
 
-                    <div id={"trends"} style={{height: 10}}/>
-                    <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
-                    <div id={"hot_spots"} style={{height: 10}}/>
-                    <HotList data={hotListData}/>
-                </Layout.Content>
-            </Layout>
+                <div id={"trends"} style={{height: 10}}/>
+                <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
+                <div id={"hot_spots"} style={{height: 10}}/>
+                <HotList data={hotListData}/>
+            </Layout.Content>
         </Layout>
+    </Layout>)
+    return (
+        <Spin
+            spinning={loading} delay={250}>
+            {container}
+        </Spin>
+
     );
 
 

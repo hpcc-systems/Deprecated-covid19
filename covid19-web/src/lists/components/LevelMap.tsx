@@ -35,8 +35,8 @@ const LevelMap = (props: LevelMapProps) => {
     useEffect(() => {
         listData.current = props.listData;
         maxData.current = props.maxData;
-        setHeatMapType('contagion_risk');
-    }, [setHeatMapType,props.listData, props.maxData]);
+        // setHeatMapType('contagion_risk');
+    }, [props.listData, props.maxData]);
 
     useEffect(() => {
         setGeoFileInfo(Catalog.maps.get(props.location));
@@ -45,9 +45,6 @@ const LevelMap = (props: LevelMapProps) => {
     }, [props.location]);
 
     function olToolTipHandler(name: string) {
-
-
-
         let row = listData.current.get(name.toUpperCase());
         //console.log('Tooltip Location ' + name.toUpperCase() + ' row - ' + row);
         if (row) {
@@ -185,57 +182,57 @@ const LevelMap = (props: LevelMapProps) => {
             "<td>" +
             "Contagion Risk:" +
             "</td>" +
-            "<td>" +
+            "<td><b>" +
             Math.round(row.contagion_risk * 100) +
-            "%</td>" +
+            "%</b></td>" +
             "</tr>" +
             "<tr>" +
             "<td>" +
             "Infection State:" +
             "</td>" +
-            "<td>" +
+            "<td><b>" +
             row.status +
-            "</td>" +
+            "</b></td>" +
             "</tr>" +
             "<tr>" +
             "<td>" +
             "R:" +
             "</td>" +
-            "<td>" +
+            "<td><b>" +
             row.r +
-            "</td>" +
+            "</b></td>" +
             "</tr>" +
             "<tr>" +
             "<td>" +
             "Weekly New Cases:" +
             "</td>" +
-            "<td>" +
+            "<td><b>" +
             formatNumber(row.period_new_cases) +
-            "</td>" +
+            "</b></td>" +
             "</tr>" +
             "<tr>" +
             "<td>" +
             "Weekly New Deaths:" +
             "</td>" +
-            "<td>" +
+            "<td><b>" +
             formatNumber(row.period_new_deaths) +
-            "</td>" +
+            "</b></td>" +
             "</tr>" +
             "<tr>" +
             "<td>" +
             "Total Cases:" +
             "</td>" +
-            "<td>" +
+            "<td><b>" +
             formatNumber(row.cases) + '  (' + row.cases_per_capita + ' per 100K)' +
-            "</td>" +
+            "</b></td>" +
             "</tr>" +
             "<tr>" +
             "<td>" +
             "Total Deaths:" +
             "</td>" +
-            "<td>" +
-            formatNumber(row.deaths) + '  (' + row.deaths_per_capita + ' per 100K)' +
-            "</td>" +
+            "<td><b>" +
+            formatNumber(row.deaths) + '  (' + row.deaths_per_capita + ' per 100K)'+
+            "</b></td>" +
             "</tr>" +
             "<tr>" +
             "<td colspan='2' style='font-style: italic;color: black'>"
