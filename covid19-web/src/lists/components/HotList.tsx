@@ -1,8 +1,9 @@
-import {Layout, Table} from "antd";
+import {Button, Layout, Table} from "antd";
 import React from "react";
 
 interface HotListProps {
     data: any;
+    selectHandler: (name: string) => void;
 }
 
 const getLocation = (location: string, location_code: string | undefined) => {
@@ -20,7 +21,10 @@ const HotList = (props: HotListProps) => {
     const columns = [
         {   
             dataIndex: 'commentary',
-            render: (text: any, record: any) => <div style={{fontSize:14}}><b>{getLocation(record.location, undefined)}</b><br/>{record.commentary}</div>
+            render: (text: any, record: any) => <div style={{fontSize:14}}>
+                <Button type={'link'} onClick={()=>props.selectHandler(getLocation(record.location, undefined))} style={{}}>
+                    {getLocation(record.location, undefined)}
+                </Button><br/>{record.commentary}</div>
         }
     ];
     if (props.data.length > 0) {
