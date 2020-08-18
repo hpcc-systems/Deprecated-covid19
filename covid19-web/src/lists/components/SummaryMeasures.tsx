@@ -37,7 +37,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
         padding: 'auto',
         title: {
             text: 'Weekly Metrics ' + props.summaryData.period_string,
-            visible: true,
+            visible: false,
             style: {fontSize: 14, fontWeight: 'bold'}
         },
         forceFit: true,
@@ -72,12 +72,13 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
         return (
         <Layout>
-            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Summary Statistics and
-                Metrics
-            </div>
+
 
             <Row>
                 <Col span={12}>
+                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Summary Statistics and
+                        Metrics
+                    </div>
                     <Card>
                         <Statistic
                             title={"New Cases on " + props.summaryData.date_string}
@@ -138,6 +139,9 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                 <Col span={12} style={{paddingLeft: 25}}>
 
                     <Row>
+                        <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>
+                            {'Weekly Metrics ' + props.summaryData.period_string}
+                        </div>
                         <Col span={24}>
                             <Chart chart={Bar} config={chartModel} data={chartModelData}/>
                         </Col>

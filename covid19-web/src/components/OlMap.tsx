@@ -7,11 +7,12 @@ import GeoJSON from 'ol/format/GeoJSON';
 import VectorSource from "ol/source/Vector";
 import Select from "ol/interaction/Select";
 import {pointerMove} from "ol/events/condition";
-import {Style, Fill, Stroke, Text} from 'ol/style';
+import {Fill, Stroke, Style, Text} from 'ol/style';
 import {FeatureLike} from "ol/Feature";
 import Overlay from "ol/Overlay";
 import {fromLonLat} from "ol/proj";
 import {defaults as defaultInteractions} from 'ol/interaction.js'
+import OverlayPositioning from "ol/OverlayPositioning";
 
 
 interface Props {
@@ -65,10 +66,9 @@ export default function OlMap(props: Props) {
     }
 
     const overlay = new Overlay({
-        autoPan: true,
-        autoPanAnimation: {
-            duration: 250
-        }
+        offset: [10, 0],
+        positioning:OverlayPositioning.TOP_LEFT,
+
     });
 
     const map = useRef<Map | null>(null);

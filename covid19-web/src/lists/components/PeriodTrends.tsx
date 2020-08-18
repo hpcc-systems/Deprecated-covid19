@@ -13,7 +13,7 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
         padding: 'auto',
         title: {
             text: 'Rate of Infection',
-            visible: true,
+            visible: false,
             style: {fontSize: 14, fontWeight: 'bold'}
         },
         forceFit: true,
@@ -46,7 +46,7 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
         padding: 'auto',
         title: {
             text: 'New Cases and New Deaths',
-            visible: true,
+            visible: false,
             style: {fontSize: 14, fontWeight: 'bold'}
         },
         forceFit: true,
@@ -77,13 +77,15 @@ const PeriodTrends = (props: PeriodTrendsProps) => {
     return (
         <Layout>
             <Layout.Content>
-                <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Trends of Infection Rate, Weekly New Cases and Weekly New Deaths</div>
+                {/*<div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Trends of Infection Rate, Weekly New Cases and Weekly New Deaths</div>*/}
                 <Row style={{width: "100%"}}>
                     <Col flex={2}>
+                        <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Trends of Infection Rate</div>
                         <Chart chart={Column} config={RTrend} data={props.columnData}
                                />
                     </Col>
                     <Col flex={3}>
+                        <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10, paddingTop: 10}}>Weekly New Cases and Weekly New Deaths</div>
                         <Chart chart={Column} config={NewCasesTrend} data={props.groupedData}
                                />
                     </Col>
