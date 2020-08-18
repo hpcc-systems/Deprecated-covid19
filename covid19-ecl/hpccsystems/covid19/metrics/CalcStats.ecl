@@ -15,6 +15,7 @@ EXPORT CalcStats := MODULE
   SHARED infectedConfirmedRatio := Config.InfectedConfirmedRatio; // Calibrated by early antibody testing (rough estimate),
                                                                   // and ILI Surge statistics.
   SHARED locDelim := Config.LocDelim; // Delimiter between location terms.
+  SHARED min7dma := 2;  // Minimum effective 7-day moving average for cases and deaths
 
   SHARED DATASET(statsRec) smoothData(DATASET(statsRec) recs) := FUNCTION
     // Filter out any daily increases that imply an R > 10.
@@ -43,27 +44,31 @@ EXPORT CalcStats := MODULE
       // - If the new value is > 2.24 * 7 day moving average (implying R > 10)
       //    limit new cases / deaths it to 2.24 * 7 day average
       // - Calculate new cumulative values by adding up adjusted new values.
-      REAL adjNewCases := IF(cases7dma > 10 AND newCases > 2.24 * cases7dma, cases7dma * 2.24, MAX(newCases, 0));
+      // Allow for greater variation when the MA is very low, but still constrain it
+      cases7dma2 := MAX(cases7dma, min7dma);
+      UNSIGNED adjNewCases := IF(newCases > 2.24 * cases7dma2, cases7dma2 * 2.24, MAX(newCases, 0));
       casesHist := IF(le.location != ri.location, ri.casesHistory, [adjNewCases] + le.casesHistory)[..7];
       SELF.casesHistory := casesHist;
-      SELF.cases7dma := ROUND(cases7dma);
-      SELF.newCases := ROUND(adjNewCases);
+      SELF.cases7dma := cases7dma;
+      SELF.newCases := adjNewCases;
       SELF.prevCases := IF(le.location = ri.location, le.cumCases, 0);
       SELF.adjPrevCases := IF(le.location = ri.location, le.adjCumCases, 0);
-      SELF.adjCumCases := SELF.adjPrevCases + ROUND(adjNewCases);
-      SELF.caseAdjustment := ROUND(adjNewCases - newCases);
+      SELF.adjCumCases := SELF.adjPrevCases + adjNewCases;
+      SELF.caseAdjustment := adjNewCases - newCases;
       newDeaths := IF(le.location = ri.location, ri.cumDeaths - le.cumDeaths, ri.cumDeaths);
       //newDeaths := IF(le.location = ri.location AND ri.cumDeaths > le.cumDeaths, ri.cumDeaths - le.cumDeaths, 0);
       REAL deaths7dma := IF(le.location != ri.location OR COUNT(le.deathsHistory) = 0, 0, AVE(le.deathsHistory));
-      REAL adjNewDeaths := IF(deaths7dma > 10 AND newDeaths > 2.25 * deaths7dma, deaths7dma * 2.25, MAX(newDeaths, 0));
+      // Allow for greater variation when the MA is very low, but still constrain it
+      deaths7dma2 := MAX(deaths7dma, min7dma);
+      UNSIGNED adjNewDeaths := IF(newDeaths > 2.25 * deaths7dma2, deaths7dma2 * 2.25, MAX(newDeaths, 0));
       deathsHist := IF(le.location != ri.location, ri.deathsHistory, [adjNewDeaths] + le.deathsHistory)[..7];
       SELF.deathsHistory := deathsHist;
-      SELF.deaths7dma := ROUND(deaths7dma);
-      SELF.newDeaths := ROUND(adjNewDeaths);
+      SELF.deaths7dma := deaths7dma;
+      SELF.newDeaths := adjNewDeaths;
       SELF.prevDeaths := IF(le.location = ri.location, le.cumDeaths, 0);
       SELF.adjPrevDeaths := IF(le.location = ri.location, le.adjCumDeaths, 0);
-      SELF.adjCumDeaths := SELF.adjPrevDeaths + ROUND(adjNewDeaths);
-      SELF.deathsAdjustment := ROUND(adjNewDeaths - newDeaths);
+      SELF.adjCumDeaths := SELF.adjPrevDeaths + adjNewDeaths;
+      SELF.deathsAdjustment := adjNewDeaths - newDeaths;
       SELF.population := ri.population;
       SELF := ri;
     END;
@@ -84,7 +89,8 @@ EXPORT CalcStats := MODULE
       SELF.Location := IF(lev = 3, L3Loc, IF(lev = 2, L2Loc, IF(lev=1, L1Loc, L0Loc)));
       SELF := inp;
     END;
-    stats1 := PROJECT(stats0, addLocation(LEFT, level));
+    // Filter out some bad locations
+    stats1 := PROJECT(stats0, addLocation(LEFT, level))(Level3 != 'UNASSIGNED' AND Level2 != 'UNASSIGNED');
     // Add record id
     stats2 := SORT(stats1, location, -date);
     stats3 := PROJECT(stats2, TRANSFORM(RECORDOF(LEFT), SELF.id := COUNTER, SELF := LEFT));
