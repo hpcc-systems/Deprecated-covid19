@@ -29,12 +29,12 @@ export default class Catalog {
     maps.set('THE WORLD-US-AMERICANSAMOA', { file: 'us-counties-americansamoa.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -14.26, long: -170.6, zoom: 6.5, });
     maps.set('THE WORLD-US-ARKANSAS', { file: 'us-counties-arkansas.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 35.146, long: -92.33, zoom: 6.5, });
     maps.set('THE WORLD-US-CONNECTICUT', { file: 'us-counties-connecticut.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -72.492, long: 41.947, zoom: 6.5, });
-    maps.set('THE WORLD-US-DELAWARE', { file: 'us-counties-delaware.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -75.481, long: 39.38, zoom: 6.5, });
-    maps.set('THE WORLD-US-ARIZONA', { file: 'us-counties-arizona.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -116.0, long: 39.0, zoom: 7.5, });
-    maps.set('THE WORLD-US-MAINE', { file: 'us-counties-maine.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -68.0, long: 45.0, zoom: 7.5, });
+    maps.set('THE WORLD-US-DELAWARE', { file: 'us-counties-delaware.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 39.38, long: -75.481, zoom: 8.5, });
+    maps.set('THE WORLD-US-ARIZONA', { file: 'us-counties-arizona.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 34.0, long: -111, zoom: 7.5, });
+    maps.set('THE WORLD-US-MAINE', { file: 'us-counties-maine.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 45.0, long: -68.0, zoom: 7.5, });
     maps.set('THE WORLD-US-IDAHO', { file: 'us-counties-idaho.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -114.0, long: 44.0, zoom: 7.5, });
     maps.set('THE WORLD-US-NEVADA', { file: 'us-counties-nevada.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 39.0, long: -116.0, zoom: 6.5, });
-    maps.set('THE WORLD-US-CALIFORNIA', { file: 'us-counties-california.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -120.329, long: 37.628, zoom: 6.5, });
+    maps.set('THE WORLD-US-CALIFORNIA', { file: 'us-counties-california.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 38.43, long: -122.68, zoom: 6.5, });
     maps.set('THE WORLD-US-DISTRICTOFCOLUMBIA', { file: 'us-counties-districtofcolumbia.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -77.119, long: 38.934, zoom: 6.5, });
     maps.set('THE WORLD-US-GUAM', { file: 'us-counties-guam.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 13.442, long: 144.76, zoom: 6.5, });
     maps.set('THE WORLD-US-HAWAII', { file: 'us-counties-hawaii.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 23.7186, long: -164.736, zoom: 6.5, });
@@ -49,7 +49,7 @@ export default class Catalog {
     maps.set('THE WORLD-US-MICHIGAN', { file: 'us-counties-michigan.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 44.335, long: -84.6115, zoom: 6.5, });
     maps.set('THE WORLD-US-MINNESOTA', { file: 'us-counties-minnesota.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 46.9496, long: -94.325, zoom: 7.25, });
     maps.set('THE WORLD-US-MISSISSIPPI', { file: 'us-counties-mississippi.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 33.086, long: -89.581, zoom: 7.0, });
-    maps.set('THE WORLD-US-MONTANA', { file: 'us-counties-montana.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -12016859.6604, long: 5966475.153300002, zoom: 7.0, });
+    maps.set('THE WORLD-US-MONTANA', { file: 'us-counties-montana.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 46.9, long: -109.5, zoom: 7.0, });
     maps.set('THE WORLD-US-NEBRASKA', { file: 'us-counties-nebraska.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 41.394264035, long: -99.7261437929, zoom: 7.0, });
     maps.set('THE WORLD-US-NEW HAMPSHIRE', { file: 'us-counties-newhampshire.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 43.5179685655, long: -71.4226936036, zoom: 7.5, });
     maps.set('THE WORLD-US-NEW JERSEY', { file: 'us-counties-newjersey.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 40.2875173436, long: -74.1582023922, zoom: 7.25, });
@@ -73,9 +73,9 @@ export default class Catalog {
     maps.set('THE WORLD-US-VIRGIN ISLANDS', { file: 'us-counties-virginislands.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 18.3286016876, long: -64.9670827857, zoom: 7.5, });
     maps.set('THE WORLD-US-WEST VIRGINIA', { file: 'us-counties-westvirginia.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 38.6998727176, long: -80.7192881391, zoom: 7.5, });
     maps.set('THE WORLD-US-WISCONSIN', { file: 'us-counties-wisconsin.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 44.4760263134, long: -89.501400671, zoom: 7.5, });
-    maps.set('THE WORLD-US-MISSOURI', { file: 'us-counties-missouri.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -92.629, long: 38.428, zoom: 7.5, });
+    maps.set('THE WORLD-US-MISSOURI', { file: 'us-counties-missouri.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 38.428, long: -92.629, zoom: 7.5, });
     maps.set('THE WORLD-US-WISCONSIN', { file: 'us-counties-wisconsin.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 44.4760263134, long: -89.501400671, zoom: 7.5, });
-    maps.set('THE WORLD-US-COLORADO', { file: 'us-counties-colorado.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: -106.151, long: 39.365, zoom: 7.5, });
+    maps.set('THE WORLD-US-COLORADO', { file: 'us-counties-colorado.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 39.365, long: -106.151, zoom: 7.5, });
     maps.set('THE WORLD-US-WYOMING', { file: 'us-counties-wyoming.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 42.9622404458, long: -106.798493803, zoom: 7.25, });
     return maps;
   }
