@@ -149,7 +149,7 @@ const LevelMap = (props: LevelMapProps) => {
                     d = Math.round(row.contagion_risk * 100) +
                         "%";
                     break;
-                case 'status': d = row.status;
+                case 'status': d= '' //d = row.status ;
             }
 
             return d;
