@@ -42,7 +42,7 @@ These define the potential values of the  _Infection State_ at a given location.
 
 # Epidemiological Model
 
- The system embeds a classical epidemiological model known as SIR (see [Wikipedia Article](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology)).  The SIR model predicts the changes in Susceptibility, Infection, and Recovery using a set of differential equations.  This allows us to estimate quantities such as Active Infections, Recovered Infections, Percent Immunity, Time-to-peak, Deaths-at-peak, and Time-to-recovery.
+ The system embeds a classical epidemiological model known as SIR [1].  The SIR model predicts the changes in Susceptibility, Infection, and Recovery using a set of differential equations.  This allows us to estimate quantities such as Active Infections, Recovered Infections, Percent Immunity, Time-to-peak, Deaths-at-peak, and Time-to-recovery.
  
  In practice, the SIR model gives us a good estimate of Active versus Recovered infections, but predictive power is limited due to rapidly changing social and societal behaviors.  In animal epidemiology, the growth rate (R) is typically identical to the Basic Reproductive Rate (i.e. R0) of the virus.  In human society, there are both innate and orchestrated responses to a pandemic that cause R to rapidly diverge from R0.  Changes in behavior such as quarantines, social distancing, and enhanced hygiene can quickly dampen the growth rate.  Returning to normal behavior can rapidly increase the rate.  Therefore any predictions of growth must model the expected changes in human behavior, which is beyond the scope of the current system.
  
@@ -119,7 +119,7 @@ The specific calculations used for Metrics are described below:
 
 These constants can be changed as better information becomes available.
 - Infection Period(IP) -- The average length of time during which an individual remains infections.  This is currently set to 10 days.
-- Infection Case Ratio(ICR) -- The average ratio of Actual infections to cases.  This is a gross estimate of the ratio of all infections (Asymptomatic, Subclinical, Clinical) to Confirmed Cases.  Although this is treated as a constant for rough estimation, it is known that this number varies over time as well as location, based on testing availability.  This is currently set to 3.0 based on estimates by Penn State [ref]
+- Infection Case Ratio(ICR) -- The average ratio of Actual infections to cases.  This is a gross estimate of the ratio of all infections (Asymptomatic, Subclinical, Clinical) to Confirmed Cases.  Although this is treated as a constant for rough estimation, it is known that this number varies over time as well as location, based on testing availability.  This is currently set to 3.0 based on estimates by Penn State [2]
 - Metric Window (MW) -- The number of days over which growth metrics are calculated.  This is currently set to 7.
 - minActiveThreshold -- The minimum fraction of the population with active infections in a location to be considered beyond containment.  This is currently set to 0.0003.
 - hiScaleFactor -- A scaling factor for Heat Index that provides a threshold for the Hot Spots list.  This is calibrated such that Heat Index >= 1.0 identifies locations requiring attention.  This is currently set to 5.0.
@@ -239,7 +239,10 @@ EWI0 := SDI - MI;
   EWI := IF(SDI < -.2 AND MI > .2, EWI0, IF(SDI > .2 AND MI < -.2, EWI0, 0));
 
 
+# References
 
+[1] Kermack, W. O., & McKendrick, A. G. (1927). A contribution to the mathematical theory of epidemics. Proceedings of the royal society of london. Series A, Containing papers of a mathematical and physical character, 115(772), 700-721.
+[2] Silverman, J. D., Hupert, N., & Washburne, A. D. Using influenza surveillance networks to estimate state-specific case detection rates and forecast SARS-CoV-2 spread in the United States.
 
 
 
