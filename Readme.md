@@ -1,5 +1,6 @@
 ![Intro](/docs/images/readme/intro.png)
 
+
 # HPCC Systems Covid 19 Tracker
 
 An open data lake solution for research and collaboration to track and report the progress of Covid 19 virus.
@@ -27,6 +28,9 @@ By following changes in R, we can quickly see how the infection is responding to
 We use an evolving model of the cause and effect relationships between observed and unobserved (latent) variables to inform the definition and interpretation of metrics.  This model lets us visualize the ways in which measurements are confounded by hidden variables, and possible ways to de-confound the meanings.
 
 ![Causal Model](/docs/images/readme/CausalModel.png)
+<p align="center">
+Causal Model
+</p>
 
 # Infection State
 
@@ -90,14 +94,60 @@ _"The World has worsened to a Stabilizing state from a previous state of Stabili
 The system provides a friendly web-based interface for viewing COVID-19 data and metrics.  World, Country, and Regional maps are color coded to represent any of various selectable attributes of the infection at those locations.  Clicking on any given location brings up a set of pages that provides details about that location -- from raw statistics to charts to advanced metrics and commentary.
 
 The user interface provides several ways to navigate:
-* _Map View_ shows aspects of the infection through color codings on a map.  The map can be color coded by a number of attributes including Infection State, New Cases, New Deaths, Cases per 100K, Deaths per 100K, Total Cases and Total Deaths.
-![Map View](/docs/images/readme/map.png)
-* _Map Detail View_ is shown when you click on a location on the map. The details shows the trending of Infection Rate over time and other advanced metrics. 
-![Map Detail View](/docs/images/readme/map-detail.png)
+
+* _Map View_ shows aspects of the infection through color codings on a map.  The map can be color coded by a number of attributes including Infection State, New Cases, New Deaths, Cases per 100K, Deaths per 100K, Total Cases and Total Deaths. On Map View, users can drilldown to the lowest location as possible. Currently supported Views include World  View, Country View, Province/State View, City/County View.
+
+<!-- ![Map View](/docs/images/readme/map.png) -->
+
+![Country Map View](/docs/images/readme/map_country.png)
+<p align="center">
+Country Map View
+</p>
+
+![County Map View](/docs/images/readme/map_state.png)
+<p align="center">
+State Map View
+</p>
+<!-- 
+* _Map Detail View_ is shown when you click on a location on the map. The details shows the trending of Infection Rate over time and other advanced metrics. -->
+
+
+<!-- ![Map Detail View](/docs/images/readme/map-detail.png)
+<p align="center">
+Map Detail View
+</p> --> 
+
+* _Stats View_ shows the summary statistics and metrics of each location. The location can be world level, country level, province/state level or city/country level. The statistics include but limited to daily new cases, daily new deaths, cumulative cases and cumulative deaths. It also includes all the metrics introduced in the previous section. The metrics are displayed in a bar chart. 
+
+
+![Stats View](/docs/images/readme/stats.png)
+<p align="center">
+Stats View
+</p>
+
+* _Trend View_ shows the trend of infection rate, weekly new cases and weekly new deaths. The details of theses definitions can be found in the previous section.
+
+
+![Trend View – Infection Trend](/docs/images/readme/trend_infection.png)
+<p align="center">
+Trend View – Infection Trend
+</p>
+
+![Trend View – New Cases and New Deaths Trend](/docs/images/readme/trend_cases.png)
+<p align="center">
+Trend View – New Cases and New Deaths Trend
+</p>
+
 * _Hotspots View_ orders the locations by _Heat Index_,  showing a triage list of locations and a description of their state.  All details can be seen by clicking on any of the Hotspot locations.
+
+
 ![Hotspots View](/docs/images/readme/hotspots.png)
-* _Comparison View_ allows simultaneous viewing of statistics from multiple selected locations of interest.
-![Comparison View](/docs/images/readme/compare.png)
+<p align="center">
+Hotspots View
+</p>
+
+<!-- * _Comparison View_ allows simultaneous viewing of statistics from multiple selected locations of interest.
+![Comparison View](/docs/images/readme/compare.png) -->
 
 # Data Sources
 
@@ -106,10 +156,16 @@ The main data sources are John Hopkins University (daily cases and deaths), US C
 https://tombolo.hpccsystems.com   [please login using CovidTracker/HPCCSystems as the user  name and password]
 
 ![Tombolo Intro](/docs/images/readme/tombolo_intro.png)
+<p align="center">
+Tombolo Application
+</p>
 
 A node in the workflow can be selected and double clicked to view the details. The following is an example of the details of a metrics file:
 
-![Tombolo File Detail](/docs/images/readme/tombolo_file_detail.png)
+![Tombolo Workflow](/docs/images/readme/tombolo_workflow_v2.png)
+<p align="center">
+Tombolo Workflow
+</p>
 
 # Calculations
 
