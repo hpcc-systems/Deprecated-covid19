@@ -203,7 +203,7 @@ const LevelMap = (props: LevelMapProps) => {
             "</b></td>" +
             "</tr>" +
             "<tr>" +
-            "<td>" +
+            "<td >" +
             "Weekly New Cases:" +
             "</td>" +
             "<td><b>" +
@@ -211,7 +211,7 @@ const LevelMap = (props: LevelMapProps) => {
             "</b></td>" +
             "</tr>" +
             "<tr>" +
-            "<td>" +
+            "<td style='padding-right: 10px'>" +
             "Weekly New Deaths:" +
             "</td>" +
             "<td><b>" +
