@@ -172,7 +172,6 @@ export default function OlMap(props: Props) {
 
             map.current.addInteraction(selectMouseMove);
 
-
             map.current.on('singleclick', function (evt) {
                 if (map.current !== null) {
                     map.current.forEachFeatureAtPixel(evt.pixel,
@@ -184,7 +183,6 @@ export default function OlMap(props: Props) {
                         });
                 }
             });
-
 
             map.current.updateSize();
             map.current.render();
@@ -202,7 +200,7 @@ export default function OlMap(props: Props) {
         }
 
     })
-//background: '#2b2b2b',
+
     return (
         <div>
             <div style={{background: '#2b2b2b', height: props.height}} ref={(e) => (container.current = e)}/>

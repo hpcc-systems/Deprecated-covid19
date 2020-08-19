@@ -3,14 +3,14 @@ import React from "react";
 
 export default function MetricsTerms() {
     return (
-        <div style={{width: 700}}>
+        <div style={{width: 800, height: 500, overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
             <Descriptions column={1}>
                 <Descriptions.Item label="Contagion Risk">
                     The estimated probability of meeting at least one actively infected person during 100 random encounters within
                     a given location.  This is based on an evolving estimate of the number of active infections which is subject to
                     refinement as more data becomes available.  It should be
                     used for comparing the relative risk of various locations.  It should not be taken as the actual probability of
-                    becoming infected, which depends on many factors, including an individuals succeptibility, the behavior of
+                    becoming infected, which depends on many factors, including an individuals susceptibility, the behavior of
                     infected individuals, and the specifics of each encounter.
                 </Descriptions.Item>
                 <Descriptions.Item label="Infection State">
@@ -68,7 +68,7 @@ export default function MetricsTerms() {
                     Identifies inflection points in the spread of the virus.  A negative value suggests
                     that an infection is transitioning from a neutral or recovering phase to a growth phase.
                     A positive value indicates a transition from growth to stability.  The magnitude indicates
-                    the strength and speed of the transition.  A zero value indicates that no major transition is iminent.
+                    the strength and speed of the transition.  A zero value indicates that no major transition is imminent.
                     The timeframe of this indicator is three days to two weeks.
                 </Descriptions.Item>
                 <Descriptions.Item label="HeatIndex">
