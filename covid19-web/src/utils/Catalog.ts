@@ -62,7 +62,7 @@ export default class Catalog {
     maps.set('THE WORLD-US-OKLAHOMA', { file: 'us-counties-oklahoma.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 35.5515100533, long: -97.4072328405, zoom: 7.0, });
     maps.set('THE WORLD-US-PENNSYLVANIA', { file: 'us-counties-pennsylvania.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 40.9193457751, long: -77.8199601615, zoom: 7.5, });
     maps.set('THE WORLD-US-PUERTO RICO', { file: 'us-counties-puertorico.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 18.2149040847, long: -66.4339884969, zoom: 7.5, });
-    maps.set('THE WORLD-US-RHODE ISLAND', { file: 'us-counties-rhodeisland.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 41.6733545588, long: -71.5790218623, zoom: 7.5, });
+    maps.set('THE WORLD-US-RHODE ISLAND', { file: 'us-counties-rhodeisland.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 41.5, long: -71.5790218623, zoom: 9.5, });
     maps.set('THE WORLD-US-SOUTH CAROLINA', { file: 'us-counties-southcarolina.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 34.0218460217, long: -80.9030859572, zoom: 7.5, });
     maps.set('THE WORLD-US-SOUTH DAKOTA', { file: 'us-counties-southdakota.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 44.7155640273, long: -100.132245565, zoom: 7.5, });
     maps.set('THE WORLD-US-TENNESSEE', { file: 'us-counties-tennessee.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 35.8427065264, long: -86.4167378958, zoom: 7.5, });
