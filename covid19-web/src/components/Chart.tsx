@@ -11,14 +11,14 @@ interface Props {
 export function Chart(props: Props) {
     const [plot, setPlot] = React.useState<any>(undefined);
     const [container, setContainer] = React.useState<HTMLElement|null>(null);
+
+
     useEffect(() => {
 
-      if (plot) {
-          plot.updateConfig(props.config);
-          plot.changeData(props.data);
-          plot.render();
-      }
-    })
+        if (plot) {
+            plot.changeData(props.data);
+        }
+    },[plot,props.data])
 
     useEffect(() => {
         if(!plot && container != null) {
