@@ -151,13 +151,20 @@ L3InputDat0 := PROJECT(L3DatIn, TRANSFORM(inputRec,
                                             SELF.tested := 0,
                                             SELF.positive := 0,
                                             SELF.negative := 0));
+// Fixup some bad FIPS mappings in the input data
+inputRec fixupBadLocations(inputRec rec) := TRANSFORM
+  SELF.fips := IF(rec.Country = 'US' AND rec.Level2 = 'MASSACHUSETTS' AND rec.level3 = 'DUKES AND NANTUCKET', '25007', rec.fips);
+  SELF := rec;
+END;
+L3InputDat1 := PROJECT(L3InputDat0, fixupBadLocations(LEFT), LOCAL);
 
 L3PopData := DATASET(countyPopulationPath, countyPopRecord, THOR);
-L3InputDat1 := JOIN(L3InputDat0, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RECORDOF(LEFT),
+L3InputDat2 := JOIN(L3InputDat1, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RECORDOF(LEFT),
 																																SELF.population := IF((UNSIGNED)RIGHT.popestimate2019 > 0, (UNSIGNED)RIGHT.popestimate2019, 1),
                                                                 SELF := LEFT),
 																																				LEFT OUTER, LOOKUP);
-L3InputDat := SORT(L3InputDat1, Country, Level2, Level3, -date);
+L3InputDat := SORT(L3InputDat2, Country, Level2, Level3, -date);
+;
 out3 := OUTPUT(L3InputDat, ,Paths.JHLevel3, Thor, OVERWRITE);
 
 //OUTPUT(L3InputDat[..10000], ALL, NAMED('L3InputData'));
