@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Descriptions, Layout, Spin} from "antd";
+import {Button, Descriptions, Layout, Popover, Spin} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import SummaryMeasures from "./components/SummaryMeasures";
@@ -7,6 +7,7 @@ import HotList from "./components/HotList";
 import PeriodTrends from "./components/PeriodTrends";
 import {LeftOutlined} from '@ant-design/icons';
 import LevelList from "./components/LevelList";
+import MetricsTerms from "./MetricsTerms";
 
 
 const LevelDetail = () => {
@@ -24,6 +25,8 @@ const LevelDetail = () => {
     const [periodTrendsGroupedData, setPeriodTrendsGroupedData] = useState<any>([]);
     const [hotListData, setHotListData] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
+
+    const scrollLayout = useRef<any | null>(null);
 
 
     useEffect(() => {
@@ -103,21 +106,24 @@ const LevelDetail = () => {
     }, [location]);
 
     const pushLocation = (location: any) => {
+
         locationStack.current.push(location);
         setLocation(location);
+
+        scrollLayout.current.scrollTo(0, 0);
     }
 
     const popLocation = () => {
         locationStack.current.pop();
         setLocation(locationStack.current[locationStack.current.length - 1]);
 
+        scrollLayout.current.scrollTo(0, 0);
     }
 
     function olSelectHandler(name: string) {
         console.log('location selection ' + name);
 
         pushLocation(name);
-
     }
 
     function locationUUID() {
@@ -139,14 +145,17 @@ const LevelDetail = () => {
             <div style={{textAlign: "center"}}>
                 <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
                 <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
+                <Button href={"#list"} type={"link"} className={"anchor-btn"}>List</Button>
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
                 <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
                 <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
+                <Popover key={'popover_metrics_terms'} title={"Metrics Terms"} content={<MetricsTerms/>}
+                         trigger={"click"} ><Button type={"link"} className={"anchor-btn"}>METRICS TERMS</Button></Popover>
                 <Button onClick={() => popLocation()} style={{height: 25}} icon={<LeftOutlined/>}
                         shape={"round"} type={"primary"} className={"anchor-btn"}
                         disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
-            <Layout style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}}>
+            <div style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}} ref={(e) => (scrollLayout.current = e)}>
                 <Spin spinning={loading} delay={500}>
 
 
@@ -161,6 +170,7 @@ const LevelDetail = () => {
                         <div id={"map"}/>
                         <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
                                   selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
+                        <div id={"list"} style={{height: 5}}/>
                         <LevelList data={listData} location={locationUUID()}
                                    selectHandler={(name) => olSelectHandler(name)}/>
                         <div id={"summary_stats"} style={{height: 10}}/>
@@ -174,7 +184,7 @@ const LevelDetail = () => {
 
 
                 </Spin>
-            </Layout>
+            </div>
         </Layout>
 
     );

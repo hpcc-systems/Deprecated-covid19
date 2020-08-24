@@ -149,7 +149,7 @@ const LevelMap = (props: LevelMapProps) => {
                     d = Math.round(row.contagion_risk * 100) +
                         "%";
                     break;
-                case 'status': d = row.status;
+                case 'status': d= '' //d = row.status ;
             }
 
             return d;
@@ -203,7 +203,7 @@ const LevelMap = (props: LevelMapProps) => {
             "</b></td>" +
             "</tr>" +
             "<tr>" +
-            "<td>" +
+            "<td >" +
             "Weekly New Cases:" +
             "</td>" +
             "<td><b>" +
@@ -211,7 +211,7 @@ const LevelMap = (props: LevelMapProps) => {
             "</b></td>" +
             "</tr>" +
             "<tr>" +
-            "<td>" +
+            "<td style='padding-right: 10px'>" +
             "Weekly New Deaths:" +
             "</td>" +
             "<td><b>" +

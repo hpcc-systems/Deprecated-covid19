@@ -4,6 +4,8 @@ IMPORT hpccsystems.covid19.file.public.USCountyPopulation as popClean;
 
 IMPORT Std;
 
+excluded := ['DUKES COUNTY' , 'NANTUCKET COUNTY'];
+
 cleanedPop := PROJECT
     (
        popRaw.ds, 
@@ -33,6 +35,18 @@ cleanedPop := PROJECT
 boroughNames := ['BRONX COUNTY', 'KINGS COUNTY', 'QUEENS COUNTY', 'RICHMOND COUNTY', 'NEW YORK COUNTY'];
 boroughs := cleanedPop(state = '36' AND ctyname in boroughNames );
 
+DUKESAndNANTUCKETPop := SUM(cleanedPop(ctyname  IN excluded),popestimate2019 );
+DUKESAndNANTUCKETPop;
+
+DUKESAndNANTUCKET := DATASET(1,
+                             TRANSFORM(popClean.layout,
+                             SELF.FIPS := '25007', 
+                             SELF.state := '25',
+                             SELF.stname := 'MASSACHUSETTS',
+                             SELF.county := '007', 
+                             SELF. ctyname := 'DUKES AND NANTUCKET',
+                             SELF.popestimate2019 := DUKESAndNANTUCKETPop));
+
 popClean.layout rollTrans(popClean.layout l, DATASET(popClean.layout) r) :=TRANSFORM
           SELF.FIPS            := r(ctyname = 'NEW YORK COUNTY')[1].FIPS,
           SELF.county          := r(ctyname = 'NEW YORK COUNTY')[1].county,
@@ -54,7 +68,9 @@ NYCounty := ROLLUP(GROUP(boroughs, state), GROUP, rollTrans(LEFT, ROWS(LEFT)));
 
 nonBoroughs := cleanedPop - boroughs;
 
-OUTPUT(nonBoroughs + NYCounty ,,popclean.filePath, THOR, COMPRESSED, OVERWRITE);
+
+
+OUTPUT(nonBoroughs(CTYNAME  NOT IN  excluded) + NYCounty + DUKESAndNANTUCKET ,,popclean.filePath, THOR, COMPRESSED, OVERWRITE);
 
 
 
@@ -76,7 +92,7 @@ cleanedPop_agegender := PROJECT
           ) 
     );       
 
-OUTPUT(cleanedPop_agegender ,,popclean.filePath_agegender, THOR, COMPRESSED, OVERWRITE);
+// OUTPUT(cleanedPop_agegender ,,popclean.filePath_agegender, THOR, COMPRESSED, OVERWRITE);
 
 
 
