@@ -60,7 +60,7 @@ EXPORT CalcStats := MODULE
       REAL deaths7dma := IF(le.location != ri.location OR COUNT(le.deathsHistory) = 0, 0, AVE(le.deathsHistory));
       // Allow for greater variation when the MA is very low, but still constrain it
       deaths7dma2 := MAX(deaths7dma, min7dma);
-      UNSIGNED adjNewDeaths := IF(newDeaths > 2.25 * deaths7dma2, deaths7dma2 * 2.25, MAX(newDeaths, 0));
+      UNSIGNED adjNewDeaths := IF(newDeaths > 2.24 * deaths7dma2, deaths7dma2 * 2.24, MAX(newDeaths, 0));
       deathsHist := IF(le.location != ri.location, ri.deathsHistory, [adjNewDeaths] + le.deathsHistory)[..7];
       SELF.deathsHistory := deathsHist;
       SELF.deaths7dma := deaths7dma;
