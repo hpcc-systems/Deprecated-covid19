@@ -9,6 +9,7 @@ IMPORT COVID19.Paths;
 
 inputRec := Types.inputRec;
 populationRec := Types.populationRec;
+cleanSpaces := Std.Str.CleanSpaces;
 
 // For L1 level
 countryFilePath := '~hpccsystems::covid19::file::public::johnhopkins::world.flat';
@@ -129,7 +130,15 @@ STRING cleanupLocation(STRING location) := Std.Str.CleanSpaces(Std.Str.FindRepla
 // Country Data contains some L2 and L3 data as well for certain countries.  Combine that with
 // US County and State data to produce L2 and L3 inputs.
 countryData0 := SORT(DATASET(countryFilePath, scRecord, THOR), country, state, admin2, update_date);
-//OUTPUT(countryData0[.. 10000], ALL, NAMED('RawCountryData'));
+// France reports data for its territories, but not its mainland at level 2.  Assign a level 2 name "CONTINENTAL" to
+// the mainland data so that rollups work properly.
+// Until 6/11/20, UK reports data at L1 and after that date, moves all of that data to L2 = 'UNKNOWN'.  Fix by assigning L1 data to UNKNOWN.
+countryData1 := PROJECT(countryData0, TRANSFORM(RECORDOF(LEFT),
+                                              SELF.Country := Std.Str.CleanSpaces(LEFT.Country),
+                                              SELF.State := MAP(SELF.Country = 'FRANCE' AND CleanSpaces(LEFT.State) = '' => 'CONTINENTAL',
+                                                                SELF.Country = 'UNITED KINGDOM' AND CleanSpaces(LEFT.state) = '' => 'UNKNOWN',
+                                                                CleanSpaces(LEFT.state)),
+                                              SELF := LEFT));
 
 // Prepare L3 level input
 
@@ -137,13 +146,13 @@ USDatIn0 := DATASET(USFilePath, scRecord, THOR);
 USDatIn := USDatIn0(state != '' AND admin2 != '' AND update_date != 0);
 //OUTPUT(USDatIn[..10000], ALL, NAMED('RawUSData'));
 L3WorldDatIn := countryData0(country != '' AND country != 'US' AND state != '' AND admin2 != '' AND update_date != 0);
-L3DatIn := SORT(USDatIn + L3WorldDatIn, state, admin2, update_date);
+L3DatIn := DEDUP(SORT(USDatIn + L3WorldDatIn, country, state, admin2, update_date));
 //OUTPUT(rawDatIn0(update_date = 0), ALL, NAMED('RawBadDate'));
 L3InputDat0 := PROJECT(L3DatIn, TRANSFORM(inputRec,
                                             SELF.fips := LEFT.fips,
-                                            SELF.country := Std.Str.CleanSpaces(LEFT.country),
-                                            SELF.Level2 := Std.Str.CleanSpaces(LEFT.state),
-                                            SELF.Level3 := Std.Str.CleanSpaces(LEFT.admin2),
+                                            SELF.country := CleanSpaces(LEFT.country),
+                                            SELF.Level2 := CleanSpaces(LEFT.state),
+                                            SELF.Level3 := CleanSpaces(LEFT.admin2),
                                             SELF.date := LEFT.update_date,
                                             SELF.cumCases := LEFT.Confirmed,
                                             SELF.cumDeaths := LEFT.Deaths,
@@ -164,13 +173,13 @@ L3InputDat2 := JOIN(L3InputDat1, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RE
                                                                 SELF := LEFT),
 																																				LEFT OUTER, LOOKUP);
 L3InputDat := SORT(L3InputDat2, Country, Level2, Level3, -date);
-;
+
 out3 := OUTPUT(L3InputDat, ,Paths.JHLevel3, Thor, OVERWRITE);
 
 //OUTPUT(L3InputDat[..10000], ALL, NAMED('L3InputData'));
 
 // Prepare L2 level input
-L2WorldDatIn := countryData0(country != '' AND state != '' AND admin2 = '' AND update_date != 0);
+L2WorldDatIn := countryData1(country != '' AND state != '' AND admin2 = '' AND update_date != 0);
 USStateDatIn := USDatIn0(state != '' AND admin2 = '' AND update_date != 0);
 L2DatIn := SORT(L2WorldDatIn + USStateDatIn, country, state, update_date);
 
@@ -275,16 +284,16 @@ out2 := OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
 //OUTPUT(L2InputDat(date > 20200629), ALL, NAMED('L2InputData'));
 
 // Prepare Country Level Input
-countryData1 := SORT(countryData0, country, update_date);
-countryData2 := DEDUP(countryData1, country, update_date);
+countryData2 := SORT(countryData1, country, update_date);
+countryData3 := DEDUP(countryData2, country, update_date);
 
 // Filter out bad country info
 // Note: We want at least one record per country so we can get population data.
-countryData3 := countryData2(country != '' AND update_date != 0);
-countryData4 := DEDUP(countryData3, country, update_date);
+countryData4 := countryData3(country != '' AND update_date != 0);
+countryData5 := DEDUP(countryData4, country, update_date);
 countryPopData0 := DATASET(countryPopulationPath, countryPopRecord, THOR);
 countryPopData := DEDUP(SORT(countryPopData0, location, -time), location);
-countryInputDat := JOIN(countryData4, countryPopData, LEFT.Country = RIGHT.location, TRANSFORM(inputRec,
+countryInputDat := JOIN(countryData5, countryPopData, LEFT.Country = RIGHT.location, TRANSFORM(inputRec,
                                             SELF.fips := LEFT.fips,
                                             SELF.country := Std.Str.CleanSpaces(LEFT.country),
                                             SELF.Level2 := '',

@@ -156,7 +156,7 @@ const LevelDetail = () => {
                         disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
             <div style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10}} ref={(e) => (scrollLayout.current = e)}>
-                <Spin spinning={loading} delay={500}>
+                <Spin spinning={loading} delay={250}>
 
 
                     <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID()}</div>

@@ -8,6 +8,8 @@ interface SummaryMeasuresProps {
 }
 
 const SummaryMeasures = (props: SummaryMeasuresProps) => {
+
+
     const renderCommaFormattedValue= (value: any) => {
         if (value) {
             return Math.trunc(value).toLocaleString()
@@ -22,15 +24,16 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
             return ''
         }
     }
-    const chartModelData = [{"name": "Short Term Indicator", "value": props.summaryData.sti},
-        {"name": "Heat Index", "value": props.summaryData.heat_index},
-        {"name": "Case Fatality Rate", "value": props.summaryData.cfr},
-        {"name": "Medical Indicator", "value": props.summaryData.med_indicator},
-        {"name": "Social Distance Indicator", "value": props.summaryData.sd_indicator},
-        {"name": "Mortality Rate (mR)", "value": props.summaryData.mr},
-        {"name": "Cases Rate (cR)", "value": props.summaryData.cr},
+
+    const chartModelData = [{"name": "Contagion Risk", "value": props.summaryData.contagion_risk},
         {"name": "Infection Rate (R)", "value": props.summaryData.r},
-        {"name": "Contagion Risk", "value": props.summaryData.contagion_risk}
+        {"name": "Cases Rate (cR)", "value": props.summaryData.cr},
+        {"name": "Mortality Rate (mR)", "value": props.summaryData.mr},
+        {"name": "Social Distance Indicator", "value": props.summaryData.sd_indicator},
+        {"name": "Medical Indicator", "value": props.summaryData.med_indicator},
+        {"name": "Case Fatality Rate", "value": props.summaryData.cfr},
+        {"name": "Heat Index", "value": props.summaryData.heat_index},
+        {"name": "Short Term Indicator", "value": props.summaryData.sti},
     ];
 
     const chartModel = {
@@ -72,7 +75,6 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
         return (
         <Layout>
-
 
             <Row>
                 <Col span={12}>
@@ -137,7 +139,6 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                     </Card>
                 </Col>
                 <Col span={12} style={{paddingLeft: 25}}>
-
                     <Row>
                         <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>
                             {'Weekly Metrics ' + props.summaryData.period_string}
@@ -150,6 +151,8 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                 </Col>
 
             </Row>
+
+
 
         </Layout>
     );

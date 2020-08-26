@@ -25,19 +25,20 @@ RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     logStartAction := Std.System.Log.AddWorkunitInformation(Std.Date.SecondsToString(Std.Date.CurrentSeconds()) + ': running ' + wuJobName);
     // Kafka message
     guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
-    sendMsg := KUtils.sendMsg(wuid := wuid, dataflowid := kutils.DataflowId_v2, instanceid := guid, msg := 'Sending message with instanceid ' + guid );   
+    sendMsg := KUtils.sendMsg(broker := kutils.prod_defaultbroker, appid := kutils.prod_applicationId, wuid := wuid, dataflowid := kutils.prod_DataflowId_v2, instanceid := guid, msg := 'Prod Cluster: Sending message with instanceid ' + guid );   
     RETURN SEQUENTIAL(ast, logStartAction, sendMsg);
 
 END;
+
 
 thingsToDo := ORDERED
 
     (
         KUtils.genInstanceID;
+        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
         RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');            
     );
-
 thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
 // thingsToDo;

@@ -49,12 +49,12 @@ export default class Catalog {
     maps.set('THE WORLD-US-MICHIGAN', { file: 'us-counties-michigan.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 44.335, long: -84.6115, zoom: 6.5, });
     maps.set('THE WORLD-US-MINNESOTA', { file: 'us-counties-minnesota.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 46.9496, long: -94.325, zoom: 7.25, });
     maps.set('THE WORLD-US-MISSISSIPPI', { file: 'us-counties-mississippi.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 33.086, long: -89.581, zoom: 7.0, });
-    maps.set('THE WORLD-US-MONTANA', { file: 'us-counties-montana.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 46.9, long: -109.5, zoom: 7.0, });
+    maps.set('THE WORLD-US-MONTANA', { file: 'us-counties-montana.geojson', secondaryFile: '', colorKeyField: 'ALLFIPS', selectKeyField: 'NAME', lat: 46.9, long: -110.5, zoom: 7.0, });
     maps.set('THE WORLD-US-NEBRASKA', { file: 'us-counties-nebraska.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 41.394264035, long: -99.7261437929, zoom: 7.0, });
     maps.set('THE WORLD-US-NEW HAMPSHIRE', { file: 'us-counties-newhampshire.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 43.5179685655, long: -71.4226936036, zoom: 7.5, });
     maps.set('THE WORLD-US-NEW JERSEY', { file: 'us-counties-newjersey.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 40.2875173436, long: -74.1582023922, zoom: 7.25, });
     maps.set('THE WORLD-US-NEW MEXICO', { file: 'us-counties-newmexico.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 34.6404921514, long: -105.850819579, zoom: 7.0, });
-    maps.set('THE WORLD-US-NEW YORK', { file: 'us-counties-newyork.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 43.2417469044, long: -75.4358401731, zoom: 7.0, });
+    maps.set('THE WORLD-US-NEW YORK', { file: 'us-counties-newyork.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 42.2417469044, long: -75.4358401731, zoom: 7.5, });
     maps.set('THE WORLD-US-NORTH CAROLINA', { file: 'us-counties-northcarolina.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 35.4751864248, long: -79.1714836119, zoom: 7.25, });
     maps.set('THE WORLD-US-NORTH DAKOTA', { file: 'us-counties-northdakota.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 47.6069508739, long: -101.321804009, zoom: 7.25, });
     maps.set('THE WORLD-US-NORTHERN MARIANA ISLANDS', { file: 'us-counties-northernmarianaislands.geojson', secondaryFile: '', colorKeyField: 'geoid', selectKeyField: 'name', lat: 18.1183693017, long: 145.631090555, zoom: 7.5, });

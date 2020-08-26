@@ -26,7 +26,7 @@ RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     // logEndAction := Std.System.Log.AddWorkunitInformation(Std.Date.SecondsToString(Std.Date.CurrentSeconds()) + ': success: ' + IF(wuid <> '', 'true', 'false'));
     // Kafka message
     guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
-    sendMsg := KUtils.sendMsg(wuid := wuid,instanceid := guid, msg := 'Prod Cluster: sending message with instanceid ' + guid );   
+    sendMsg := KUtils.sendMsg(broker := kutils.prod_defaultbroker, appid := kutils.prod_applicationId, wuid := wuid,dataflowid := kutils.prod_DataflowId_v1,  instanceid := guid, msg := 'Prod Cluster: sending message with instanceid ' + guid );   
     RETURN SEQUENTIAL(ast, logStartAction, sendMsg);
     // RETURN SEQUENTIAL(ast, logStartAction, logEndAction);
 
@@ -54,7 +54,8 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_metrics_grouped');
         RunOrPublishByName('hpccsystems_covid19_query_metrics_period');
         RunOrPublishByName('hpccsystems_covid19_query_states_map');
-        RunOrPublishByName('hpccsystems_covid19_query_location_metrics'); 
+        RunOrPublishByName('hpccsystems_covid19_query_location_metrics');
+        RunOrPublishByName('hpccsystems_covid19_query_location_map');  
         // RunOrPublishByName('hpccsystems_covid19_scraped_spray' , 'RUN');
         // RunOrPublishByName('hpccsystems_covid19_scraped_Compare' , 'RUN');
              

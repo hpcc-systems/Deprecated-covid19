@@ -1,6 +1,6 @@
 EXPORT IndiaPopulation := MODULE
 
-  EXPORT filePath := '~hpccsystems::covid19::file::public::indiapopulation::population.flat';  
+  EXPORT filePath := '~hpccsystems::covid19::file::public::indiapopulation::v1::population.flat';  
 
 	EXPORT layout := RECORD
     STRING4 State;
