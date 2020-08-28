@@ -14,9 +14,16 @@ EXPORT Paths := MODULE
   EXPORT StatsLevel1 := '~hpccsystems::covid19::file::public::stats::Level1.flat';
   EXPORT StatsLevel2 := '~hpccsystems::covid19::file::public::stats::Level2.flat';
   EXPORT StatsLevel3 := '~hpccsystems::covid19::file::public::stats::Level3.flat';
+
   // Metrics Files
   EXPORT MetricsLevel0 := '~hpccsystems::covid19::file::public::metrics::Level0.flat';
   EXPORT MetricsLevel1 := '~hpccsystems::covid19::file::public::metrics::Level1.flat';
   EXPORT MetricsLevel2 := '~hpccsystems::covid19::file::public::metrics::Level2.flat';
   EXPORT MetricsLevel3 := '~hpccsystems::covid19::file::public::metrics::Level3.flat';
+
+  // Metrics Evolution Files
+  EXPORT MetricsEvolLevel0 := '~hpccsystems::covid19::file::public::metricsevol::Level0.flat';
+  EXPORT MetricsEvolLevel1 := '~hpccsystems::covid19::file::public::metricsevol::Level1.flat';
+  EXPORT MetricsEvolLevel2 := '~hpccsystems::covid19::file::public::metricsevol::Level2.flat';
+  EXPORT MetricsEvolLevel3 := '~hpccsystems::covid19::file::public::metricsevol::Level3.flat';
 END;
