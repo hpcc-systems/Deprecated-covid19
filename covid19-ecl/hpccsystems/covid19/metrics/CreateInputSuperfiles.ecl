@@ -4,7 +4,7 @@ IMPORT $.Paths;
 // Create the superfiles for all three levels
 Std.File.CreateSuperFile(Paths.InputLevel1, , TRUE);
 Std.File.CreateSuperFile(Paths.InputLevel2, , TRUE);
-Std.File.CreateSuperFile(Paths.InputLevel2, , TRUE);
+Std.File.CreateSuperFile(Paths.InputLevel3, , TRUE);
 Std.File.ClearSuperFile(Paths.InputLevel1);
 Std.File.ClearSuperFile(Paths.InputLevel2);
 Std.File.ClearSuperFile(Paths.InputLevel3);
