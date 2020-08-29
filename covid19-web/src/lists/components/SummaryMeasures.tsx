@@ -8,6 +8,8 @@ interface SummaryMeasuresProps {
 }
 
 const SummaryMeasures = (props: SummaryMeasuresProps) => {
+
+
     const renderCommaFormattedValue= (value: any) => {
         if (value) {
             return Math.trunc(value).toLocaleString()
@@ -74,7 +76,6 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
         return (
         <Layout>
 
-
             <Row>
                 <Col span={12}>
                     <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Summary Statistics and
@@ -138,7 +139,6 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                     </Card>
                 </Col>
                 <Col span={12} style={{paddingLeft: 25}}>
-
                     <Row>
                         <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>
                             {'Weekly Metrics ' + props.summaryData.period_string}
@@ -151,6 +151,8 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                 </Col>
 
             </Row>
+
+
 
         </Layout>
     );
