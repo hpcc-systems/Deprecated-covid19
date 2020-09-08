@@ -34,8 +34,14 @@ END;
 thingsToDo := ORDERED
 
     (
+
+      PARALLEL(
         KUtils.genInstanceID;
-        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles_v2' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN'),
+        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles_v2' , 'RUN')
+        );
+
+        RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
         RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');
