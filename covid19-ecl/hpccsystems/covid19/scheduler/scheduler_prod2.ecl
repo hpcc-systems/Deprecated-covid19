@@ -35,10 +35,12 @@ thingsToDo := ORDERED
 
     (
         KUtils.genInstanceID;
-        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles_v2' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
-        RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');            
+        RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_query_location_map');              
     );
-thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
+// thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
+thingsToDo : WHEN(CRON('30 1,7,13,19 * * *'));
 // thingsToDo;

@@ -152,16 +152,20 @@ EXPORT Utils := MODULE
           RETURN IF(EXISTS(queryResults), publishResults, DATASET([], PublishResultsLayout));
       END;
   
-      EXPORT removeFiles() := FUNCTION
+      EXPORT removeFiles(INTEGER ver = 1) := FUNCTION
         files_list := STD.File.LogicalFileList( );
-        Filenames := files_list( STD.STR.FIND(cluster, 'myroxie') <> 0);
+        Filenames0 := files_list( STD.STR.FIND(cluster, 'myroxie') <> 0);
+        Filenames := IF(ver = 1, Filenames0( REGEXFIND( 'level', name) = FALSE), Filenames0( REGEXFIND( 'level', name) = TRUE));
         RETURN APPLY(Filenames,STD.FILE.DeleteLogicalFile('~'+Filenames.name));
     END;
     
 
      EXPORT deleteQueries( STRING espURL = '',
                             STRING username = '',
-                            STRING userPW = '') := FUNCTION
+                            STRING userPW = '',
+                            INTEGER ver = 1) := FUNCTION
+
+        ver2Queries := ['hpccsystems_covid19_query_location_map'];
         myESPURL := CreateESPURL(espURL);
         auth := CreateAuthHeaderValue(username, userPW);
 
@@ -198,7 +202,9 @@ EXPORT Utils := MODULE
             // STRING rSuspended {XPATH('ClientState/Suspended')};
         END;
 
-        queries2Delete := PROJECT(queryResults, TRANSFORM(ActionLayout , SELF.rQueryID := LEFT.rID));
+        queries2Delete0 := PROJECT(queryResults, TRANSFORM({ActionLayout, STRING queryName} , SELF.rQueryID := LEFT.rID, SELF.Queryname := STD.Str.SplitWords(LEFT.rID, '.')[1]));
+        queries2Delete1 := IF(ver = 1,queries2Delete0(queryName NOT IN ver2Queries), queries2Delete0(queryName IN ver2Queries ));
+        queries2Delete := PROJECT(queries2Delete1 , TRANSFORM(ActionLayout , SELF:= LEFT));
 
         deleteResults := SOAPCALL
             (

@@ -38,7 +38,7 @@ thingsToDo := ORDERED
 
     (
         KUtils.genInstanceID;
-        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles_v1' , 'RUN');
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('CountiesFIPSClean' , 'RUN');
@@ -55,11 +55,12 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_metrics_period');
         RunOrPublishByName('hpccsystems_covid19_query_states_map');
         RunOrPublishByName('hpccsystems_covid19_query_location_metrics');
-        RunOrPublishByName('hpccsystems_covid19_query_location_map');  
+        // RunOrPublishByName('hpccsystems_covid19_query_location_map');  
         // RunOrPublishByName('hpccsystems_covid19_scraped_spray' , 'RUN');
         // RunOrPublishByName('hpccsystems_covid19_scraped_Compare' , 'RUN');
              
     );
 
-thingsToDo : WHEN(CRON('45 8,23 * * *'));
+// thingsToDo : WHEN(CRON('45 8,23 * * *'));
+thingsToDo : WHEN(CRON('30 6,12,18,23 * * *'));
 // thingsToDo;
