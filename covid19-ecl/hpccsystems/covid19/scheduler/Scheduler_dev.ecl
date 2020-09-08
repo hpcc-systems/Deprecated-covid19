@@ -3,6 +3,8 @@ IMPORT $.Utils.KafkaUtils AS KUtils;
 IMPORT $.Utils.SOAPUtils AS SUtils;
 
 //ActionType: RUN: Run Thor Job; PUBLISH: Publish Roxie Query
+
+guid := STD.Date.Today() + '' + STD.Date.CurrentTime(True) : STORED('guid');
 RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     ast := ASSERT(ActionType = 'RUN' OR ActionType = 'PUBLISH', 'WARNING: ActionType not exists', FAIL);
     
@@ -24,16 +26,23 @@ RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     // Logging
     logStartAction := Std.System.Log.AddWorkunitInformation(Std.Date.SecondsToString(Std.Date.CurrentSeconds()) + ': running ' + wuJobName);
     // Kafka message
-    guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
+    // guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
     sendMsg := KUtils.sendMsg(wuid := wuid, dataflowid := kutils.DataflowId_v1, instanceid := guid, msg := 'Test Cluster: Sending message with instanceid ' + guid );   
     RETURN SEQUENTIAL(ast, logStartAction, sendMsg);
 
 END;
 
+// schedulerMsg := FUNCTION
+//     // guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
+//     sendMsg := KUtils.sendMsg(wuid := WORKUNIT, dataflowid := kutils.DataflowId_v1, instanceid := guid, msg := 'Test Cluster: Scheduler sending message with instanceid ' + guid );   
+//     RETURN sendMsg;
+// END;
+
 thingsToDo := ORDERED
 
     (
-        KUtils.genInstanceID;
+        // KUtils.genInstanceID;
+        KUtils.sendMsg(wuid := WORKUNIT, dataflowid := kutils.DataflowId_v1, instanceid := guid, msg := 'Test Cluster: Scheduler sending message with instanceid ' + guid );   
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('global_metrics', 'RUN');
