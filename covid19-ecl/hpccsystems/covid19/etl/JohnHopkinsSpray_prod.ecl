@@ -65,6 +65,6 @@ ACTIONS := IF(EXISTS(newFiles),
                         STEP2,
                         step3
                       ),
-            OUTPUT('No Incoming Files'));
+            ASSERT(COUNT(newFiles)>0, 'No Incoming Files'));
 
 ACTIONS;
