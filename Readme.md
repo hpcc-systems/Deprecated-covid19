@@ -1,5 +1,7 @@
 ![Intro](/docs/images/readme/intro.png)
-
+<p align="center">
+https://covid19.hpccsystems.com
+</p>
 
 # HPCC Systems Covid 19 Tracker
 
@@ -8,6 +10,9 @@ An open data lake solution for research and collaboration to track and report th
 This system was built around a Production Data Lake Architecture (see [Data Lake Whitepaper](https://hpccsystems.com/End_to_End_Data_Lake_Management_Whitepaper)) allowing incremental value extraction, easy incorporation of new data sources, and rapid transition to production.
 
 The goal of the project is to provide unique insights into the state and progress of the pandemic for each reporting location.  This system is for the benefit of researchers, health workers, government agencies, and the general public.  Data is presented in a balanced, digestable form, allowing individuals sufficient information and context to make reasonable decisions, rather than relying on news sources that are often sensationalized or politicised.  It includes a "Hot Spots" module that identifies locations (e.g. Countries, States, Regions, Counties) that are experiencing the worst outbreaks at the current time.  This could potentially aid in triage for various health organizations around the world.
+
+With user-friendly interface and informative infection indicators, HPCC Systems Covid-19 Tracker is released to the public https://covid19.hpccsystems.com.
+
 
 # Background
 
@@ -25,12 +30,46 @@ By following changes in R, we can quickly see how the infection is responding to
 
 # Causal Model
 
-We use an evolving model of the cause and effect relationships between observed and unobserved (latent) variables to inform the definition and interpretation of metrics.  This model lets us visualize the ways in which measurements are confounded by hidden variables, and possible ways to de-confound the meanings.
+We use an evolving model of the cause and effect relationships between observed and unobserved (latent) variables to inform the definition and interpretation of metrics. This model lets us visualize the ways in which measurements are confounded by hidden variables, and possible ways to de-confound the meanings.  Judea Pearl [3] has demonstrated that people are extremely good at building causal models.  It may be that the human mind is largely a causality processing machine.  Given any occurrence, we can quickly assess potential causes and downstream effects.  Pearl has further defined an algebra for determining whether causes can be de-confounded, and which variables need to be controlled for in order to effect the de-confounding, given a causal model [4].
 
 ![Causal Model](/docs/images/readme/CausalModel.png)
 <p align="center">
 Causal Model
 </p>
+
+Using the above model, we were able to show, for example, that changes in the rate of growth of reported cases is a reasonable proxy for Social Behavior (i.e. Social Distancing). This let us develop the Social Distance Indicator (SDI) metric, which is described in later sections.
+
+
+# Epidemiological Model
+
+ The system embeds a classical epidemiological model known as SIR [1].  The SIR model predicts the changes in Susceptibility, Infection, and Recovery using a set of differential equations.  This allows us to estimate quantities such as Active Infections, Recovered Infections, Percent Immunity, Time-to-peak, Deaths-at-peak, and Time-to-recovery.
+ 
+ In practice, the SIR model gives us a good estimate of Active versus Recovered infections, but predictive power is limited due to rapidly changing social and societal behaviors.  In animal epidemiology, the growth rate (R) is typically identical to the Basic Reproductive Rate (i.e. R0) of the virus.  In human society, there are both innate and orchestrated responses to a pandemic that cause R to rapidly diverge from R0.  Changes in behavior such as quarantines, social distancing, and enhanced hygiene can quickly dampen the growth rate.  Returning to normal behavior can rapidly increase the rate.  Therefore any predictions of growth must model the expected changes in human behavior, which is beyond the scope of the current system.
+ 
+
+# Data Filtering
+
+In the first iteration of the system, we noticed some unexpected swings in R values.  Upon analysis, it was discovered that many locations will make corrections to their cumulative case and death data retroactively, either due to changes in reporting policy or correction of previous errors.  This sometimes results in cumulative values shrinking, and differential values (e.g. growth) turning negative.  Other times, this results in large numbers of cases that occurred previously being dumped into a single day’s data.  Both situations can badly distort differential growth calculations.  In fact, these adjustments are irrelevant for growth calculations as well as any other calculations that are based on sequential changes (such as the Active Cases calculation) since they are anachronous – not received in the order that they actually occurred.  These adjustments, while detrimental to sequential calculations, are important to cumulative values. 
+
+We therefore added a Smoothing Filter that calculates an alternate time series for Cases and Deaths with most of the effect of these anachronistic changes removed.  This greatly improved the stability and dependability of the sequence dependent metrics, while still allowing use of the original time series for sequence independent metrics.  This filter process is described below under Metric Details.
+
+The Smoothing Filter described above has done a good job of eliminating anachronous data dumps, while having little impact on the natural time series.  If differential values such as R were computed on the raw time series, severe distortions would result.
+
+The charts below show the original time series data as well as the filtered results at two levels -- the county of Bergen, New Jersey, USA, and the state of New Jersey.  “deltaCases” is the difference in Cases from period T-1 to period T.  “deltaDeaths” is the equivalent for Deaths.  “filtNewCases” and “filtNewDeaths” are the adjusted versions of the delta time series based on the Smoothing Filter.
+
+![Smoothing Filter](/docs/images/readme/smoothingfilter_county.png)
+<p align="center">
+Smoothing Filter - County Level
+</p>
+
+Note that the anachronous spike in deaths (red line), and the negative spikes in delta cases (green line) have been effectively removed from the filtered series.  Also note that toward the end of the green line several anamolous spikes have also been attenuated.  Early in the history of deltaDeaths (red line), the series was very noisy, likely the result of sporadic test results arrivals.  This noise was also reduced in the filtered series.
+
+![Smoothing Filter](/docs/images/readme/smoothingfilter_state.png)
+<p align="center">
+Smoothing Filter - State Level
+</p>
+
+The above chart illustrates the filter operating at a higher level (the state of New Jersey).  Note that statewide the Deaths adjustment at 06/25 indicates nearly 1800 one day deaths compared to an average of around 50.  This is effectively filtered out along with several anomalously high and low spikes.
 
 # Infection State
 
@@ -44,13 +83,8 @@ The levels of cR and mR along with some other data, allow us to classify an outb
 
 These define the potential values of the  _Infection State_ at a given location.
 
-# Epidemiological Model
 
- The system embeds a classical epidemiological model known as SIR [1].  The SIR model predicts the changes in Susceptibility, Infection, and Recovery using a set of differential equations.  This allows us to estimate quantities such as Active Infections, Recovered Infections, Percent Immunity, Time-to-peak, Deaths-at-peak, and Time-to-recovery.
- 
- In practice, the SIR model gives us a good estimate of Active versus Recovered infections, but predictive power is limited due to rapidly changing social and societal behaviors.  In animal epidemiology, the growth rate (R) is typically identical to the Basic Reproductive Rate (i.e. R0) of the virus.  In human society, there are both innate and orchestrated responses to a pandemic that cause R to rapidly diverge from R0.  Changes in behavior such as quarantines, social distancing, and enhanced hygiene can quickly dampen the growth rate.  Returning to normal behavior can rapidly increase the rate.  Therefore any predictions of growth must model the expected changes in human behavior, which is beyond the scope of the current system.
- 
-# Other metrics
+# Metrics
 
 Given a reasonable estimate of R, cR, and mR, we can begin to infer some other metrics that further illuminate the nature of the infection.
 Metrics are developed to provide insight into the dynamic state of the infection within a location.  They may illustrate temporal changes as well as contemporaneous relationships within the data.
@@ -85,9 +119,60 @@ The system tracks ebbs and flows in the infection rate to show multiple "surges"
 
 # Commentary
 
-A unique aspect of this system is the ability to produce a daily English commentary reflecting the state of each location.  The commentary combines metrics-based inferences with enough background information to help the reader understand the implications.   For example, here is a commentary describing the state of the World-wide infection for June 18, 2020.
+The metrics above paint a fairly clear picture of the state of the infection in any location at any given time.  Interpreting them, however, requires a detailed understanding of the meaning of each metric and the range of values that it can assume.
 
-_"The World has worsened to a Stabilizing state from a previous state of Stabilized. The infection is slowly increasing (R = 1.18). At this growth rate, new infections and deaths will double every 42 days. This is the 2nd surge in infections, which started on the week of May 28, 2020. With 989,711 new cases and 32,758 new deaths, this is the worst week yet for cases and deaths during this surge. It appears that the level of social distancing is decreasing, which may result in higher levels of infection growth. The Case Fatality Rate (CFR) is estimated as 6.4%. The Short-Term Indicator suggests that the infection is likely to worsen over the course of the next few days."_
+We therefore created an interpretive commentary that describes the state of the infection for each location.  This commentary combines the various metrics with expert qualitative assessment to form as complete a picture as possible, depending on the Infection State.  For example:
+
+“As of Aug 20, 2020, US-FLORIDA has improved to a Recovering state from a previous state of Stabilized. The infection is slowly decreasing (R = 0.81). There are currently 49,270 active cases. New Cases are currently 30,750 per week, down 62% from a peak of 79,920 per week. New Deaths are currently 1,035 per week, down 0% from a peak of 1,035 per week. This is the 4th surge in infections, which started on the week of May 29, 2020. With 1,035 new deaths, this is the worst week so far for deaths during this surge. The Contagion Risk is very high at 49.9%. This is the likelihood of meeting an infected person during one hundred random encounters. It appears that the level of social distancing has increased significantly, resulting in lower levels of infection growth. The Case Fatality Rate (CFR) is estimated as 1.7%. This is much lower than the average CFR of 3.6%. Preliminary estimates suggest that 7% of the population may have been infected and are presumed immune. This is not enough to significantly slow the spread of the virus. This preliminary estimation also implies an Infection Fatality Rate (IFR) of roughly 0.6%. The Short-Term Indicator(STI) suggests that the infection is likely to slow somewhat over the next few days.”
+
+The commentary consists of several sections, each centered on the interpretation of one or more metrics:
+
+- Infection State and Previous state if changed
+- Number of active cases and implications
+- Surge information
+- Contagion Risk and qualitative assessment
+- Social Distancing assessment
+- Medical Conditions
+- Case Fatality Rate
+- Immune Percentage
+- Hot Spots information (if on Hot Spots list)
+- Predictive Indicators
+
+Sections may be omitted if they are not relevant to the current scenario.
+
+# Data Pipeline
+
+Our data pipeline is a One-Stop-Shop scalable solution from seemless data collecting, ingestion, ETL, analytics to governing and monitoring built on top of HPCC Systems.  Each component of the pipeline is running as a job in HPCC Systems cluster. These jobs are scheduled to run automatically once the new incoming data is received without human intervention. Below is an introduction of each component of the pipeline.
+
+- Collection: In our pipeline, the source data is automatically collected by monitoring and pulling the new data  from data source and automatically uploaded to HPCC Systems cluster for Data Ingestion.
+
+- Ingestion: once the data are collected and automatically uploaded for ingestion, the ingestor will automatically search the newly uploaded files and ingested to the system  for ETL. 
+
+- ETL: By transforming, enhancing and cleaning the data, the processed data including Covid19 metrics are  stored in HPCC Systems Data Lake and ready for data scientist and researchers to apply data analytics to extract useful information.
+
+- Analysis: As introduced in the Metrics section, SIR model and Covid-19 indicators are developed in HPCC System for Covid19 analysis and prediction.  The built-in Machine Learning Library of HPCC Systems is a great tool for data scientist and researcher to conduct data analytics and statistic inference as well. It includes but not limited to regression bundles, classification bundles, clustering bundles and Deep Learning bundle as well. 
+
+- Governing/Monitering: The data governing and job monitering is managed by Tombolo, HPCC Systems Data Catalog tool. When job failes, Tombolo will instantly identify the failure and automatcially send email notification to system administrator for the failure. For data governing, the pipeline on HPCC Systems is defined as workflow in Tombolo, as shown in Fig Tombolo COVID-19 Workflow . Each run of the workflow is an instance  and the status of each job is recorded, as show in Fig Tombolo Workflow Instances and Fig Tombolo Instance Detial. If any job failed, it will automatically send an email notification to the adminitrators. 
+
+
+# Data Governing
+
+The main data sources are John Hopkins University (daily cases and deaths), US Census Bureau (US population), UN DESA (World population). The data lake data and the workflow can viewed using HPCC Systems Data Catalog tool Tombolo (version 0.5) at: 
+
+https://tombolo.hpccsystems.com   [please login using CovidTracker/HPCCSystems as the user  name and password]
+
+![Tombolo Intro](/docs/images/readme/tombolo_intro.png)
+<p align="center">
+Tombolo Application
+</p>
+
+A node in the workflow can be selected and double clicked to view the details. The following is an example of the details of a metrics file:
+
+![Tombolo Workflow](/docs/images/readme/tombolo_workflow_v2.png)
+<p align="center">
+Tombolo Workflow
+</p>
+
 
 # User Interface
 
@@ -97,7 +182,6 @@ The user interface provides several ways to navigate:
 
 * _Map View_ shows aspects of the infection through color codings on a map.  The map can be color coded by a number of attributes including Infection State, New Cases, New Deaths, Cases per 100K, Deaths per 100K, Total Cases and Total Deaths. On Map View, users can drilldown to the lowest location as possible. Currently supported Views include World  View, Country View, Province/State View, City/County View.
 
-<!-- ![Map View](/docs/images/readme/map.png) -->
 
 ![Country Map View](/docs/images/readme/map_country.png)
 <p align="center">
@@ -108,14 +192,7 @@ Country Map View
 <p align="center">
 State Map View
 </p>
-<!-- 
-* _Map Detail View_ is shown when you click on a location on the map. The details shows the trending of Infection Rate over time and other advanced metrics. -->
 
-
-<!-- ![Map Detail View](/docs/images/readme/map-detail.png)
-<p align="center">
-Map Detail View
-</p> --> 
 
 * _Stats View_ shows the summary statistics and metrics of each location. The location can be world level, country level, province/state level or city/country level. The statistics include but limited to daily new cases, daily new deaths, cumulative cases and cumulative deaths. It also includes all the metrics introduced in the previous section. The metrics are displayed in a bar chart. 
 
@@ -146,42 +223,21 @@ Trend View – New Cases and New Deaths Trend
 Hotspots View
 </p>
 
-<!-- * _Comparison View_ allows simultaneous viewing of statistics from multiple selected locations of interest.
-![Comparison View](/docs/images/readme/compare.png) -->
 
-# Data Sources
+# Appendix
 
-The main data sources are John Hopkins University (daily cases and deaths), US Census Bureau (US population), UN DESA (World population). The data lake data and the workflow can viewed using HPCC Systems Data Catalog tool Tombolo (version 0.5) at: 
-
-https://tombolo.hpccsystems.com   [please login using CovidTracker/HPCCSystems as the user  name and password]
-
-![Tombolo Intro](/docs/images/readme/tombolo_intro.png)
-<p align="center">
-Tombolo Application
-</p>
-
-A node in the workflow can be selected and double clicked to view the details. The following is an example of the details of a metrics file:
-
-![Tombolo Workflow](/docs/images/readme/tombolo_workflow_v2.png)
-<p align="center">
-Tombolo Workflow
-</p>
-
-# Calculations
-
-The specific calculations used for Metrics are described below:
+Our metrics are based on below assumptions and definitions.
 
 ## Constants
 
-These constants can be changed as better information becomes available.
-- Infection Period(IP) -- The average length of time during which an individual remains infections.  This is currently set to 10 days.
-- Infection Case Ratio(ICR) -- The average ratio of Actual infections to cases.  This is a gross estimate of the ratio of all infections (Asymptomatic, Subclinical, Clinical) to Confirmed Cases.  Although this is treated as a constant for rough estimation, it is known that this number varies over time as well as location, based on testing availability.  This is currently set to 3.0 based on estimates by Penn State [2]
-- Metric Window (MW) -- The number of days over which growth metrics are calculated.  This is currently set to 7.
-- minActiveThreshold -- The minimum fraction of the population with active infections in a location to be considered beyond containment.  This is currently set to 0.0003.
-- hiScaleFactor -- A scaling factor for Heat Index that provides a threshold for the Hot Spots list.  This is calibrated such that Heat Index >= 1.0 identifies locations requiring attention.  This is currently set to 5.0.
+- Infection Period(IP) -- The average length of time during which an individual remains infections. This is currently set to 10 days.
+- Infection Case Ratio(ICR) -- The average ratio of Actual infections to cases. This is a gross estimate of the ratio of all infections (Asymptomatic, Subclinical, Clinical) to Confirmed Cases. Although this is treated as a constant for rough estimation, it is known that this number varies over time as well as location, based on testing availability. This is currently set to 3.0 based on estimates by Penn State [2]
+- Metric Window (MW) -- The number of days over which growth metrics are calculated. This is currently set to 7.
+- minActiveThreshold -- The minimum fraction of the population with active infections in a location to be considered beyond containment. This is currently set to 0.0003.
+- hiScaleFactor -- A scaling factor for Heat Index that provides a threshold for the Hot Spots list. This is calibrated such that Heat Index >= 1.0 identifies locations requiring attention. This is currently set to 5.0.
+
 
 ## Input Statistics
-These statistics are available as input to the metrics.  Each forms a time series.
 
 - Cases -- Cumulative cases for a given location.
 - Deaths -- Cumulative deaths for a given location.
@@ -190,115 +246,105 @@ These statistics are available as input to the metrics.  Each forms a time serie
 - Negative -- Cumulative number of negative tests for a given location.
 - Population -- The number of individuals living in a given location.
 
+
 ## Adjusted Cases and Deaths
-Various locations will occasionally produce anachronous data.  That is, data that is not arriving in correct time sequence.  This typically occurs when there is a change in reporting policy for the location, or when errors were found in the reporting process and corrections are applied retroactively.  In these cases, it is common for large batches of cases or deaths to be suddently dumped into a single days reporting.  Likewise, downward corrections are occasionally seen, that can cause the cumulative values to become non monotonic.  These occurances can dramatically distort resulting metrics, especially those that depend on the difference in cumulative totals among periods, such as growth rate computations.
-To compensate for this, we subject the source data to a smoothing filter.
-This produces a set of alternate inputs that have removed thes spikes and reversals.  These alternate values can then be used to caclutate more consistent differential values.
 
-This filter is applied to the incoming data, both Cases and Deaths.  It limits any daily change to 2.24 * the MW-day moving average of the series, and reconstructs a new adjusted time series based on these limited changes.  A change > 2.24 from weekly midpoint to week end implies a growth rate(R) of 10, which is larger than any expected growth rate, yet often much smaller than would be implied by the anachronous spike.  At the same time, the filter removes any negative changes.
+Various locations will occasionally produce anachronous data. That is, data that is not arriving in correct time sequence. This typically occurs when there is a change in reporting policy for the location, or when errors were found in the reporting process and corrections are applied retroactively. In these cases, it is common for large batches of cases or deaths to be suddenly dumped into a single days reporting. Likewise, downward corrections are occasionally seen, that can cause the cumulative values to become non monotonic. These occurrences can dramatically distort resulting metrics, especially those that depend on the difference in cumulative totals among periods, such as growth rate computations. To compensate for this, we subject the source data to a smoothing filter. This produces a set of alternate inputs that have removed these spikes and reversals. These alternate values can then be used to calculate more consistent differential values.
 
-newCases(T) := MAX(Cases(T) - Cases(T-1), 0);
+This filter is applied to the incoming data, both Cases and Deaths. It limits any daily change to
+between the MW-day moving MIN of the series and 1.25 * the MW-day moving MAX of the series. It then reconstructs a new adjusted time series based on these restricted changes. A change greater than 1.25  from day to day implies a growth rate(R) greater than 10, which is larger than any expected maximum real growth rate, At the same time, the filter removes any negative changes, by bounding the newCases and newDeaths to greater than or equal to zero.
 
-casesMA(T) := SUM(newCases(T-1), newCases(T-2),  ... newCases(T-MW)) / MW;
 
-adjustedNewCases(T) := IF(newCases(T) > 2.24 * casesMA(T), 2.24 * casesMA(T), newCases(T));
+-	newCases(T) = MAX(Cases(T) - Cases(T-1), 0)
+-	casesMax(T) = MAX(newCases(T-MW - 1), newCases(T-MW),  ...  ,newCases(T-1))
+-	casesMin(T) = MIN(newCases(T-MW - 1), newCases(T-MW),  ...  ,newCases(T-1))
+-	adjustedNewCases(T) = IF(newCases(T) > 1.25 * casesMax(T), 1.25 * casesMax(T), IF(newCases(T) < casesMin(T) / 1.25, casesMin / 1.25, newCases(T)))
 
-adjustedCases(T) := SUM(adjustedNewCases(1), adjustedNewCases(2), ... adjustedNewCases(T));
+-	adjustedCases(T) = adjustedNewCases(1) +  adjustedNewCases(2) +  ... adjustedNewCases(T)
 
-newDeaths(T) := MAX(Deaths(T) - Deaths(T-1), 0);
+-	newDeaths(T) = MAX(Deaths(T) - Deaths(T-1), 0)
+-	deathsMax(T) = MAX(newDeaths(T-MW - 1), new Deaths (T-MW),  ...  ,newDeaths(T-1))
+-	deathsMin(T) = MIN(newDeaths (T-MW - 1), newDeaths (T-MW),  ...  ,newDeaths (T-1))
+-	adjustedNewDeaths (T) = IF(newDeaths(T) > 1.25 * deathsMax(T), 1.25 * deathsMax(T), IF(newDeaths(T) < deathsMin(T) / 1.25, deathsMin / 1.25, newDeaths(T)))
+-	adjustedDeaths(T) = adjustedNewDeaths(1) +  adjustedNewDeaths(2) +  ... adjustedNewDeaths(T)
 
-deathsMA(T) := SUM(newDeaths(T-1), newDeaths(T-2),  ... newDeaths(T-MW)) / MW;
-
-adjustedNewDeaths(T) := IF(newDeaths(T) > 2.24 * deathsMA(T), 2.24 * deathsMA(T), 
-
-newDeaths(T));
-
-adjustedDeaths(T) := SUM(adjustedNewDeaths(1), adjustedNewDeaths(2), ... adjustedNewDeaths(T));
 
 ## Metrics
 
-These are calculated based on an MW (e.g. 7) day sliding window.  T refers to the current day, while T-MW refers to MW days previous.
-- cR -- The effective case growth rate.  
+These are calculated based on an MW (e.g. 7) day sliding window. T refers to the current day, while T-MW refers to MW days previous. Note: please see the definition of adjCase from section Adjusted Cases and Deaths.
 
-  cR := POWER(Cases(T) - Cases(T-MW), MW/IP);
-- mR -- The effective mortality growth rate;  
+-	cR -- The effective case growth rate.
+cR = (adjustedCases(T)– adjustedCases(T-MW))^(MW/IP)
 
-  mR := POWER(Deaths(T) - Deaths(T-MW), MW/IP);
-- R -- Estimate of the effective reproductive rate.  This is based on a geometric mean of cR and mR.  Some constraints are placed on the values to reduce the effect of very noisy data.  
+-	mR -- The effective mortality growth rate.
+mR = (adjustedDeaths(T)– adjustedDeaths(T-MW))^(MW/IP)
 
-  R := SQRT(MIN(cR, mR + 1.0) * MIN(mR, cR + 1.0));
+-	R -- Estimate of the effective reproductive rate. This is based on a geometric mean of cR and mR. Some constraints are placed on the values to reduce the effect of very noisy data.
+R = √((MIN(cR,mR + 1.0) * MIN(mR,cR + 1.0)))
 
-- Active -- The estimated number of active (i.e. infectious) cases.  
+-	Active -- The estimated number of active (i.e. infectious) cases.
+Active = adjustedCases(T) - adjustedCases(T-IP)
 
-  Active := adjCases(T) - adjCases(T-MW);
+-	Recovered -- The number of cases that are considered recovered.
+Recovered = Cases - Active - Deaths
 
-- Recovered -- The number of cases that are considered recovered.
+-	ContagionRisk -- The likelihood of encountering at least one infected person during 100 random encounters.
+ContagionRisk = 1 - (1-(Active / Population))^100
 
-  Recovered := Cases - Active - Deaths;
+-	Case Fatality Rate (CFR) -- The likelihood of dying given a positive test result.
+CFR = adjustedCases(T - IP) / adjustedDeaths(T)
 
-- ContagionRisk -- The likelihood of encountering at least one infected person during 100 random encounters.  
+-	Infection Fatality Rate (IFR) -- The likelihood of dying, having acquired an infection. This is a gross approximation assuming a constant ICR.
+IFR = CFR * ICR
 
-  ContagionRisk := 1-(POWER((1-(Active / Population), 100));
-- Case Fatality Rate (CFR) -- The likelihood of dying given a positive test result.
+-	immunePct -- The fraction of the population that has recovered from the infection and are considered immunune.
+immunePct = Recovered * ICR / Population
 
-    CFR := Cases(T-MW) / Deaths(T);
-- Infection Fatality Rate (IFR) -- The likelihood of dying, having acquired an infection.  This is a gross approximation assuming a constant ICR.
+-	Infection State (IState) -- A qualitative metric that models the state of the infection. It will assign one of the following states to the infection within a location: 1) INITIAL, 2)RECOVERED, 3) RECOVERING, 4) STABILIZED, 5) STABILIZING, 6) EMERGING, 7) SPREADING. These are assigned based on a series of cascading predicate tests. The first true predicate assigns the state. 
+ prevState = IF(not EXISTS(Istate(T-1), SetStat(1),
 
-  IFR := CFR * ICR;
+                         IState = MAP(
+                                      R > 1.5 and Active / Population < minActiveThreshold => EMERGING,
+                                      R > 1.5 => SPREADING,
+                                      R > 1.1, STABILIZING,
+                                      R > .9, STABILIZED,
+                                      R > .1 OR Active / population > minActiveThreshold, RECOVERING,
+                                      Cases > 0, RECOVERED,
+                                      INITIAL
+                                    )
 
-- immunePct -- The fraction of the population that has recovered from the infection and are considered immunune.
-
-  immunePct := Recovered * ICR / Population;
-
-- Infection State (IState) -- A qualitative metric that models the state of the infection. It will assign one of the following states to the infection within a location: 1) INITIAL, 2)RECOVERED, 3) RECOVERING, 4) STABILIZED, 5) STABILIZING, 6) EMERGING, 7) SPREADING.  These are assigned based on a series of cascading predicate tests.  The first true predicate assigns the state.
-prevState := IF(not EXISTS(Istate(T-1), SetStat(1)
-
-      IState := MAP(
-        R > 1.5 and Active / Population < minActiveThreshold => EMERGING,
-        R > 1.5 => SPREADING,
-        R > 1.1, STABILIZING,
-        R > .9, STABILIZED,
-        R > .1 OR Active / population > minActiveThreshold, RECOVERING,
-        Cases > 0, RECOVERED,
-        INITIAL);
-
-- HeatIndex(HI) -- A composite metric that takes into account scale, growth rate, social distancing, medical conditions, and Contagion Risk.  This metric is scaled such that values >= 1.0 are considered Hot Spots needing attention.
-
-Heat Index := LOG(Active) * (MIN(cR, mR + 1) + MIN(mR, cR+1) + MI + SDI + ContagionRisk) / hiScaleFactor;
+-	HeatIndex(HI) -- A composite metric that takes into account scale, growth rate, social distancing, medical conditions, and Contagion Risk. This metric is scaled such that values >= 1.0 are considered Hot Spots needing attention.
+Heat Index = LOG(Active) * (MIN(cR, mR + 1) + MIN(mR, cR+1) + MI + SDI + ContagionRisk) / hiScaleFactor
 
 Note: See below for definitions of SDI and MI
+
 
 ## Indicators
 
 Indicators are zero based, with negative numbers indicating negative outcomes, and positive numbers positive outcomes.
 
-- Social Distance Indicator (SDI) -- Based on the ratio of the current cR to the previous cR.  dcR := cR(T) / cR(T-MW);  
 
-  SDI := IF(dcR > 1, 1-dcR, 1 / dcR - 1);.
-- Medical Indicator (MI) -- Based on the ratio of case growth (cR) to mortality growth (mR).  
+-	Social Distance Indicator (SDI) -- Based on the ratio of the current cR to the previous cR. dcR = cR(T) / cR(T-MW)
+SDI = IF(dcR > 1, 1-dcR, 1 / dcR - 1)
 
-  cmRatio := cR / mR;  
-  MI := IF(cmRatio > 1,  cmRatio - 1, 1 - 1 / cmRatio);
-- Short-term Indicator (STI) -- A short term directional predictor (period 2-3 days) of case and death growth.
-  
-  cSTI := newCases(T) / (SUM(newCases(T-MW), mewCases(T-MW+1), ..., newCases(T)) / MW);
-  
-  mSTI := newDeaths(T) / (SUM(newDeaths(T-MW), mewDeaths(T-MW+1), ..., newDeaths(T)) / MW);
-  
-  STI0 := (cSTI + mSTI) / 2;
+-	Medical Indicator (MI) -- Based on the ratio of case growth (cR) to mortality growth (mR).
+cmRatio = cR / mR
+MI = IF(cmRatio > 1, cmRatio - 1, 1 - 1 / cmRatio)
 
-  STI := IF(STI0 > 1, 1-STI0, 1 / STI0 - 1);
+-	Short-term Indicator (STI) -- A short term directional predictor (period 2-3 days)  
+cSTI = adjustedNewCases(T) / ((adjustedNewCases(T-MW) +  adjustedNewCases(T-MW+1) +  ... +  adjustedNewCases(T)) / MW)
+mSTI = adjustedNewDeaths(T) / ((adjustedNewDeaths(T-MW - 1) + adjustedNewDeaths(T-MW)+ ... +newDeaths(T-1)) / MW)
+STI0 = (cSTI + mSTI) / 2
+STI = IF(STI0 > 1, 1-STI0, 1 / STI0 - 1)
 
-- Early Waning Indicator (EWI) -- EWI is a pseudo-predictor.  It uses predictable changes in the ratio of newCases to newDeaths to detect major inflections.  It generates a positive signal when R (as computed above) is likely to transition from above one to below one within one to two weeks.  It generates a negative signal in advance of R transition from below one to greaater than one.  It is not a true predictor in that it detects that the inflection has already occurred, but did not show up in the computed R because of its lagging mR component.
-EWI0 := SDI - MI;
-
-  EWI := IF(SDI < -.2 AND MI > .2, EWI0, IF(SDI > .2 AND MI < -.2, EWI0, 0));
-
+-	Early Warning Indicator (EWI) -- EWI is a pseudo-predictor. It uses predictable changes in the ratio of newCases to newDeaths to detect major inflections. It generates a positive signal when R (as computed above) is likely to transition from above one to below one within one to two weeks. It generates a negative signal in advance of R transition from below one to greater than one. It is not a true predictor in that it detects that the inflection has already occurred, but did not show up in the computed R because of its lagging mR component. 
+EWI0 = SDI - MI
+EWI = IF(SDI < -.2 AND MI > .2, EWI0, IF(SDI > .2 AND MI < -.2, EWI0, 0))
 
 # References
 
-[1] Kermack, W. O., & McKendrick, A. G. (1927). A contribution to the mathematical theory of epidemics. Proceedings of the royal society of london. Series A, Containing papers of a mathematical and physical character, 115(772), 700-721.
-[2] Silverman, J. D., Hupert, N., & Washburne, A. D. Using influenza surveillance networks to estimate state-specific case detection rates and forecast SARS-CoV-2 spread in the United States.
-
-
+[1] Kermack, W. O., & McKendrick, A. G. (1927). A contribution to the mathematical theory of epidemics. Proceedings of the royal society of london. Series A, Containing papers of a mathematical and physical character, 115(772), 700-721.  
+[2] Silverman, J. D., Hupert, N., & Washburne, A. D. Using influenza surveillance networks to estimate state-specific case detection rates and forecast SARS-CoV-2 spread in the United States.  
+[3] Judea Pearl. "Causality: Models, Reasoning, and Inference", Cambridge University Press, 2000, 2008, Kindle edition.  
+[4] Judea Pearl, Madelyn Glymour, Nicholas P. Jewell.  “Causal Inference in Statistics”, John Wiley and Sons, 2016.  
 
