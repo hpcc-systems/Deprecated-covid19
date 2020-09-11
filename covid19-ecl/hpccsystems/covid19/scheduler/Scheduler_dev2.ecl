@@ -37,10 +37,11 @@ thingsToDo := ORDERED
         // KUtils.genInstanceID;
         KUtils.sendMsg(wuid := WORKUNIT, dataflowid := kutils.DataflowId_v2, instanceid := guid, msg := 'Test Cluster: Scheduler sending message with instanceid ' + guid );   
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
+        RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
         RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');            
     );
 
-thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
-// thingsToDo;
+// thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
+thingsToDo;
