@@ -1,6 +1,6 @@
 EXPORT CanadaPopulation := MODULE
 
-    EXPORT filePath := '~hpccsystems::covid19::file::public::Canadapopulation::population.flat';  
+    EXPORT filePath := '~hpccsystems::covid19::file::public::Canadapopulation::v1::population.flat';  
 
 	EXPORT layout := RECORD
         STRING Geography;

@@ -1,6 +1,6 @@
 EXPORT BrazilPopulation := MODULE
 
-  EXPORT filePath := '~hpccsystems::covid19::file::public::brazilpopulation::v1::populatin.flat';  
+  EXPORT filePath := '~hpccsystems::covid19::file::public::brazilpopulation::v1::population.flat';  
                        
 
   EXPORT layout := RECORD
