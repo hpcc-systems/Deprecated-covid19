@@ -162,13 +162,29 @@ L3InputDat0 := PROJECT(L3DatIn, TRANSFORM(inputRec,
                                             SELF.negative := 0));
 // Fixup some bad FIPS mappings in the input data
 inputRec fixupBadLocations(inputRec rec) := TRANSFORM
-  SELF.fips := IF(rec.Country = 'US' AND rec.Level2 = 'MASSACHUSETTS' AND rec.level3 = 'DUKES AND NANTUCKET', '25007', rec.fips);
+  SELF.fips := MAP(rec.Country = 'US' AND rec.Level2 = 'MASSACHUSETTS' AND rec.Level3 = 'DUKES AND NANTUCKET' => '25007',
+                    rec.Country = 'US' AND rec.Level2 = 'NEW YORK' AND rec.Level3 IN ['NEW YORK', 'QUEENS', 'BRONX', 'BROOKLYN', 'STATTEN ISLAND', 'KINGS', 'RICHMOND'] => '36061',
+                    rec.fips);
+  SELF.Level3 := MAP(SELF.fips = '36061' => 'NEW YORK CITY',
+                        rec.Level3);
   SELF := rec;
 END;
 L3InputDat1 := PROJECT(L3InputDat0, fixupBadLocations(LEFT), LOCAL);
+// Roll up the corrections to sum up stats for reassigned locations
+L3InputDat1G := GROUP(SORT(L3InputDat1, Country, Level2, Level3, date), Country, Level2, Level3, date);
+inputRec doRollup(inputRec rec, DATASET(inputRec) recs) := TRANSFORM
+                          SELF.cumCases := SUM(recs, cumCases);
+                          SELF.cumDeaths := SUM(recs, cumDeaths);
+                          SELF.cumHosp := SUM(recs, cumHosp);
+                          SELF.tested := SUM(recs, tested);
+                          SELF.positive := SUM(recs, positive);
+                          SELF.negative := SUM(recs, negative);
+                          SELF := rec;
+END;
+L3InputDat1R := ROLLUP(L3InputDat1G, GROUP, doRollup(LEFT, ROWS(LEFT)));
 
 L3PopData := DATASET(countyPopulationPath, countyPopRecord, THOR);
-L3InputDat2 := JOIN(L3InputDat1, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RECORDOF(LEFT),
+L3InputDat2 := JOIN(L3InputDat1R, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RECORDOF(LEFT),
 																																SELF.population := IF((UNSIGNED)RIGHT.popestimate2019 > 0, (UNSIGNED)RIGHT.popestimate2019, 1),
                                                                 SELF := LEFT),
 																																				LEFT OUTER, LOOKUP);

@@ -21,7 +21,7 @@ L2Stats := DATASET(Paths.StatsLevel2, statsRec, THOR);
 L3Stats := DATASET(Paths.StatsLevel3, statsRec, THOR);
 
 //keyStats0 := TABLE(L2Stats(Level2 = 'RHODE ISLAND' AND Level3 = 'PROVIDENCE' AND date >= 20200701), {Level2, Level3, date, cumCases, cumDeaths, deltaCases := cumCases - prevCases, deltaDeaths := cumDeaths - prevDeaths, filtNewCases := newCases, filtNewDeaths := newDeaths, caseAdjustment, deathsAdjustment, newCases2 := newCases - caseAdjustment, newDeaths2 := newDeaths - deathsAdjustment}, Level3, date);
-keyStats0 := TABLE(L2Stats(Country = 'US' AND Level2 = 'ALABAMA' AND Level3 = ''), {Country, Level2, Level3, date, cumCases, cumDeaths, deltaCases := cumCases - prevCases, filtNewCases := newCases, deltaDeaths := cumDeaths - prevDeaths, filtNewDeaths := newDeaths, caseAdjustment, deathsAdjustment, newCases2 := newCases - caseAdjustment, newDeaths2 := newDeaths - deathsAdjustment}, Level3, date);
+keyStats0 := TABLE(L3Stats(Country = 'US' AND Level2 = 'TEXAS' AND Level3 = 'DALLAS'), {Country, Level2, Level3, date, cumCases, cumDeaths, deltaCases := cumCases - prevCases, filtNewCases := newCases, deltaDeaths := cumDeaths - prevDeaths, filtNewDeaths := newDeaths, caseAdjustment, deathsAdjustment, newCases2 := newCases - caseAdjustment, newDeaths2 := newDeaths - deathsAdjustment}, Level3, date);
 keyStats := SORT(keyStats0, Level3, date);
 OUTPUT(keyStats, ALL, NAMED('keyStats'));
 
