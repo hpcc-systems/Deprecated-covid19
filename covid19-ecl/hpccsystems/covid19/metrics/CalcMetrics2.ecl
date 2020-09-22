@@ -9,7 +9,7 @@ populationRec := Types.populationRec;
 
 EXPORT CalcMetrics2 := MODULE
   SHARED InfectionPeriod := Config.InfectionPeriod;
-  SHARED PeriodDays := Config.PeriodDays;
+  SHARED PeriodDaysDefault := Config.PeriodDays;
   SHARED ScaleFactor := Config.ScaleFactor;  // Lower will give more hot spots.
   SHARED MinActDefault := Config.MinActDefault; // Minimum cases to be considered emerging, by default.
   SHARED MinActPer100k := Config.MinActPer100k; // Minimum active per 100K population to be considered emerging.
@@ -19,7 +19,9 @@ EXPORT CalcMetrics2 := MODULE
 
 
   // Calculate Metrics, given input Stats Data.
-  EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, UNSIGNED minActive = minActDefault, DECIMAL5_3 parentCFR = 0) := FUNCTION
+  EXPORT DATASET(metricsRec) WeeklyMetrics(DATASET(statsRec) stats, UNSIGNED minActive = minActDefault, DECIMAL5_3 parentCFR = 0, periodDaysOverride = 0) := FUNCTION
+    // Allow override of period days for certain uses
+    PeriodDays := IF(periodDaysOverride > 0, periodDaysOverride, PeriodDaysDefault);
     // First add a period to records for each location
     statsGrpd0 := GROUP(stats, location);
     statsGrpd1 := PROJECT(statsGrpd0, TRANSFORM(RECORDOF(LEFT), SELF.period := (COUNTER-1) DIV periodDays + 1, SELF := LEFT));

@@ -14,7 +14,7 @@ metricsEvolRec := Types.metricsEvolRec;
 L1MinSpreadingInfections := 2000;
 L2MinSpreadingInfections := 500;
 L3MinSpreadingInfections := 100;
-
+PeriodDaysOverride := 14;
 
 // Read Stats and produce Metrics
 L0Stats := DATASET(Paths.StatsLevel0, statsRec, THOR);
@@ -34,14 +34,14 @@ OUTPUT(allDates0, NAMED('AllDates'));
 tempRec := {UNSIGNED asOfDate, DATASET(metricsRec) metricsL0, DATASET(metricsRec) metricsL1, DATASET(metricsRec) metricsL2, DATASET(metricsRec) metricsL3,};
 
 tempRec getEvol({UNSIGNED date} datRec) := TRANSFORM
-  L0metr := CalcMetrics.WeeklyMetrics(L0Stats(date <= datRec.date),  L1MinSpreadingInfections, worldCFR);
+  L0metr := CalcMetrics.WeeklyMetrics(L0Stats(date <= datRec.date),  L1MinSpreadingInfections, worldCFR, periodDaysOverride := PeriodDaysOverride);
   SELF.asOfDate := datRec.date;
   SELF.metricsL0 := L0metr(period = 1);
-  L1metr := CalcMetrics.WeeklyMetrics(L1Stats(date <= datRec.date),  L1MinSpreadingInfections, worldCFR);
+  L1metr := CalcMetrics.WeeklyMetrics(L1Stats(date <= datRec.date),  L1MinSpreadingInfections, worldCFR, periodDaysOverride := PeriodDaysOverride);
   SELF.metricsL1 := L1metr(period = 1);
-  L2metr := CalcMetrics.WeeklyMetrics(L2Stats(date <= datRec.date),  L2MinSpreadingInfections, worldCFR);
+  L2metr := CalcMetrics.WeeklyMetrics(L2Stats(date <= datRec.date),  L2MinSpreadingInfections, worldCFR, periodDaysOverride := PeriodDaysOverride);
   SELF.metricsL2 := L2metr(period = 1);
-  L3metr := CalcMetrics.WeeklyMetrics(L3Stats(date <= datRec.date),  L3MinSpreadingInfections, worldCFR);
+  L3metr := CalcMetrics.WeeklyMetrics(L3Stats(date <= datRec.date),  L3MinSpreadingInfections, worldCFR, periodDaysOverride := PeriodDaysOverride);
   SELF.metricsL3 := L3metr(period = 1);
 END;
 
