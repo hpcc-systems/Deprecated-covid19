@@ -149,7 +149,7 @@ L3WorldDatIn := countryData0(country != '' AND country != 'US' AND state != '' A
 L3DatIn := DEDUP(SORT(USDatIn + L3WorldDatIn, country, state, admin2, update_date));
 //OUTPUT(rawDatIn0(update_date = 0), ALL, NAMED('RawBadDate'));
 L3InputDat0 := PROJECT(L3DatIn, TRANSFORM(inputRec,
-                                            SELF.fips := LEFT.fips,
+                                            SELF.fips := (STRING)(INTEGER)LEFT.fips,
                                             SELF.country := CleanSpaces(LEFT.country),
                                             SELF.Level2 := CleanSpaces(LEFT.state),
                                             SELF.Level3 := CleanSpaces(LEFT.admin2),
@@ -183,11 +183,13 @@ inputRec doRollup(inputRec rec, DATASET(inputRec) recs) := TRANSFORM
 END;
 L3InputDat1R := ROLLUP(L3InputDat1G, GROUP, doRollup(LEFT, ROWS(LEFT)));
 
-L3PopData := DATASET(countyPopulationPath, countyPopRecord, THOR);
+L3PopData0 := DATASET(countyPopulationPath, countyPopRecord, THOR);
+// Normalize FIPS codes to integer representation to get rid of leading zeros and spurious '.0'
+L3PopData := PROJECT(L3PopData0, TRANSFORM(RECORDOF(LEFT), SELF.FIPS := (STRING)(INTEGER) LEFT.FIPS, SELF := LEFT));
 L3InputDat2 := JOIN(L3InputDat1R, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RECORDOF(LEFT),
 																																SELF.population := IF((UNSIGNED)RIGHT.popestimate2019 > 0, (UNSIGNED)RIGHT.popestimate2019, 1),
                                                                 SELF := LEFT),
-																																				LEFT OUTER, LOOKUP);
+																																LEFT OUTER, LOOKUP);
 L3InputDat := SORT(L3InputDat2, Country, Level2, Level3, -date);
 
 out3 := OUTPUT(L3InputDat, ,Paths.JHLevel3, Thor, OVERWRITE);
@@ -200,7 +202,7 @@ USStateDatIn := USDatIn0(state != '' AND admin2 = '' AND update_date != 0);
 L2DatIn := SORT(L2WorldDatIn + USStateDatIn, country, state, update_date);
 
 L2InputDat0 := PROJECT(DEDUP(L2DatIn, country, state, update_date), TRANSFORM(inputRec,
-                                            SELF.fips := LEFT.fips,
+                                            SELF.fips := (STRING)(INTEGER)LEFT.fips,
                                             SELF.country := cleanupLocation(LEFT.country),
                                             SELF.Level2 := cleanupLocation(LEFT.state),
                                             SELF.Level3 := '',
