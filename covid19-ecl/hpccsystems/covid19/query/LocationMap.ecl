@@ -44,7 +44,9 @@ MeasuresLayout := RECORD
     REAL8 infection_count,
     REAL8 sti,
     REAL8 ewi,
-    REAL8 contagion_risk
+    REAL8 contagion_risk,
+    REAL8 immune_pct,
+    REAL8 ifr;
 END;
 
 MeasuresSummaryLayout := RECORD
@@ -97,6 +99,8 @@ summary := JOIN(summaryStats, summaryMetrics,
                       SELF.cfr := RIGHT.cfr, 
                       SELF.sti := RIGHT.sti,
                       SELF.ewi := RIGHT.ewi,
+                      SELF.immune_pct := RIGHT.immunePct;
+                      SELF.ifr := RIGHT.ifr;
                       SELF.contagion_risk := RIGHT.contagionRisk,
                       SELF.heat_index := RIGHT.heatIndex,
                       SELF.infection_count := RIGHT.infectionCount,
@@ -153,6 +157,8 @@ list := JOIN(listStats, listMetrics,
                       SELF.cfr := RIGHT.cfr, 
                       SELF.sti := RIGHT.sti,
                       SELF.ewi := RIGHT.ewi,
+                      SELF.immune_pct := RIGHT.immunePct,
+                      SELF.ifr := RIGHT.ifr,
                       SELF.contagion_risk := RIGHT.contagionRisk,
                       SELF.heat_index := RIGHT.heatIndex,
                       SELF.infection_count := RIGHT.infectionCount,

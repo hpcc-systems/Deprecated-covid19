@@ -32,8 +32,11 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
         {"name": "Social Distance Indicator", "value": props.summaryData.sd_indicator},
         {"name": "Medical Indicator", "value": props.summaryData.med_indicator},
         {"name": "Case Fatality Rate", "value": props.summaryData.cfr},
+        {"name": "Infection Fatality Rate", "value": props.summaryData.ifr},
         {"name": "Heat Index", "value": props.summaryData.heat_index},
         {"name": "Short Term Indicator", "value": props.summaryData.sti},
+        {"name": "Early Warning Indicator", "value": props.summaryData.ewi},
+        {"name": "Immune Percent", "value": props.summaryData.immune_pct},
     ];
 
     const chartModel = {
@@ -61,7 +64,9 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                             d === 'Medical Indicator' ? '#7a4e48' :
                                 d === 'Case Fatality Rate' ? '#6dc8ec' :
                                     d === 'Short Term Indicator' ? 'gray':
-                                        '#9867bc'
+                                        d === 'Infection Fatality Rate' ? 'red':
+                                            d === 'Early Warning Indicator' ? 'cyan':
+                                                d === 'Immune Percent' ? 'lightgray': '#9867bc'
         },
         colorField: 'name',
         data: [],
