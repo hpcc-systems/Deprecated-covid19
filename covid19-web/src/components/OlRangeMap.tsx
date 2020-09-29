@@ -14,7 +14,8 @@ import {fromLonLat} from "ol/proj";
 import {defaults as defaultInteractions} from 'ol/interaction.js'
 import OverlayPositioning from "ol/OverlayPositioning";
 import {Button, Select as DropdownSelect, Space} from "antd";
-import {RightCircleFilled, LeftCircleFilled, CaretRightFilled, StepBackwardFilled, StepForwardFilled} from '@ant-design/icons';
+import {RightCircleFilled, LeftCircleFilled, CaretRightFilled, CaretLeftFilled,
+        StepBackwardFilled, StepForwardFilled, PauseCircleFilled} from '@ant-design/icons';
 
 
 interface Props {
@@ -48,6 +49,7 @@ export default function OlRangeMap(props: Props) {
     const popup = useRef<HTMLElement | null>(null);
     const [period, setPeriod, periodRef] = useStateRef ("1");
     const heatMapTypeRef = useRef ("contagion_risk");
+    const [timerOn, setTimerOn, timerOnRef] = useStateRef(false);
     const toolTipHandler = (name: string):string => {
         return "";
     }
@@ -371,13 +373,43 @@ export default function OlRangeMap(props: Props) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    async function pause() {
+       setTimerOn(false);
+    }
+
+    async function forward() {
+        setTimerOn(true);
+        await playPeriods();
+        setTimerOn(false);
+    }
+
+    async function backward() {
+        setTimerOn(true);
+        await playPeriodsReverse();
+        setTimerOn(false);
+    }
+
     async function playPeriods()  {
         let p =periodRef.current.valueOf();
         p--;
         if (props.data.get(p.toString())) {
             setPeriod(p.toString());
             await sleep(1000);
-            await playPeriods();
+            if (timerOnRef.current) {
+                await playPeriods();
+            }
+        }
+    }
+
+    async function playPeriodsReverse()  {
+        let p =periodRef.current.valueOf();
+        p++;
+        if (props.data.get(p.toString())) {
+            setPeriod(p.toString());
+            await sleep(1000);
+            if (timerOnRef.current) {
+                await playPeriodsReverse();
+            }
         }
     }
 
@@ -393,14 +425,16 @@ export default function OlRangeMap(props: Props) {
         <div>
             <div style={{paddingBottom:2}}>
                 <Space>
-                <DropdownSelect value={period} style={{ width: 300}} onChange={(value)=> setPeriod(value)}>
+                <DropdownSelect value={period}  style={{ width: 300}} onChange={(value)=> setPeriod(value)}>
                     {renderPeriodSelectors()}
                 </DropdownSelect>
-                <Button  shape="circle" icon={<LeftCircleFilled/>} onClick={()=> nextPeriod()}/>
-                <Button  shape="circle"  icon={<RightCircleFilled/>} onClick={()=> previousPeriod()}/>
-                <Button  icon={<StepBackwardFilled/>} onClick={()=> startPeriod()}/>
-                <Button  icon={<CaretRightFilled/>} onClick={()=> playPeriods()}/>
-                <Button  icon={<StepForwardFilled/>} onClick={()=> endPeriod()}/>
+                <Button title={"Previous Period"}  disabled={timerOn} shape="circle" icon={<LeftCircleFilled/>} onClick={()=> nextPeriod()}/>
+                <Button title={"Next Period"} disabled={timerOn} shape="circle"  icon={<RightCircleFilled/>} onClick={()=> previousPeriod()}/>
+                <Button title={"First Period"} disabled={timerOn} icon={<StepBackwardFilled/>} onClick={()=> startPeriod()}/>
+                <Button title={"Play Reverse"} disabled={timerOn} icon={<CaretLeftFilled/>} onClick={()=> backward()}/>
+                <Button title={"Play Forward"} disabled={timerOn} icon={<CaretRightFilled/>} onClick={()=> forward()}/>
+                <Button title={"Pause"} disabled={!timerOn} icon={<PauseCircleFilled/>} onClick={()=> pause()}/>
+                <Button title={"Last/Current Period"} disabled={timerOn} icon={<StepForwardFilled/>} onClick={()=> endPeriod()}/>
                 </Space>
             </div>
 

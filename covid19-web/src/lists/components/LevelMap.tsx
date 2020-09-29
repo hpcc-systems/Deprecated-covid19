@@ -56,7 +56,7 @@ const LevelMap = (props: LevelMapProps) => {
             return ""
         }
     }
-    
+
     function rangeMap() {
         if (mapTabKey === "1") {
             return null;
