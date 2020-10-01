@@ -29,6 +29,7 @@ const LevelDetail = () => {
     const scrollLayout = useRef<any | null>(null);
 
 
+
     useEffect(() => {
 
         function toMapData(data: any) {
@@ -140,6 +141,24 @@ const LevelDetail = () => {
         return uuid;
     }
 
+    const getLevelLocations = () => {
+        let locations: any = {"level":0, "level1": "", "level2": "", "level3": "", location: locationUUID()};
+
+        locations["level"] = locationStack.current.length + 1;
+        if (locationStack.current.length >= 1)
+            locations["level1"] = locationStack.current[0];
+        if (locationStack.current.length >= 2)
+            locations["level2"] = locationStack.current[1];
+        if (locationStack.current.length >= 3)
+            locations["level3"] = locationStack.current[2];
+
+        return locations;
+
+    }
+
+
+
+
     return (
         <Layout>
             <div style={{textAlign: "center"}}>
@@ -151,6 +170,7 @@ const LevelDetail = () => {
                 <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
                 <Popover key={'popover_metrics_terms'} title={"Metrics Terms"} content={<MetricsTerms/>}
                          trigger={"click"} ><Button type={"link"} className={"anchor-btn"}>METRICS TERMS</Button></Popover>
+
                 <Button onClick={() => popLocation()} style={{height: 25}} icon={<LeftOutlined/>}
                         shape={"round"} type={"primary"} className={"anchor-btn"}
                         disabled={locationStack.current.length === 0}>{"BACK"}</Button>
@@ -169,7 +189,8 @@ const LevelDetail = () => {
                     <Layout.Content>
                         <div id={"map"}/>
                         <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
-                                  selectHandler={(name) => olSelectHandler(name)} location={locationUUID()}/>
+                                  selectHandler={(name) => olSelectHandler(name)}
+                                  location={locationUUID()} levelLocations={getLevelLocations()}/>
                         <div id={"list"} style={{height: 5}}/>
                         <LevelList data={listData} location={locationUUID()}
                                    selectHandler={(name) => olSelectHandler(name)}/>
@@ -185,6 +206,9 @@ const LevelDetail = () => {
 
                 </Spin>
             </div>
+
+
+
         </Layout>
 
     );

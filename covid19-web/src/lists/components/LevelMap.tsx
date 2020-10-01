@@ -1,7 +1,8 @@
 import React, {useEffect, useRef, useState} from "react";
 import OlMap from "../../components/OlMap";
-import {Button, Layout, Popover, Radio} from "antd";
+import {Button, Layout, Popover, Radio, Tabs} from "antd";
 import Catalog from "../../utils/Catalog";
+import RangeMap from "./RangeMap";
 
 
 function useStateRef(initialValue: any) {
@@ -22,6 +23,7 @@ interface LevelMapProps {
     locationAlias: string;
     selectHandler: (name: string) => void;
     location: string;
+    levelLocations: any;
 }
 
 
@@ -31,6 +33,7 @@ const LevelMap = (props: LevelMapProps) => {
     const listData = useRef(new Map());
     const maxData = useRef<any>([]);
     const [geoFileInfo, setGeoFileInfo] = useState<any>({});
+    const [mapTabKey, setMapTabKey] = useState<string>("1");
 
     useEffect(() => {
         listData.current = props.listData;
@@ -51,6 +54,14 @@ const LevelMap = (props: LevelMapProps) => {
             return makeTooltip(name, row);
         } else {
             return ""
+        }
+    }
+
+    function rangeMap() {
+        if (mapTabKey === "1") {
+            return null;
+        } else {
+            return <RangeMap locations={props.levelLocations} heatMapType={heatMapType}/>;
         }
     }
 
@@ -362,6 +373,8 @@ const LevelMap = (props: LevelMapProps) => {
             return Math.trunc(d).toLocaleString();
         }
 
+
+
         function statsScale(d: number, label: string) {
             return <div style={{width: 250, paddingLeft: 10}}>
                 <table cellPadding={5}>
@@ -408,6 +421,8 @@ const LevelMap = (props: LevelMapProps) => {
         }
 
 
+
+
         switch (heatMapType) {
             case 'cases':
                 return statsScale(maxData.current.cases_max, 'Cases');
@@ -435,8 +450,8 @@ const LevelMap = (props: LevelMapProps) => {
 
             <Layout>
                 <Layout.Content>
-                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:10}}>Interactive Map. Zoom to view more details or click on a location to view details.</div>
 
+                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:5}}>Maps</div>
                     <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
                                  value={heatMapType} buttonStyle="outline" style={{fontSize: 11, fontWeight: "bold"}}>
 
@@ -455,17 +470,29 @@ const LevelMap = (props: LevelMapProps) => {
 
                     <div style={{height: 5}}/>
 
-                    <OlMap toolTipHandler={(name) => olToolTipHandler(name)}
-                           colorHandler={(name) => olColorHandler(name)}
-                           measureHandler={(name) => olMeasureHandler(name)}
-                           selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
-                           zoom={geoFileInfo.zoom}
-                           geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}
-                           selectKeyField={geoFileInfo.selectKeyField}
-                           secondaryGeoFile={geoFileInfo.secondaryFile}
-                           height={'800px'}/>
+                    <Tabs defaultActiveKey="1"  onChange={(key) => setMapTabKey(key)}>
+                        <Tabs.TabPane tab="Interactive Map" key="1">
+                            <div style={{fontSize: 14, fontWeight: 'bold', paddingBottom:7}}>Zoom to view more details or click on a location to view details.</div>
+                            <OlMap toolTipHandler={(name) => olToolTipHandler(name)}
+                                   colorHandler={(name) => olColorHandler(name)}
+                                   measureHandler={(name) => olMeasureHandler(name)}
+                                   selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
+                                   zoom={geoFileInfo.zoom}
+                                   geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}
+                                   selectKeyField={geoFileInfo.selectKeyField}
+                                   secondaryGeoFile={geoFileInfo.secondaryFile}
+                                   height={'800px'}/>
+
+                        </Tabs.TabPane>
+
+                        <Tabs.TabPane tab="Progressive Map" key="2">
+                            {rangeMap()}
+                        </Tabs.TabPane>
+                    </Tabs>
 
                 </Layout.Content>
+
+
             </Layout>
 
         )
