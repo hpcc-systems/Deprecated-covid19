@@ -13,9 +13,18 @@ import Overlay from "ol/Overlay";
 import {fromLonLat} from "ol/proj";
 import {defaults as defaultInteractions} from 'ol/interaction.js'
 import OverlayPositioning from "ol/OverlayPositioning";
-import {Button, Select as DropdownSelect, Space} from "antd";
-import {RightCircleFilled, LeftCircleFilled, CaretRightFilled, CaretLeftFilled,
-        StepBackwardFilled, StepForwardFilled, PauseCircleFilled} from '@ant-design/icons';
+import {Button, Card, Col, Modal, Row, Select as DropdownSelect, Space, Statistic} from "antd";
+import {
+    CaretLeftFilled,
+    CaretRightFilled,
+    LeftCircleFilled,
+    PauseCircleFilled,
+    RightCircleFilled,
+    StepBackwardFilled,
+    StepForwardFilled
+} from '@ant-design/icons';
+import {Bar} from "@antv/g2plot";
+import {Chart} from "./Chart";
 
 
 interface Props {
@@ -50,6 +59,9 @@ export default function OlRangeMap(props: Props) {
     const [period, setPeriod, periodRef] = useStateRef ("1");
     const heatMapTypeRef = useRef ("contagion_risk");
     const [timerOn, setTimerOn, timerOnRef] = useStateRef(false);
+    const [selectedLocation, setSelectedLocation] = useState<any>("");
+    const [dialogVisible, setDialogVisible] = useState(false);
+
     const toolTipHandler = (name: string):string => {
         return "";
     }
@@ -119,7 +131,11 @@ export default function OlRangeMap(props: Props) {
     }
 
     const selectHandler = (name: string) => {
+        if (!name) return '';
 
+
+        setSelectedLocation(name.toUpperCase());
+        setDialogVisible(true);
     }
 
     const measureHandler =  (name: string) => {
@@ -314,7 +330,7 @@ export default function OlRangeMap(props: Props) {
                     map.current.forEachFeatureAtPixel(evt.pixel,
                         function (feature, l) {
                             if (l === layer) {
-                                selectHandler(feature.get(props.selectKeyField));
+                                selectHandler(feature.get(props.colorKeyField));
                                 return [feature, layer];
                             }
                         });
@@ -343,6 +359,59 @@ export default function OlRangeMap(props: Props) {
             })
         }
     })
+
+    const chartModelData = (selectedData: any) => {
+
+        return [{"name": "Contagion Risk", "value": selectedData.contagion_risk},
+        {"name": "Infection Rate (R)", "value": selectedData.r},
+        {"name": "Cases Rate (cR)", "value": selectedData.cr},
+        {"name": "Mortality Rate (mR)", "value": selectedData.mr},
+        {"name": "Social Distance Indicator", "value": selectedData.sd_indicator},
+        {"name": "Medical Indicator", "value": selectedData.med_indicator},
+        {"name": "Case Fatality Rate", "value": selectedData.cfr},
+        {"name": "Infection Fatality Rate", "value": selectedData.ifr},
+        {"name": "Heat Index", "value": selectedData.heat_index},
+        {"name": "Short Term Indicator", "value": selectedData.sti},
+        {"name": "Early Warning Indicator", "value": selectedData.ewi},
+        {"name": "Immune Percent", "value": selectedData.immune_pct/100.0},
+    ]};
+
+    const chartModel = {
+        padding: 'auto',
+        title: {
+            text: 'Weekly Metrics',
+            visible: false,
+            style: {fontSize: 14, fontWeight: 'bold'}
+        },
+        forceFit: true,
+        label: {
+            visible: true,
+            style: {
+                strokeColor: 'black'
+            }
+        },
+        xAxis: {
+            title: {visible: false}
+        },
+        color: (d: any) => {
+            return d === 'Infection Rate (R)' ? '#6394f8' :
+                d === 'Case Rate (cR)' ? '#61d9aa' :
+                    d === 'Mortality Rate (mR)' ? '#657797' :
+                        d === 'Social Distance Indicator' ? '#f6c02c' :
+                            d === 'Medical Indicator' ? '#7a4e48' :
+                                d === 'Case Fatality Rate' ? '#6dc8ec' :
+                                    d === 'Short Term Indicator' ? 'gray':
+                                        d === 'Infection Fatality Rate' ? 'red':
+                                            d === 'Early Warning Indicator' ? 'cyan':
+                                                d === 'Immune Percent' ? 'lightgray': '#9867bc'
+        },
+        colorField: 'name',
+        data: [],
+        xField: 'value',
+        yField: 'name',
+
+    }
+
 
     const renderPeriodSelectors = () => {
         const items: any = [];
@@ -421,9 +490,32 @@ export default function OlRangeMap(props: Props) {
        setPeriod("1");
     }
 
+    const renderCommaFormattedValue= (value: any) => {
+        if (value) {
+            return Math.trunc(value).toLocaleString()
+        } else {
+            return ''
+        }
+    }
+    const renderOptionalValue= (value: any) => {
+        if (value) {
+            return '  (' + value + ' per 100K)'
+        } else {
+            return ''
+        }
+    }
+
+    let selectedData = [];
+    if (props.data.get(period)) {
+        selectedData = props.data.get(period).map.get(selectedLocation);
+    }
+    if (!selectedData) {
+        selectedData = [];
+    }
+
     return (
         <div>
-            <div style={{paddingBottom:2}}>
+            <div style={{paddingBottom:4}}>
                 <Space>
                 <DropdownSelect value={period}  style={{ width: 300}} onChange={(value)=> setPeriod(value)}>
                     {renderPeriodSelectors()}
@@ -440,6 +532,73 @@ export default function OlRangeMap(props: Props) {
 
             <div style={{background: '#2b2b2b', height: props.height}} ref={(e) => (container.current = e)}/>
             <div ref={(e) => (popup.current = e)}/>
+
+            <Modal visible={dialogVisible} width={1200}  onCancel={() => setDialogVisible(false)} onOk={()=>setDialogVisible(false)}
+                   title={selectedData.location}
+                   footer={[
+                       <Button title={"Previous Period"}  disabled={timerOn} shape="circle" icon={<LeftCircleFilled/>} onClick={()=> nextPeriod()}/>,
+                       <Button title={"Next Period"} disabled={timerOn} shape="circle"  icon={<RightCircleFilled/>} onClick={()=> previousPeriod()}/>,
+                       <Button title={"First Period"} disabled={timerOn} icon={<StepBackwardFilled/>} onClick={()=> startPeriod()}/>,
+                       <Button title={"Play Reverse"} disabled={timerOn} icon={<CaretLeftFilled/>} onClick={()=> backward()}/>,
+                       <Button title={"Play Forward"} disabled={timerOn} icon={<CaretRightFilled/>} onClick={()=> forward()}/>,
+                       <Button title={"Pause"} disabled={!timerOn} icon={<PauseCircleFilled/>} onClick={()=> pause()}/>,
+                       <Button title={"Last/Current Period"} disabled={timerOn} icon={<StepForwardFilled/>} onClick={()=> endPeriod()}/>
+                   ]} >
+                <div style={{width:"100%"}}>
+                    <Row>
+                        <Col span={12}>
+                            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Summary Statistics and
+                                Metrics
+                            </div>
+                            <Card>
+                                <Statistic
+                                    title={"Total Cases" }
+                                    value={renderCommaFormattedValue(selectedData.cases) + renderOptionalValue(selectedData.cases_per_capita)}
+                                    valueStyle={{color: '#cf1322'}}
+                                />
+                            </Card>
+                            <Card>
+                                <Statistic
+                                    title={"Total Deaths"}
+                                    value={renderCommaFormattedValue(selectedData.deaths) + renderOptionalValue(selectedData.deaths_per_capita)}
+                                    valueStyle={{color: '#cf1322'}}
+                                />
+                            </Card>
+
+                            <Card>
+                                <Statistic
+                                    title={"Weekly New Cases - " + selectedData.period_string}
+                                    value={selectedData.period_new_cases}
+                                    valueStyle={{color: '#cf1322'}}
+                                />
+                            </Card>
+                            <Card>
+                                <Statistic
+                                    title={"Weekly New Deaths - " + selectedData.period_string}
+                                    value={selectedData.period_new_deaths}
+                                    valueStyle={{color: '#cf1322'}}
+                                />
+                            </Card>
+                        </Col>
+                        <Col span={12} style={{paddingLeft: 25}}>
+                            <Row>
+                                <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>
+                                    {'Weekly Metrics ' + selectedData.period_string}
+                                </div>
+                                <Col span={24}>
+                                    <Chart chart={Bar} config={chartModel} data={chartModelData(selectedData)}/>
+                                </Col>
+                            </Row>
+
+                        </Col>
+
+                    </Row>
+
+
+
+                </div>
+
+            </Modal>
         </div>
 
     )

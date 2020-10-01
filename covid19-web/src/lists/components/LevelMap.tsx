@@ -3,6 +3,10 @@ import OlMap from "../../components/OlMap";
 import {Button, Layout, Popover, Radio, Tabs} from "antd";
 import Catalog from "../../utils/Catalog";
 import RangeMap from "./RangeMap";
+import LevelList from "./LevelList";
+import SummaryMeasures from "./SummaryMeasures";
+import PeriodTrends from "./PeriodTrends";
+import HotList from "./HotList";
 
 
 function useStateRef(initialValue: any) {
@@ -18,28 +22,34 @@ function useStateRef(initialValue: any) {
 }
 
 interface LevelMapProps {
+    mapData: any;
     listData: any;
     maxData: any;
     locationAlias: string;
     selectHandler: (name: string) => void;
     location: string;
     levelLocations: any;
+    summaryData: any;
+    locationUUID: string;
+    periodTrendsColumnData: any;
+    periodTrendsGroupedData: any;
+    hotListData: any;
 }
 
 
 const LevelMap = (props: LevelMapProps) => {
 
     const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('contagion_risk');
-    const listData = useRef(new Map());
+    const mapData = useRef(new Map());
     const maxData = useRef<any>([]);
     const [geoFileInfo, setGeoFileInfo] = useState<any>({});
     const [mapTabKey, setMapTabKey] = useState<string>("1");
 
     useEffect(() => {
-        listData.current = props.listData;
+        mapData.current = props.mapData;
         maxData.current = props.maxData;
         // setHeatMapType('contagion_risk');
-    }, [props.listData, props.maxData]);
+    }, [props.mapData, props.maxData]);
 
     useEffect(() => {
         setGeoFileInfo(Catalog.maps.get(props.location));
@@ -48,7 +58,7 @@ const LevelMap = (props: LevelMapProps) => {
     }, [props.location]);
 
     function olToolTipHandler(name: string) {
-        let row = listData.current.get(name.toUpperCase());
+        let row = mapData.current.get(name.toUpperCase());
         //console.log('Tooltip Location ' + name.toUpperCase() + ' row - ' + row);
         if (row) {
             return makeTooltip(name, row);
@@ -68,7 +78,7 @@ const LevelMap = (props: LevelMapProps) => {
     function olColorHandler(name: string) {
         if (!name) return '#a1a080';
 
-        let row = listData.current.get(name.toUpperCase());
+        let row = mapData.current.get(name.toUpperCase());
 
         //console.log('Color location: ' + name.toUpperCase() +  ' -- ' + name.length + '  ' + row);
 
@@ -131,7 +141,7 @@ const LevelMap = (props: LevelMapProps) => {
     function olMeasureHandler(name: string) {
         if (!name) return '';
 
-        let row = listData.current.get(name.toUpperCase());
+        let row = mapData.current.get(name.toUpperCase());
 
         //console.log('Color location: ' + name.toUpperCase() +  ' -- ' + name.length + '  ' + row);
 
@@ -160,7 +170,8 @@ const LevelMap = (props: LevelMapProps) => {
                     d = Math.round(row.contagion_risk * 100) +
                         "%";
                     break;
-                case 'status': d= '' //d = row.status ;
+                case 'status':
+                    d = '' //d = row.status ;
             }
 
             return d;
@@ -242,7 +253,7 @@ const LevelMap = (props: LevelMapProps) => {
             "Total Deaths:" +
             "</td>" +
             "<td><b>" +
-            formatNumber(row.deaths) + '  (' + row.deaths_per_capita + ' per 100K)'+
+            formatNumber(row.deaths) + '  (' + row.deaths_per_capita + ' per 100K)' +
             "</b></td>" +
             "</tr>" +
             "<tr>" +
@@ -250,7 +261,7 @@ const LevelMap = (props: LevelMapProps) => {
             + "Please click on the map for more details" +
             "</td>" +
             "</tr>" +
-        "</table></div>"
+            "</table></div>"
     }
 
 
@@ -374,7 +385,6 @@ const LevelMap = (props: LevelMapProps) => {
         }
 
 
-
         function statsScale(d: number, label: string) {
             return <div style={{width: 250, paddingLeft: 10}}>
                 <table cellPadding={5}>
@@ -421,8 +431,6 @@ const LevelMap = (props: LevelMapProps) => {
         }
 
 
-
-
         switch (heatMapType) {
             case 'cases':
                 return statsScale(maxData.current.cases_max, 'Cases');
@@ -443,15 +451,15 @@ const LevelMap = (props: LevelMapProps) => {
         }
     }
 
-    //console.log(props.location + ' - ' + props.listData.size );
+    //console.log(props.location + ' - ' + props.mapData.size );
 
-    if (listData.current.size !== 0 && geoFileInfo) {
+    if (mapData.current.size !== 0 && geoFileInfo) {
         return (
 
             <Layout>
                 <Layout.Content>
 
-                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom:5}}>Maps</div>
+                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 5}}>Maps</div>
                     <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
                                  value={heatMapType} buttonStyle="outline" style={{fontSize: 11, fontWeight: "bold"}}>
 
@@ -470,19 +478,32 @@ const LevelMap = (props: LevelMapProps) => {
 
                     <div style={{height: 5}}/>
 
-                    <Tabs defaultActiveKey="1"  onChange={(key) => setMapTabKey(key)}>
+                    <Tabs defaultActiveKey="1" onChange={(key) => setMapTabKey(key)}>
                         <Tabs.TabPane tab="Interactive Map" key="1">
-                            <div style={{fontSize: 14, fontWeight: 'bold', paddingBottom:7}}>Zoom to view more details or click on a location to view details.</div>
+                            <div style={{fontSize: 14, fontWeight: 'bold', paddingBottom: 7}}>Zoom to view more details
+                                or click on a location to view details.
+                            </div>
                             <OlMap toolTipHandler={(name) => olToolTipHandler(name)}
                                    colorHandler={(name) => olColorHandler(name)}
                                    measureHandler={(name) => olMeasureHandler(name)}
                                    selectHandler={(name) => olSelectHandler(name)} geoFile={geoFileInfo.file}
                                    zoom={geoFileInfo.zoom}
-                                   geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long} colorKeyField={geoFileInfo.colorKeyField}
+                                   geoLat={geoFileInfo.lat} geoLong={geoFileInfo.long}
+                                   colorKeyField={geoFileInfo.colorKeyField}
                                    selectKeyField={geoFileInfo.selectKeyField}
                                    secondaryGeoFile={geoFileInfo.secondaryFile}
                                    height={'800px'}/>
+                            <div id={"list"} style={{height: 5}}/>
+                            <LevelList data={props.listData} location={props.locationUUID}
+                                       selectHandler={(name) => olSelectHandler(name)}/>
+                            <div id={"summary_stats"} style={{height: 10}}/>
+                            <SummaryMeasures summaryData={props.summaryData}/>
 
+                            <div id={"trends"} style={{height: 10}}/>
+                            <PeriodTrends columnData={props.periodTrendsColumnData}
+                                          groupedData={props.periodTrendsGroupedData}/>
+                            <div id={"hot_spots"} style={{height: 10}}/>
+                            <HotList data={props.hotListData} selectHandler={(name) => olSelectHandler(name)}/>
                         </Tabs.TabPane>
 
                         <Tabs.TabPane tab="Progressive Map" key="2">
@@ -497,7 +518,19 @@ const LevelMap = (props: LevelMapProps) => {
 
         )
     } else {
-        return null;
+        return (<Layout>
+                <div id={"list"} style={{height: 5}}/>
+                <LevelList data={props.listData} location={props.locationUUID}
+                           selectHandler={(name) => olSelectHandler(name)}/>
+                <div id={"summary_stats"} style={{height: 10}}/>
+                <SummaryMeasures summaryData={props.summaryData}/>
+
+                <div id={"trends"} style={{height: 10}}/>
+                <PeriodTrends columnData={props.periodTrendsColumnData} groupedData={props.periodTrendsGroupedData}/>
+                <div id={"hot_spots"} style={{height: 10}}/>
+                <HotList data={props.hotListData} selectHandler={(name) => olSelectHandler(name)}/>
+            </Layout>
+        );
     }
 }
 

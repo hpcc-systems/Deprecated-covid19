@@ -2,11 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {Button, Descriptions, Layout, Popover, Spin} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
-import SummaryMeasures from "./components/SummaryMeasures";
-import HotList from "./components/HotList";
-import PeriodTrends from "./components/PeriodTrends";
 import {LeftOutlined} from '@ant-design/icons';
-import LevelList from "./components/LevelList";
 import MetricsTerms from "./MetricsTerms";
 
 
@@ -188,19 +184,23 @@ const LevelDetail = () => {
 
                     <Layout.Content>
                         <div id={"map"}/>
-                        <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
+                        <LevelMap mapData={mapData} maxData={maxData} locationAlias={''} listData={listData}
+                                  summaryData={summaryData} hotListData={hotListData}
+                                  locationUUID={locationUUID()}
+                                  periodTrendsColumnData={periodTrendsColumnData}
+                                  periodTrendsGroupedData={periodTrendsGroupedData}
                                   selectHandler={(name) => olSelectHandler(name)}
                                   location={locationUUID()} levelLocations={getLevelLocations()}/>
-                        <div id={"list"} style={{height: 5}}/>
-                        <LevelList data={listData} location={locationUUID()}
-                                   selectHandler={(name) => olSelectHandler(name)}/>
-                        <div id={"summary_stats"} style={{height: 10}}/>
-                        <SummaryMeasures summaryData={summaryData}/>
+                        {/*<div id={"list"} style={{height: 5}}/>*/}
+                        {/*<LevelList data={mapData} location={locationUUID()}*/}
+                        {/*           selectHandler={(name) => olSelectHandler(name)}/>*/}
+                        {/*<div id={"summary_stats"} style={{height: 10}}/>*/}
+                        {/*<SummaryMeasures summaryData={summaryData}/>*/}
 
-                        <div id={"trends"} style={{height: 10}}/>
-                        <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
-                        <div id={"hot_spots"} style={{height: 10}}/>
-                        <HotList data={hotListData} selectHandler={(name) => olSelectHandler(name)}/>
+                        {/*<div id={"trends"} style={{height: 10}}/>*/}
+                        {/*<PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>*/}
+                        {/*<div id={"hot_spots"} style={{height: 10}}/>*/}
+                        {/*<HotList data={hotListData} selectHandler={(name) => olSelectHandler(name)}/>*/}
                     </Layout.Content>
 
 

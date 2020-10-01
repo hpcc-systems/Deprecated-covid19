@@ -30,12 +30,14 @@ MeasuresLayout := RECORD
     REAL8 status_numb,
     REAL8 infection_count,
     REAL8 sti,
-    REAL8 ewi,
     REAL8 contagion_risk,
     REAL8 cases_per_capita,
     REAL8 deaths_per_capita,
     REAL8 cases,
-    REAL8 deaths
+    REAL8 deaths,
+    REAL8 immune_pct,
+    REAL8 ifr;
+    REAL8 ewi
 END;
 
 
@@ -45,7 +47,7 @@ metrics := CASE(_level , 1 => measures.level1_metrics,
                              2 => measures.level2_metrics(country=_level1_location), 
                              3 => measures.level3_metrics(country=_level1_location and level2 = _level2_location), 
                              DATASET([], RECORDOF(measures.level3_metrics)));
-rangeMetrics := PROJECT(metrics,          
+rangeMetrics := PROJECT(metrics (endDate > 20200318),          
                             TRANSFORM (MeasuresLayout,
                                         SELF.period := LEFT.period,                    
                                         SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
@@ -69,6 +71,8 @@ rangeMetrics := PROJECT(metrics,
                                         SELF.cfr := LEFT.cfr, 
                                         SELF.sti := LEFT.sti,
                                         SELF.ewi := LEFT.ewi,
+                                        SELF.immune_pct := LEFT.immunePct,
+                                        SELF.ifr := LEFT.ifr,
                                         SELF.contagion_risk := LEFT.contagionRisk,
                                         SELF.heat_index := LEFT.heatIndex,
                                         SELF.infection_count := LEFT.infectionCount,
