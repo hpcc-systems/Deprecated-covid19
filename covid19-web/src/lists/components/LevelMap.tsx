@@ -479,7 +479,7 @@ const LevelMap = (props: LevelMapProps) => {
                     <div style={{height: 5}}/>
 
                     <Tabs defaultActiveKey="1" onChange={(key) => setMapTabKey(key)}>
-                        <Tabs.TabPane tab="Interactive Map" key="1">
+                        <Tabs.TabPane tab="Current" key="1">
                             <div style={{fontSize: 14, fontWeight: 'bold', paddingBottom: 7}}>Zoom to view more details
                                 or click on a location to view details.
                             </div>
@@ -506,7 +506,7 @@ const LevelMap = (props: LevelMapProps) => {
                             <HotList data={props.hotListData} selectHandler={(name) => olSelectHandler(name)}/>
                         </Tabs.TabPane>
 
-                        <Tabs.TabPane tab="Progressive Map" key="2">
+                        <Tabs.TabPane tab="Historical" key="2">
                             {rangeMap()}
                         </Tabs.TabPane>
                     </Tabs>
