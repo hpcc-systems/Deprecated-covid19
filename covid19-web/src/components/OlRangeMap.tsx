@@ -564,7 +564,20 @@ export default function OlRangeMap(props: Props) {
                                     valueStyle={{color: '#cf1322'}}
                                 />
                             </Card>
-
+                            <Card>
+                                <Statistic
+                                    title={"Active Cases"}
+                                    value={selectedData.period_active}
+                                    valueStyle={{color: '#cf1322'}}
+                                />
+                            </Card>
+                            <Card>
+                                <Statistic
+                                    title={"Recovered Cases"}
+                                    value={selectedData.period_recovered}
+                                    valueStyle={{color: '#cf1322'}}
+                                />
+                            </Card>
                             <Card>
                                 <Statistic
                                     title={"Weekly New Cases - " + selectedData.period_string}
