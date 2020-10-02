@@ -3,7 +3,8 @@ IMPORT $.Utils.KafkaUtils AS KUtils;
 IMPORT $.Utils.SOAPUtils AS SUtils;
 
 //ActionType: RUN: Run Thor Job; PUBLISH: Publish Roxie Query
-guid := STD.Date.Today() + '' + STD.Date.CurrentTime(True) : STORED('guid');
+// guid := STD.Date.Today() + '' + STD.Date.CurrentTime(True) : STORED('guid');
+// guid := STD.Date.Today() + '' + STD.Date.CurrentTime(True) : GLOBAL;
 RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     ast := ASSERT(ActionType = 'RUN' OR ActionType = 'PUBLISH', 'WARNING: ActionType not exists', FAIL);
     
@@ -21,26 +22,29 @@ RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
             username := SUtils.username,
             userPW := SUtils.userPW
         );
-    wuid := IF(ActionType = 'RUN', runResults[1].wuid, publishResults[1].wuid);
+    wuid := IF(wuJobName = 'scheduler', WORKUNIT, IF(ActionType = 'RUN', runResults[1].wuid, publishResults[1].wuid));
     // Logging
     logStartAction := Std.System.Log.AddWorkunitInformation(Std.Date.SecondsToString(Std.Date.CurrentSeconds()) + ': running ' + wuJobName);
     // Kafka message
-    // guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
+    guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
     sendMsg := KUtils.sendMsg(broker := kutils.prod_defaultbroker, appid := kutils.prod_applicationId, wuid := wuid, dataflowid := kutils.prod_DataflowId_v2, instanceid := guid, msg := 'Prod Cluster: Sending message with instanceid ' + guid );   
     RETURN SEQUENTIAL(ast, logStartAction, sendMsg);
 
 END;
 
 
-thingsToDo := ORDERED
-
+thingsToDo := 
+ORDERED
+// SEQUENTIAL
     (
 
-      PARALLEL(
-        KUtils.sendMsg(broker := kutils.prod_defaultbroker, appid := kutils.prod_applicationId, wuid := WORKUNIT, dataflowid := kutils.prod_DataflowId_v2, instanceid := guid, msg := 'Prod Cluster: Scheduler sending message with instanceid ' + guid );   
-        RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN'),
-        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles_v2' , 'RUN')
-        );
+    //   PARALLEL(
+        KUtils.genInstanceID;
+        RunOrPublishByName('scheduler' , 'RUN');
+        // KUtils.sendMsg(broker := kutils.prod_defaultbroker, appid := kutils.prod_applicationId, wuid := WORKUNIT, dataflowid := kutils.prod_DataflowId_v2, instanceid := guid, msg := 'Prod Cluster: Scheduler sending message with instanceid ' + guid );   
+        RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles_v2' , 'RUN');
+        // );
 
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
@@ -49,5 +53,6 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_location_map');              
     );
 // thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
-thingsToDo : WHEN(CRON('30 1,7,13,19 * * *'));
+thingsToDo : WHEN(CRON('30 7,10 * * *'));
+// thingsToDo : WHEN(CRON('* * * * *'));
 // thingsToDo;
