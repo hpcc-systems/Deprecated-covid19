@@ -87,6 +87,13 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                     </div>
                     <Card>
                         <Statistic
+                            title={"Infection State"}
+                            value={props.summaryData.status}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                    <Card>
+                        <Statistic
                             title={"New Cases on " + props.summaryData.date_string}
                             value={props.summaryData.new_cases}
                             valueStyle={{color: '#cf1322'}}
