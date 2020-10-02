@@ -337,7 +337,7 @@ export default function OlRangeMap(props: Props) {
                         });
                 }
             });
-            
+
             setPeriod("1");
 
             map.current.updateSize();

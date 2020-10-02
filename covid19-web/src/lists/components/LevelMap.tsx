@@ -42,7 +42,6 @@ const LevelMap = (props: LevelMapProps) => {
     const mapData = useRef(new Map());
     const maxData = useRef<any>([]);
     const [geoFileInfo, setGeoFileInfo] = useState<any>({});
-    const [mapTabKey, setMapTabKey] = useState<string>("1");
 
     useEffect(() => {
         mapData.current = props.mapData;
@@ -66,13 +65,13 @@ const LevelMap = (props: LevelMapProps) => {
         }
     }
 
-    function rangeMap() {
-        if (mapTabKey === "1") {
-            return null;
-        } else {
-            return <RangeMap locations={props.levelLocations} heatMapType={heatMapType}/>;
-        }
-    }
+    // function rangeMap() {
+    //     if (mapTabKey === "1") {
+    //         return null;
+    //     } else {
+    //         return <RangeMap locations={props.levelLocations} heatMapType={heatMapType}/>;
+    //     }
+    // }
 
     function olColorHandler(name: string) {
         if (!name) return '#a1a080';
@@ -477,7 +476,7 @@ const LevelMap = (props: LevelMapProps) => {
 
                     <div style={{height: 5}}/>
 
-                    <Tabs defaultActiveKey="1" onChange={(key) => setMapTabKey(key)}>
+                    <Tabs defaultActiveKey="1">
                         <Tabs.TabPane tab="Current" key="1">
                             <div style={{fontSize: 14, fontWeight: 'bold', paddingBottom: 7}}>Zoom to view more details
                                 or click on a location to view details.

@@ -48,6 +48,35 @@ const LevelDetail = () => {
             return mapData;
         }
 
+        function getLocationUUID() {
+            let uuid: string = 'THE WORLD';
+            if (locationStack.current.length >= 1) {
+                uuid += '-' + locationStack.current[0];
+            }
+            if (locationStack.current.length >= 2) {
+                uuid += '-' + locationStack.current[1];
+            }
+            if (locationStack.current.length >= 3) {
+                uuid += '-' + locationStack.current[2];
+            }
+            return uuid;
+        }
+
+        const getLevelLocations = () => {
+            let locations: any = {"level":0, "level1": "", "level2": "", "level3": "", location: getLocationUUID()};
+
+            locations["level"] = locationStack.current.length + 1;
+            if (locationStack.current.length >= 1)
+                locations["level1"] = locationStack.current[0];
+            if (locationStack.current.length >= 2)
+                locations["level2"] = locationStack.current[1];
+            if (locationStack.current.length >= 3)
+                locations["level3"] = locationStack.current[2];
+
+            return locations;
+
+        }
+
         setLoading(true);
 
         setSummaryData([]);
@@ -130,34 +159,7 @@ const LevelDetail = () => {
         pushLocation(name);
     }
 
-    function getLocationUUID() {
-        let uuid: string = 'THE WORLD';
-        if (locationStack.current.length >= 1) {
-            uuid += '-' + locationStack.current[0];
-        }
-        if (locationStack.current.length >= 2) {
-            uuid += '-' + locationStack.current[1];
-        }
-        if (locationStack.current.length >= 3) {
-            uuid += '-' + locationStack.current[2];
-        }
-        return uuid;
-    }
 
-    const getLevelLocations = () => {
-        let locations: any = {"level":0, "level1": "", "level2": "", "level3": "", location: getLocationUUID()};
-
-        locations["level"] = locationStack.current.length + 1;
-        if (locationStack.current.length >= 1)
-            locations["level1"] = locationStack.current[0];
-        if (locationStack.current.length >= 2)
-            locations["level2"] = locationStack.current[1];
-        if (locationStack.current.length >= 3)
-            locations["level3"] = locationStack.current[2];
-
-        return locations;
-
-    }
 
 
 
