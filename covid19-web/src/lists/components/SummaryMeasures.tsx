@@ -75,8 +75,6 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
     }
 
-
-
         return (
         <Layout style={{width:"100%"}}>
 

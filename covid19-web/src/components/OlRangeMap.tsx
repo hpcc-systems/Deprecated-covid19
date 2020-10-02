@@ -337,6 +337,8 @@ export default function OlRangeMap(props: Props) {
                         });
                 }
             });
+            
+            setPeriod("1");
 
             map.current.updateSize();
             map.current.render();
@@ -358,7 +360,9 @@ export default function OlRangeMap(props: Props) {
             map.current.getLayers().forEach((layer) => {
                 (layer as VectorLayer).getSource().changed();
             })
+            map.current.updateSize();
         }
+
     })
 
     const chartModelData = (selectedData: any) => {
@@ -545,19 +549,19 @@ export default function OlRangeMap(props: Props) {
                    onOk={() => setDialogVisible(false)}
                    title={selectedData.location}
                    footer={[
-                       <Button title={"Previous Period"} disabled={timerOn} shape="circle" icon={<LeftCircleFilled/>}
+                       <Button key={"Previous Period"} title={"Previous Period"} disabled={timerOn} shape="circle" icon={<LeftCircleFilled/>}
                                onClick={() => nextPeriod()}/>,
-                       <Button title={"Next Period"} disabled={timerOn} shape="circle" icon={<RightCircleFilled/>}
+                       <Button key={"Next Period"} title={"Next Period"} disabled={timerOn} shape="circle" icon={<RightCircleFilled/>}
                                onClick={() => previousPeriod()}/>,
-                       <Button title={"First Period"} disabled={timerOn} icon={<StepBackwardFilled/>}
+                       <Button key={"First Period"} title={"First Period"} disabled={timerOn} icon={<StepBackwardFilled/>}
                                onClick={() => startPeriod()}/>,
-                       <Button title={"Play Reverse"} disabled={timerOn} icon={<CaretLeftFilled/>}
+                       <Button key={"Play Reverse"} title={"Play Reverse"} disabled={timerOn} icon={<CaretLeftFilled/>}
                                onClick={() => backward()}/>,
-                       <Button title={"Play Forward"} disabled={timerOn} icon={<CaretRightFilled/>}
+                       <Button key={"Play Forward"}  title={"Play Forward"} disabled={timerOn} icon={<CaretRightFilled/>}
                                onClick={() => forward()}/>,
-                       <Button title={"Pause"} disabled={!timerOn} icon={<PauseCircleFilled/>}
+                       <Button key={"Pause"} title={"Pause"} disabled={!timerOn} icon={<PauseCircleFilled/>}
                                onClick={() => pause()}/>,
-                       <Button title={"Last/Current Period"} disabled={timerOn} icon={<StepForwardFilled/>}
+                       <Button key={"Last/Current Period"} title={"Last/Current Period"} disabled={timerOn} icon={<StepForwardFilled/>}
                                onClick={() => endPeriod()}/>
                    ]}>
                 <div style={{width: "100%"}}>

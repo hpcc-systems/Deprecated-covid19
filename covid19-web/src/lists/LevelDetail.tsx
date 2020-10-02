@@ -21,6 +21,8 @@ const LevelDetail = () => {
     const [periodTrendsGroupedData, setPeriodTrendsGroupedData] = useState<any>([]);
     const [hotListData, setHotListData] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [locationUUID, setLocationUUID] = useState<string>('');
+    const [levelLocations, setLevelLocations] = useState<any>({});
 
     const scrollLayout = useRef<any | null>(null);
 
@@ -96,7 +98,12 @@ const LevelDetail = () => {
 
             setHotListData(query.current.getData('hot_list'));
 
+            setLocationUUID(getLocationUUID());
+            setLevelLocations(getLevelLocations());
+
             setLoading(false);
+
+
 
         })
 
@@ -123,7 +130,7 @@ const LevelDetail = () => {
         pushLocation(name);
     }
 
-    function locationUUID() {
+    function getLocationUUID() {
         let uuid: string = 'THE WORLD';
         if (locationStack.current.length >= 1) {
             uuid += '-' + locationStack.current[0];
@@ -138,7 +145,7 @@ const LevelDetail = () => {
     }
 
     const getLevelLocations = () => {
-        let locations: any = {"level":0, "level1": "", "level2": "", "level3": "", location: locationUUID()};
+        let locations: any = {"level":0, "level1": "", "level2": "", "level3": "", location: getLocationUUID()};
 
         locations["level"] = locationStack.current.length + 1;
         if (locationStack.current.length >= 1)
@@ -175,7 +182,7 @@ const LevelDetail = () => {
                 <Spin spinning={loading} delay={250}>
 
 
-                    <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID()}</div>
+                    <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID}</div>
 
                     <Descriptions size="small" column={1} bordered>
                         <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
@@ -186,21 +193,11 @@ const LevelDetail = () => {
                         <div id={"map"}/>
                         <LevelMap mapData={mapData} maxData={maxData} locationAlias={''} listData={listData}
                                   summaryData={summaryData} hotListData={hotListData}
-                                  locationUUID={locationUUID()}
+                                  locationUUID={locationUUID}
                                   periodTrendsColumnData={periodTrendsColumnData}
                                   periodTrendsGroupedData={periodTrendsGroupedData}
                                   selectHandler={(name) => olSelectHandler(name)}
-                                  location={locationUUID()} levelLocations={getLevelLocations()}/>
-                        {/*<div id={"list"} style={{height: 5}}/>*/}
-                        {/*<LevelList data={mapData} location={locationUUID()}*/}
-                        {/*           selectHandler={(name) => olSelectHandler(name)}/>*/}
-                        {/*<div id={"summary_stats"} style={{height: 10}}/>*/}
-                        {/*<SummaryMeasures summaryData={summaryData}/>*/}
-
-                        {/*<div id={"trends"} style={{height: 10}}/>*/}
-                        {/*<PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>*/}
-                        {/*<div id={"hot_spots"} style={{height: 10}}/>*/}
-                        {/*<HotList data={hotListData} selectHandler={(name) => olSelectHandler(name)}/>*/}
+                                  levelLocations={levelLocations}/>
                     </Layout.Content>
 
 

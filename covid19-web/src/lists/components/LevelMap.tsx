@@ -27,7 +27,6 @@ interface LevelMapProps {
     maxData: any;
     locationAlias: string;
     selectHandler: (name: string) => void;
-    location: string;
     levelLocations: any;
     summaryData: any;
     locationUUID: string;
@@ -52,10 +51,10 @@ const LevelMap = (props: LevelMapProps) => {
     }, [props.mapData, props.maxData]);
 
     useEffect(() => {
-        setGeoFileInfo(Catalog.maps.get(props.location));
+        setGeoFileInfo(Catalog.maps.get(props.locationUUID));
 
-        console.log('Location change ' + props.location);
-    }, [props.location]);
+        console.log('Location change ' + props.locationUUID);
+    }, [props.locationUUID]);
 
     function olToolTipHandler(name: string) {
         let row = mapData.current.get(name.toUpperCase());
@@ -507,7 +506,8 @@ const LevelMap = (props: LevelMapProps) => {
                         </Tabs.TabPane>
 
                         <Tabs.TabPane tab="Historical" key="2">
-                            {rangeMap()}
+                            {/*{rangeMap()}*/}
+                            <RangeMap locations={props.levelLocations} heatMapType={heatMapType}/>
                         </Tabs.TabPane>
                     </Tabs>
 
