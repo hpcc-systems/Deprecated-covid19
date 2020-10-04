@@ -361,6 +361,7 @@ export default function OlRangeMap(props: Props) {
                 (layer as VectorLayer).getSource().changed();
             })
             map.current.updateSize();
+            map.current.render();
         }
 
     })
@@ -532,9 +533,9 @@ export default function OlRangeMap(props: Props) {
                             onClick={() => previousPeriod()}/>
                     <Button title={"First Period"} disabled={timerOn} icon={<StepBackwardFilled/>}
                             onClick={() => startPeriod()}/>
-                    <Button title={"Play Reverse"} disabled={timerOn} icon={<CaretLeftFilled/>}
+                    <Button title={"Play Reverse"} disabled={timerOn || (period === (props.data.size).toString())} icon={<CaretLeftFilled/>}
                             onClick={() => backward()}/>
-                    <Button title={"Play Forward"} disabled={timerOn} icon={<CaretRightFilled/>}
+                    <Button title={"Play Forward"} disabled={timerOn || (period === "1")} icon={<CaretRightFilled/>}
                             onClick={() => forward()}/>
                     <Button title={"Pause"} disabled={!timerOn} icon={<PauseCircleFilled/>} onClick={() => pause()}/>
                     <Button title={"Last/Current Period"} disabled={timerOn} icon={<StepForwardFilled/>}
@@ -555,9 +556,9 @@ export default function OlRangeMap(props: Props) {
                                onClick={() => previousPeriod()}/>,
                        <Button key={"First Period"} title={"First Period"} disabled={timerOn} icon={<StepBackwardFilled/>}
                                onClick={() => startPeriod()}/>,
-                       <Button key={"Play Reverse"} title={"Play Reverse"} disabled={timerOn} icon={<CaretLeftFilled/>}
+                       <Button key={"Play Reverse"} title={"Play Reverse"} disabled={timerOn || (period === (props.data.size).toString())} icon={<CaretLeftFilled/>}
                                onClick={() => backward()}/>,
-                       <Button key={"Play Forward"}  title={"Play Forward"} disabled={timerOn} icon={<CaretRightFilled/>}
+                       <Button key={"Play Forward"}  title={"Play Forward"} disabled={timerOn || (period === "1")} icon={<CaretRightFilled/>}
                                onClick={() => forward()}/>,
                        <Button key={"Pause"} title={"Pause"} disabled={!timerOn} icon={<PauseCircleFilled/>}
                                onClick={() => pause()}/>,
