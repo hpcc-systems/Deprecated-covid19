@@ -42,7 +42,9 @@ thingsToDo := ORDERED
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
-        RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');            
+        RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');       
+        RunOrPublishByName('hpccsystems_covid19_query_location_map');     
+        RunOrPublishByName('hpccsystems_covid19_query_range_map');   
     );
 
 thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
