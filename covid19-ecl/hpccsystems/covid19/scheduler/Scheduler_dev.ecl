@@ -22,7 +22,7 @@ RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
             username := SUtils.username,
             userPW := SUtils.userPW
         );
-    wuid := IF(ActionType = 'RUN', runResults[1].wuid, publishResults[1].wuid);
+     wuid := IF(wuJobName = 'scheduler', WORKUNIT, IF(ActionType = 'RUN', runResults[1].wuid, publishResults[1].wuid));
     // Logging
     logStartAction := Std.System.Log.AddWorkunitInformation(Std.Date.SecondsToString(Std.Date.CurrentSeconds()) + ': running ' + wuJobName);
     // Kafka message
@@ -41,8 +41,8 @@ END;
 thingsToDo := ORDERED
 
     (
-        // KUtils.genInstanceID;
-        KUtils.sendMsg(wuid := WORKUNIT, dataflowid := kutils.DataflowId_v1, instanceid := guid, msg := 'Test Cluster: Scheduler sending message with instanceid ' + guid );   
+        KUtils.genInstanceID;
+        // KUtils.sendMsg(wuid := WORKUNIT, dataflowid := kutils.DataflowId_v1, instanceid := guid, msg := 'Test Cluster: Scheduler sending message with instanceid ' + guid );   
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('global_metrics', 'RUN');
@@ -63,5 +63,5 @@ thingsToDo := ORDERED
              
     );
 
-thingsToDo : WHEN(CRON('59 0-23/5 * * *'));
-// thingsToDo;
+// thingsToDo : WHEN(CRON('59 0-23/5 * * *'));
+thingsToDo;
