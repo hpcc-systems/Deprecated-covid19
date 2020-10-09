@@ -36,7 +36,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
         {"name": "Heat Index", "value": props.summaryData.heat_index},
         {"name": "Short Term Indicator", "value": props.summaryData.sti},
         {"name": "Early Warning Indicator", "value": props.summaryData.ewi},
-        {"name": "Immune Percent", "value": props.summaryData.immune_pct},
+        {"name": "Immune Percent", "value": props.summaryData.immune_pct/100.0},
     ];
 
     const chartModel = {
@@ -73,19 +73,23 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
         xField: 'value',
         yField: 'name',
 
-
     }
 
-
-
         return (
-        <Layout>
+        <Layout style={{width:"100%"}}>
 
             <Row>
                 <Col span={12}>
                     <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Summary Statistics and
                         Metrics
                     </div>
+                    <Card>
+                        <Statistic
+                            title={"Infection State"}
+                            value={props.summaryData.status}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
                     <Card>
                         <Statistic
                             title={"New Cases on " + props.summaryData.date_string}

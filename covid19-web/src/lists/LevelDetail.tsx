@@ -2,11 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {Button, Descriptions, Layout, Popover, Spin} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
-import SummaryMeasures from "./components/SummaryMeasures";
-import HotList from "./components/HotList";
-import PeriodTrends from "./components/PeriodTrends";
 import {LeftOutlined} from '@ant-design/icons';
-import LevelList from "./components/LevelList";
 import MetricsTerms from "./MetricsTerms";
 
 
@@ -25,6 +21,8 @@ const LevelDetail = () => {
     const [periodTrendsGroupedData, setPeriodTrendsGroupedData] = useState<any>([]);
     const [hotListData, setHotListData] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [locationUUID, setLocationUUID] = useState<string>('');
+    const [levelLocations, setLevelLocations] = useState<any>({});
 
     const scrollLayout = useRef<any | null>(null);
 
@@ -48,6 +46,35 @@ const LevelDetail = () => {
                 })
             }
             return mapData;
+        }
+
+        function getLocationUUID() {
+            let uuid: string = 'THE WORLD';
+            if (locationStack.current.length >= 1) {
+                uuid += '-' + locationStack.current[0];
+            }
+            if (locationStack.current.length >= 2) {
+                uuid += '-' + locationStack.current[1];
+            }
+            if (locationStack.current.length >= 3) {
+                uuid += '-' + locationStack.current[2];
+            }
+            return uuid;
+        }
+
+        const getLevelLocations = () => {
+            let locations: any = {"level":0, "level1": "", "level2": "", "level3": "", location: getLocationUUID()};
+
+            locations["level"] = locationStack.current.length + 1;
+            if (locationStack.current.length >= 1)
+                locations["level1"] = locationStack.current[0];
+            if (locationStack.current.length >= 2)
+                locations["level2"] = locationStack.current[1];
+            if (locationStack.current.length >= 3)
+                locations["level3"] = locationStack.current[2];
+
+            return locations;
+
         }
 
         setLoading(true);
@@ -100,7 +127,12 @@ const LevelDetail = () => {
 
             setHotListData(query.current.getData('hot_list'));
 
+            setLocationUUID(getLocationUUID());
+            setLevelLocations(getLevelLocations());
+
             setLoading(false);
+
+
 
         })
 
@@ -127,34 +159,7 @@ const LevelDetail = () => {
         pushLocation(name);
     }
 
-    function locationUUID() {
-        let uuid: string = 'THE WORLD';
-        if (locationStack.current.length >= 1) {
-            uuid += '-' + locationStack.current[0];
-        }
-        if (locationStack.current.length >= 2) {
-            uuid += '-' + locationStack.current[1];
-        }
-        if (locationStack.current.length >= 3) {
-            uuid += '-' + locationStack.current[2];
-        }
-        return uuid;
-    }
 
-    const getLevelLocations = () => {
-        let locations: any = {"level":0, "level1": "", "level2": "", "level3": "", location: locationUUID()};
-
-        locations["level"] = locationStack.current.length + 1;
-        if (locationStack.current.length >= 1)
-            locations["level1"] = locationStack.current[0];
-        if (locationStack.current.length >= 2)
-            locations["level2"] = locationStack.current[1];
-        if (locationStack.current.length >= 3)
-            locations["level3"] = locationStack.current[2];
-
-        return locations;
-
-    }
 
 
 
@@ -179,7 +184,7 @@ const LevelDetail = () => {
                 <Spin spinning={loading} delay={250}>
 
 
-                    <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID()}</div>
+                    <div id={"commentary"} style={{fontSize: 16, fontWeight: 'bold'}}>{locationUUID}</div>
 
                     <Descriptions size="small" column={1} bordered>
                         <Descriptions.Item>{summaryData.commentary}</Descriptions.Item>
@@ -188,19 +193,13 @@ const LevelDetail = () => {
 
                     <Layout.Content>
                         <div id={"map"}/>
-                        <LevelMap listData={mapData} maxData={maxData} locationAlias={''}
+                        <LevelMap mapData={mapData} maxData={maxData} locationAlias={''} listData={listData}
+                                  summaryData={summaryData} hotListData={hotListData}
+                                  locationUUID={locationUUID}
+                                  periodTrendsColumnData={periodTrendsColumnData}
+                                  periodTrendsGroupedData={periodTrendsGroupedData}
                                   selectHandler={(name) => olSelectHandler(name)}
-                                  location={locationUUID()} levelLocations={getLevelLocations()}/>
-                        <div id={"list"} style={{height: 5}}/>
-                        <LevelList data={listData} location={locationUUID()}
-                                   selectHandler={(name) => olSelectHandler(name)}/>
-                        <div id={"summary_stats"} style={{height: 10}}/>
-                        <SummaryMeasures summaryData={summaryData}/>
-
-                        <div id={"trends"} style={{height: 10}}/>
-                        <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
-                        <div id={"hot_spots"} style={{height: 10}}/>
-                        <HotList data={hotListData} selectHandler={(name) => olSelectHandler(name)}/>
+                                  levelLocations={levelLocations}/>
                     </Layout.Content>
 
 
