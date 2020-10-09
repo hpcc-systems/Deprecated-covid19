@@ -3,8 +3,6 @@ IMPORT $.Utils.KafkaUtils AS KUtils;
 IMPORT $.Utils.SOAPUtils AS SUtils;
 
 //ActionType: RUN: Run Thor Job; PUBLISH: Publish Roxie Query
-// guid := STD.Date.Today() + '' + STD.Date.CurrentTime(True) : GLOBAL;
-// guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
 RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     ast := ASSERT(ActionType = 'RUN' OR ActionType = 'PUBLISH', 'WARNING: ActionType not exists', FAIL);
     
@@ -47,5 +45,5 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_range_map');   
     );
 
-thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
-// thingsToDo;
+// thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
+thingsToDo;
