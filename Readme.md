@@ -286,10 +286,10 @@ between the MW-day moving MIN of the series and 1.25 * the MW-day moving MAX of 
 These are calculated based on an MW (e.g. 7) day sliding window. T refers to the current day, while T-MW refers to MW days previous. Note: please see the definition of adjCase from section Adjusted Cases and Deaths.
 
 -	cR -- The effective case growth rate.
-cR = ((adjustedCases(T)– adjustedCases(T-MW)) / adjustedCases(T-MW) - adjustedCases(T-2MW)))^(IP/MW)
+cR = ((adjustedCases(T)– adjustedCases(T-MW)) / (adjustedCases(T-MW) - adjustedCases(T-2MW)))^(IP/MW)
 
 -	mR -- The effective mortality growth rate.
-mR = ((adjustedDeaths(T)– adjustedDeaths(T-MW)) - adjustedDeaths(T-MW) - adjustedDeaths(T-2MW)))^(IP/MW)
+mR = ((adjustedDeaths(T)– adjustedDeaths(T-MW)) - (adjustedDeaths(T-MW) - adjustedDeaths(T-2MW)))^(IP/MW)
 
 -	R -- Estimate of the effective reproductive rate. This is based on a geometric mean of cR and mR. Some constraints are placed on the values to reduce the effect of very noisy data.
 R = √((MIN(cR,mR + 1.0) * MIN(mR,cR + 1.0)))
