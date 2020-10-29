@@ -6,6 +6,7 @@ import OlRangeMap from "../../components/OlRangeMap";
 interface RangeMapProps {
     locations: any;
     heatMapType: string;
+    selectHandler: (name: string) => void;
 }
 
 const RangeMap = (props: RangeMapProps) => {
@@ -89,7 +90,8 @@ const RangeMap = (props: RangeMapProps) => {
                         selectKeyField={geoFileInfo.selectKeyField}
                         colorKeyField={geoFileInfo.colorKeyField}
                         zoom={geoFileInfo.zoom}
-                        height={'800px'} data={data} heatMapType={props.heatMapType} maxData={maxData}/>
+                        height={'800px'} data={data} heatMapType={props.heatMapType} maxData={maxData}
+                        selectHandler={(name) => props.selectHandler(name)}/>
         </div>
     );
 }

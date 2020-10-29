@@ -118,7 +118,9 @@ const LevelDetail = () => {
 
             let list = query.current.getData('list');
             setListData(list);//The list only shown if there is no map
+            setLevelLocations(getLevelLocations());
             let mapData = toMapData(list);
+
             setMapData(mapData);
 
             setPeriodTrendsColumnData(query.current.getData('period_trend_column'));
@@ -128,7 +130,7 @@ const LevelDetail = () => {
             setHotListData(query.current.getData('hot_list'));
 
             setLocationUUID(getLocationUUID());
-            setLevelLocations(getLevelLocations());
+
 
             setLoading(false);
 
