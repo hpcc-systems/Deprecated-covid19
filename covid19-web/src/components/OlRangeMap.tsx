@@ -39,6 +39,7 @@ interface Props {
     heatMapType: string;
     data: any;
     maxData: any;
+    selectHandler: (name: string) => void;
 }
 
 function useStateRef(initialValue: any) {
@@ -331,6 +332,18 @@ export default function OlRangeMap(props: Props) {
                     map.current.forEachFeatureAtPixel(evt.pixel,
                         function (feature, l) {
                             if (l === layer) {
+                                props.selectHandler(feature.get(props.selectKeyField));
+                                return [feature, layer];
+                            }
+                        });
+                }
+            });
+
+            map.current.on('dblclick', function (evt) {
+                if (map.current !== null) {
+                    map.current.forEachFeatureAtPixel(evt.pixel,
+                        function (feature, l) {
+                            if (l === layer) {
                                 selectHandler(feature.get(props.colorKeyField));
                                 return [feature, layer];
                             }
@@ -549,7 +562,10 @@ export default function OlRangeMap(props: Props) {
             <Modal visible={dialogVisible} width={1200} onCancel={() => setDialogVisible(false)}
                    onOk={() => setDialogVisible(false)}
                    title={selectedData.location}
+
                    footer={[
+                       <Button key={"Go To"} title={"Go To"}
+                               onClick={() => {setDialogVisible(false); props.selectHandler(selectedLocation)}}/>,
                        <Button key={"Previous Period"} title={"Previous Period"} disabled={timerOn} shape="circle" icon={<LeftCircleFilled/>}
                                onClick={() => nextPeriod()}/>,
                        <Button key={"Next Period"} title={"Next Period"} disabled={timerOn} shape="circle" icon={<RightCircleFilled/>}

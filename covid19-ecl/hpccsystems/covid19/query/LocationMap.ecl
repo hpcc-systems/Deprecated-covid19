@@ -194,7 +194,7 @@ periodTrend := CASE(_level , 1 => measures.level0_metrics,
                            4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and level3 = _level3_location));
 
 periodTrendSelect := SORT(CHOOSEN(periodTrend, _trendPeriods),-period);
-OUTPUT(TABLE(periodTrendSelect, {STRING period_string := Std.Date.DateToString(startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(enddate , '%B %e, %Y'), 
+OUTPUT(TABLE(periodTrendSelect, {STRING period_string := Std.Date.DateToString(enddate , '%b %e'), 
                                   r, REAL8 new_cases := newcases, REAL8 new_deaths := newdeaths}),,NAMED('period_trend_column'));       
 
 
@@ -202,7 +202,7 @@ periodTrendGrouped := NORMALIZE(periodTrendSelect, 2, TRANSFORM (
       {STRING period_string,
        STRING measure,
        REAL value},
-       SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
+       SELF.period_string := Std.Date.DateToString(LEFT.enddate , '%b %e'),
        SELF.measure := CASE (COUNTER, 1 => 'New Cases', 2 => 'New Deaths', 'Unknown'),
        SELF.value := CASE (COUNTER, 1 => LEFT.newcases, 2 => LEFT.newdeaths, 0)
 ));

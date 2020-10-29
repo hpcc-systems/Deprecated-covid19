@@ -30,7 +30,7 @@ By following changes in R, we can quickly see how the infection is responding to
 
 # Causal Model
 
-We use an evolving model of the cause and effect relationships between observed and unobserved (latent) variables to inform the definition and interpretation of metrics. This model lets us visualize the ways in which measurements are confounded by hidden variables, and possible ways to de-confound the meanings.  Judea Pearl [3] has demonstrated that people are extremely good at building causal models.  It may be that the human mind is largely a causality processing machine.  Given any occurrence, we can quickly assess potential causes and downstream effects.  Pearl has further defined an algebra for determining whether causes can be de-confounded, and which variables need to be controlled for in order to effect the de-confounding, given a causal model [4].
+We use an evolving model of the cause and effect relationships between observed and unobserved (latent) variables to inform the definition and interpretation of metrics. This model lets us visualize the ways in which measurements are confounded by hidden variables, and possible ways to de-confound the meanings.  Judea Pearl [3] has demonstrated that people are extremely good at building causal models.  It may be that the human mind is largely a causality processing machine.  Given any occurrence, we can quickly assess potential causes and downstream effects.  Pearl has further defined an algebra for determining whether causes can be de-confounded, and which variables need to be controlled for in order to achieve the de-confounding, given a causal model [4].
 
 ![Causal Model](/docs/images/readme/CausalModel.png)
 <p align="center">
@@ -39,6 +39,18 @@ Causal Model
 
 Using the above model, we were able to show, for example, that changes in the rate of growth of reported cases is a reasonable proxy for Social Behavior (i.e. Social Distancing). This let us develop the Social Distance Indicator (SDI) metric, which is described in later sections.
 
+Looking at the diagram above, we see that Social Behavior (e.g. Social Distance) is an unobserved variable.  We can't measure it directly, but perhaps we can observe its effects on other variables.  
+We see that the primary effect of Social Behavior is on the number of Active Infections.  This is also an unobserved variable but it, in turn, effects Reported Cases, an observable variable.  When we look at the myriad influences that drive Reported Cases, it seems unlikely that we can unconfound it enough to use it as a proxy for Social Distance.  Let's look at each of these influences, both direct and indirect, and see if it's possible.  I reorder them to ease the narrative:
+- Original Exposure Count -- If we use the differential version (dCases/dT), then this 
+- Time since first exposure
+- Case Reporing Policy
+- Test Policy and Coverage
+- Weather / Climate
+- Population Density
+- Social Behavior
+- Population age and health
+
+This generally provides barriers to interpretation, as meaning (a causal concept) is confounded by the multiple influences.  Perhaps we eliminate some of those factors 
 
 # Epidemiological Model
 
@@ -274,10 +286,10 @@ between the MW-day moving MIN of the series and 1.25 * the MW-day moving MAX of 
 These are calculated based on an MW (e.g. 7) day sliding window. T refers to the current day, while T-MW refers to MW days previous. Note: please see the definition of adjCase from section Adjusted Cases and Deaths.
 
 -	cR -- The effective case growth rate.
-cR = (adjustedCases(T)– adjustedCases(T-MW))^(MW/IP)
+cR = ((adjustedCases(T)– adjustedCases(T-MW)) / (adjustedCases(T-MW) - adjustedCases(T-2MW)))^(IP/MW)
 
 -	mR -- The effective mortality growth rate.
-mR = (adjustedDeaths(T)– adjustedDeaths(T-MW))^(MW/IP)
+mR = ((adjustedDeaths(T)– adjustedDeaths(T-MW)) - (adjustedDeaths(T-MW) - adjustedDeaths(T-2MW)))^(IP/MW)
 
 -	R -- Estimate of the effective reproductive rate. This is based on a geometric mean of cR and mR. Some constraints are placed on the values to reduce the effect of very noisy data.
 R = √((MIN(cR,mR + 1.0) * MIN(mR,cR + 1.0)))
