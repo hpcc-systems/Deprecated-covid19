@@ -47,7 +47,6 @@ const LevelDetail = () => {
     const scrollLayout = useRef<any | null>(null);
 
     useEffect(() => {
-        //locationStack.current.push("THE WORLD");
         setLocation("THE WORLD");
         setPeriod("1");
     }, [setPeriod])
@@ -125,12 +124,6 @@ const LevelDetail = () => {
             });
 
             //console.log("Map - " + getLocationUUID());
-
-            setMapData(mapData);
-            setMapSummary(mapSummary);
-
-            setGeoFileInfo(Catalog.maps.get(getLocationUUID()));
-
             setMaxData({
                 "casesMax": casesMax,
                 "deathsMax": deathsMax,
@@ -140,13 +133,24 @@ const LevelDetail = () => {
                 "deathsPerCapitaMax": deathsPerCapitaMax
             })
 
+            setMapData(mapData);
+            setMapSummary(mapSummary);
+
+            setGeoFileInfo(Catalog.maps.get(getLocationUUID()));
+
+            console.log("cases max: " + casesMax);
+            console.log("cases max: " + deathsMax);
+            console.log("cases max: " + periodNewCasesMax);
+
+
+
         });
 
     }, [location]);
 
 
     useEffect(() => {
-
+        if (period.length===0) return;
 
         function getLocationUUID() {
             let uuid: string = 'THE WORLD';
