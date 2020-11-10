@@ -84,14 +84,7 @@ const RangeMap = (props: RangeMapProps) => {
     return (
         <div style={{overflow: 'auto'}}>
 
-            <OlRangeMap geoFile={geoFileInfo.file}
-                        geoLat={geoFileInfo.lat}
-                        geoLong={geoFileInfo.long}
-                        selectKeyField={geoFileInfo.selectKeyField}
-                        colorKeyField={geoFileInfo.colorKeyField}
-                        zoom={geoFileInfo.zoom}
-                        height={'800px'} data={data} heatMapType={props.heatMapType} maxData={maxData}
-                        selectHandler={(name) => props.selectHandler(name)}/>
+
         </div>
     );
 }

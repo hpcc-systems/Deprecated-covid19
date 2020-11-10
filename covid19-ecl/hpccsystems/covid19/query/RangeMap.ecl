@@ -12,7 +12,7 @@ latestDate := MAX(measures.level1_stats, date);
 
 MeasuresLayout := RECORD
     STRING location,
-    STRING location_code,                    
+    STRING location_code,                   
     REAL8 period_new_cases,
     REAL8 period_new_deaths,
     REAL8 period_active,
@@ -40,13 +40,17 @@ MeasuresLayout := RECORD
     REAL8 ewi
 END;
 
-
+summaryMetrics := CASE(_level , 1 => measures.level0_metrics, 
+                              2 => measures.level1_metrics(country=_level1_location ), 
+                              3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location),
+                              4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and level3 = _level3_location));
 
 
 metrics := CASE(_level , 1 => measures.level1_metrics, 
                              2 => measures.level2_metrics(country=_level1_location), 
                              3 => measures.level3_metrics(country=_level1_location and level2 = _level2_location), 
                              DATASET([], RECORDOF(measures.level3_metrics)));
+
 rangeMetrics := PROJECT(metrics (endDate > 20200318),          
                             TRANSFORM (MeasuresLayout,
                                         SELF.period := LEFT.period,                    
@@ -87,6 +91,8 @@ rangeMetrics := PROJECT(metrics (endDate > 20200318),
                                         ));
 
 OUTPUT(SORT(rangeMetrics, -period, location),ALL,NAMED('metrics')); 
+
+OUTPUT(SORT(TABLE(summaryMetrics, {period,commentary}), -period),ALL,NAMED('summary'));
 
 
 
