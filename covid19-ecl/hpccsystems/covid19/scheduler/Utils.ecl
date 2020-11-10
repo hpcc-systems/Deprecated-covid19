@@ -165,7 +165,7 @@ EXPORT Utils := MODULE
                             STRING userPW = '',
                             INTEGER ver = 1) := FUNCTION
 
-        ver2Queries := ['hpccsystems_covid19_query_location_map'];
+        ver2Queries := ['hpccsystems_covid19_query_location_map', 'hpccsystems_covid19_query_range_map'];
         myESPURL := CreateESPURL(espURL);
         auth := CreateAuthHeaderValue(username, userPW);
 
