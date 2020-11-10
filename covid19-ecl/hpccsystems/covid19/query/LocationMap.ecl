@@ -3,6 +3,7 @@
 IMPORT hpccsystems.covid19.file.public.LevelMeasures as measures;
 IMPORT STD;
 
+_period := 1:STORED('period');
 _level := 1:STORED('level'); //1-country , 2-state and 3-county
 _level1_location := 'US':STORED('level1_location');
 _level2_location := 'GEORGIA':STORED('level2_location');
@@ -60,10 +61,10 @@ summaryStats := CASE(_level , 1 => measures.level0_stats(date=latestDate),
                               2 => measures.level1_stats(country=_level1_location and date=latestDate), 
                               3 => measures.level2_stats(country=_level1_location and level2 = _level2_location and date=latestDate),
                               4 => measures.level3_stats(country=_level1_location and level2 = _level2_location and level3 = _level3_location and date=latestDate));
-summaryMetrics := CASE(_level , 1 => measures.level0_metrics(period=1), 
-                              2 => measures.level1_metrics(country=_level1_location and period=1), 
-                              3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location and period=1),
-                              4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and level3 = _level3_location and period=1));
+summaryMetrics := CASE(_level , 1 => measures.level0_metrics(period=_period), 
+                              2 => measures.level1_metrics(country=_level1_location and period=_period), 
+                              3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location and period=_period),
+                              4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and level3 = _level3_location and period=_period));
 
 summary := JOIN(summaryStats, summaryMetrics,
           LEFT.location=RIGHT.location,
@@ -111,7 +112,6 @@ summary := JOIN(summaryStats, summaryMetrics,
                       SELF.commentary := RIGHT.commentary                             
                       ));
 OUTPUT(summary,ALL,NAMED('summary'));//This should be exactly one record
-
 
 
 listStats := CASE(_level , 1 => measures.level1_stats(date=latestDate), 
@@ -188,13 +188,13 @@ hotList := listMetrics( heatindex >= 1);
 OUTPUT(TABLE(SORT(hotList, -heatindex), {location, commentary}),,NAMED('hot_list'));  
 
 
-periodTrend := CASE(_level , 1 => measures.level0_metrics, 
-                           2 => measures.level1_metrics(country=_level1_location), 
-                           3 => measures.level2_metrics(country=_level1_location and level2 = _level2_location),
-                           4 => measures.level3_metrics(country=_level1_location and level2 = _level2_location and level3 = _level3_location));
+periodTrend := CASE(_level , 1 => measures.level0_metrics (period >= _period), 
+                           2 => measures.level1_metrics(period >= _period and country=_level1_location), 
+                           3 => measures.level2_metrics(period >= _period and country=_level1_location and level2 = _level2_location),
+                           4 => measures.level3_metrics(period >= _period and country=_level1_location and level2 = _level2_location and level3 = _level3_location));
 
 periodTrendSelect := SORT(CHOOSEN(periodTrend, _trendPeriods),-period);
-OUTPUT(TABLE(periodTrendSelect, {STRING period_string := Std.Date.DateToString(startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(enddate , '%B %e, %Y'), 
+OUTPUT(TABLE(periodTrendSelect, {STRING period_string := Std.Date.DateToString(enddate , '%b %e'), 
                                   r, REAL8 new_cases := newcases, REAL8 new_deaths := newdeaths}),,NAMED('period_trend_column'));       
 
 
@@ -202,7 +202,7 @@ periodTrendGrouped := NORMALIZE(periodTrendSelect, 2, TRANSFORM (
       {STRING period_string,
        STRING measure,
        REAL value},
-       SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
+       SELF.period_string := Std.Date.DateToString(LEFT.enddate , '%b %e'),
        SELF.measure := CASE (COUNTER, 1 => 'New Cases', 2 => 'New Deaths', 'Unknown'),
        SELF.value := CASE (COUNTER, 1 => LEFT.newcases, 2 => LEFT.newdeaths, 0)
 ));

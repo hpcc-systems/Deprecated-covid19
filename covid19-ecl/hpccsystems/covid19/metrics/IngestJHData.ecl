@@ -126,6 +126,17 @@ countryPopRecord := RECORD
 END;
 
 STRING cleanupLocation(STRING location) := Std.Str.CleanSpaces(Std.Str.FindReplace(location, '-', ' '));
+STRING cleanupFIPS(STRING fips) := FUNCTION
+  fips2 := (STRING)(INTEGER)fips;
+  fipsLen := LENGTH(fips2);
+  final := MAP(fipsLen = 5 => fips2,
+              fipsLen = 4 => '0' + fips2,
+              fipsLen = 3 => '00' + fips2,
+              fipsLen = 2 => '000' + fips2,
+              fipsLen = 1 => '0000' + fips2,
+              fips2);
+  return final;
+END;
 
 // Country Data contains some L2 and L3 data as well for certain countries.  Combine that with
 // US County and State data to produce L2 and L3 inputs.
@@ -149,7 +160,7 @@ L3WorldDatIn := countryData0(country != '' AND country != 'US' AND state != '' A
 L3DatIn := DEDUP(SORT(USDatIn + L3WorldDatIn, country, state, admin2, update_date));
 //OUTPUT(rawDatIn0(update_date = 0), ALL, NAMED('RawBadDate'));
 L3InputDat0 := PROJECT(L3DatIn, TRANSFORM(inputRec,
-                                            SELF.fips := (STRING)(INTEGER)LEFT.fips,
+                                            SELF.fips := cleanupFIPS(LEFT.fips),
                                             SELF.country := CleanSpaces(LEFT.country),
                                             SELF.Level2 := CleanSpaces(LEFT.state),
                                             SELF.Level3 := CleanSpaces(LEFT.admin2),
@@ -185,7 +196,7 @@ L3InputDat1R := ROLLUP(L3InputDat1G, GROUP, doRollup(LEFT, ROWS(LEFT)));
 
 L3PopData0 := DATASET(countyPopulationPath, countyPopRecord, THOR);
 // Normalize FIPS codes to integer representation to get rid of leading zeros and spurious '.0'
-L3PopData := PROJECT(L3PopData0, TRANSFORM(RECORDOF(LEFT), SELF.FIPS := (STRING)(INTEGER) LEFT.FIPS, SELF := LEFT));
+L3PopData := PROJECT(L3PopData0, TRANSFORM(RECORDOF(LEFT), SELF.FIPS := cleanupFIPS(LEFT.fips), SELF := LEFT));
 L3InputDat2 := JOIN(L3InputDat1R, L3PopData, LEFT.fips = RIGHT.fips, TRANSFORM(RECORDOF(LEFT),
 																																SELF.population := IF((UNSIGNED)RIGHT.popestimate2019 > 0, (UNSIGNED)RIGHT.popestimate2019, 1),
                                                                 SELF := LEFT),
@@ -202,7 +213,7 @@ USStateDatIn := USDatIn0(state != '' AND admin2 = '' AND update_date != 0);
 L2DatIn := SORT(L2WorldDatIn + USStateDatIn, country, state, update_date);
 
 L2InputDat0 := PROJECT(DEDUP(L2DatIn, country, state, update_date), TRANSFORM(inputRec,
-                                            SELF.fips := (STRING)(INTEGER)LEFT.fips,
+                                            SELF.fips := cleanupFIPS(LEFT.fips),
                                             SELF.country := cleanupLocation(LEFT.country),
                                             SELF.Level2 := cleanupLocation(LEFT.state),
                                             SELF.Level3 := '',

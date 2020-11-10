@@ -75,8 +75,6 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
     }
 
-
-
         return (
         <Layout style={{width:"100%"}}>
 
@@ -85,6 +83,13 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
                     <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Summary Statistics and
                         Metrics
                     </div>
+                    <Card>
+                        <Statistic
+                            title={"Infection State"}
+                            value={props.summaryData.status}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
                     <Card>
                         <Statistic
                             title={"New Cases on " + props.summaryData.date_string}
