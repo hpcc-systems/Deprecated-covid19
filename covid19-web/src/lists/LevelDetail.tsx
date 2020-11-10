@@ -1,5 +1,16 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Descriptions, Layout, Popover, Radio, Select as DropdownSelect, Skeleton, Space, Spin} from "antd";
+import {
+    Button,
+    Descriptions,
+    Layout,
+    Popover,
+    Radio,
+    Select as DropdownSelect,
+    Skeleton,
+    Space,
+    Spin,
+    Tabs
+} from "antd";
 import LevelMap from "./components/LevelMap";
 import {QueryData} from "../components/QueryData";
 import {
@@ -143,14 +154,13 @@ const LevelDetail = () => {
             console.log("cases max: " + periodNewCasesMax);
 
 
-
         });
 
     }, [location]);
 
 
     useEffect(() => {
-        if (period.length===0) return;
+        if (period.length === 0) return;
 
         function getLocationUUID() {
             let uuid: string = 'THE WORLD';
@@ -191,6 +201,7 @@ const LevelDetail = () => {
         //Get the data
         let filters = new Map();
         filters.set('period', period);
+
         filters.set('level', locationStack.current.length + 1);
         if (locationStack.current.length >= 1)
             filters.set('level1_location', locationStack.current[0]);
@@ -257,6 +268,10 @@ const LevelDetail = () => {
             //console.log(key);
             items.push(<DropdownSelect.Option key={key} value={key}>{value.period}</DropdownSelect.Option>);
         });
+
+        if (items.length === 0) {
+            items.push(<DropdownSelect.Option key={"1"} value={"1"}>Loading...</DropdownSelect.Option>);
+        }
         return items;
     }
 
@@ -525,7 +540,7 @@ const LevelDetail = () => {
         if (mapSummary.get(period)) {
             return mapSummary.get(period);
         } else {
-            return "";
+            return "Loading...";
         }
     }
 
@@ -535,7 +550,6 @@ const LevelDetail = () => {
 
                 <Button href={"#commentary"} type={"link"} className={"anchor-btn"}>Commentary/Top</Button>
                 <Button href={"#map"} type={"link"} className={"anchor-btn"}>Map</Button>
-                <Button href={"#list"} type={"link"} className={"anchor-btn"}>List</Button>
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
                 <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
                 <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
@@ -547,11 +561,11 @@ const LevelDetail = () => {
                         shape={"round"} type={"primary"} className={"anchor-btn"}
                         disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
-            <div style={{paddingLeft: 10, paddingBottom: 10,fontSize: 16, fontWeight: 'bold'}}>
+            <div style={{paddingLeft: 10, paddingBottom: 10, fontSize: 16, fontWeight: 'bold'}}>
                 <Space>
                     {locationUUID}
                     <DropdownSelect value={period} style={{width: 300, paddingTop: 2}}
-                                    onChange={(value) => setPeriod(value)}>
+                                    onChange={(value) => setPeriod(value)} loading={loading}>
                         {renderPeriodSelectors()}
                     </DropdownSelect>
                     <Button title={"Previous Period"} disabled={timerOn || (period === (mapData.size).toString())}
@@ -580,37 +594,48 @@ const LevelDetail = () => {
 
                 <Layout.Content>
                     <div id={"map"}/>
+                    <Tabs>
+                        {geoFileInfo &&
+                        <Tabs.TabPane tab={"Map"} key={"Map"}>
+                            <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
+                                         value={heatMapType} buttonStyle="outline"
+                                         style={{fontSize: 11, fontWeight: "bold"}}>
 
-                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 5}}>Map</div>
-                    <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
-                                 value={heatMapType} buttonStyle="outline" style={{fontSize: 11, fontWeight: "bold"}}>
+                                <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
+                                <Radio.Button value={'status'}>Infection State</Radio.Button>
+                                <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
+                                <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
+                                <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>
+                                <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
+                                <Radio.Button value={'cases'}>Cases</Radio.Button>
+                                <Radio.Button value={'deaths'}>Deaths</Radio.Button>
+                                <Popover content={renderScale()} title={renderScaleTitle()}>
+                                    <Button type={"link"}>Legend</Button>
+                                </Popover>
+                            </Radio.Group>
 
-                        <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
-                        <Radio.Button value={'status'}>Infection State</Radio.Button>
-                        <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
-                        <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
-                        <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>
-                        <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
-                        <Radio.Button value={'cases'}>Cases</Radio.Button>
-                        <Radio.Button value={'deaths'}>Deaths</Radio.Button>
-                        <Popover content={renderScale()} title={renderScaleTitle()}>
-                            <Button type={"link"}>Legend</Button>
-                        </Popover>
-                    </Radio.Group>
+                            <div style={{height: 5}}/>
 
-                    <div style={{height: 5}}/>
-                    {geoFileInfo &&
-                    <OlRangeMap geoFile={geoFileInfo.file}
-                                geoLat={geoFileInfo.lat}
-                                geoLong={geoFileInfo.long}
-                                selectKeyField={geoFileInfo.selectKeyField}
-                                colorKeyField={geoFileInfo.colorKeyField}
-                                zoom={geoFileInfo.zoom}
-                                height={'800px'} data={mapData} heatMapType={heatMapType} maxData={maxData}
-                                selectHandler={(name) => selectHandler(name)}
-                                periodHandler={(period) => setPeriod(period)}
-                                period={period}/>
-                    }
+                            <OlRangeMap geoFile={geoFileInfo.file}
+                                        geoLat={geoFileInfo.lat}
+                                        geoLong={geoFileInfo.long}
+                                        selectKeyField={geoFileInfo.selectKeyField}
+                                        colorKeyField={geoFileInfo.colorKeyField}
+                                        zoom={geoFileInfo.zoom}
+                                        height={'800px'} data={mapData} heatMapType={heatMapType} maxData={maxData}
+                                        selectHandler={(name) => selectHandler(name)}
+                                        periodHandler={(period) => setPeriod(period)}
+                                        period={period}/>
+
+                        </Tabs.TabPane>
+                        }
+                        <Tabs.TabPane tab={"Data"} key={"Data"}>
+                            <Skeleton loading={timerOn}>
+                                <LevelList data={listData} location={locationUUID}
+                                           selectHandler={(name) => selectHandler(name)}/>
+                            </Skeleton>
+                        </Tabs.TabPane>
+                    </Tabs>
 
                     <div id={"trends"} style={{height: 10}}/>
                     <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
@@ -619,11 +644,6 @@ const LevelDetail = () => {
                     <div id={"hot_spots"} style={{height: 10}}/>
                     <Skeleton loading={timerOn}>
                         <HotList data={hotListData} selectHandler={(name) => selectHandler(name)}/>
-                    </Skeleton>
-                    <Skeleton loading={timerOn}>
-                        <div id={"list"} style={{height: 0}}/>
-                        <LevelList data={listData} location={locationUUID}
-                                   selectHandler={(name) => selectHandler(name)}/>
                     </Skeleton>
                 </Layout.Content>
 
