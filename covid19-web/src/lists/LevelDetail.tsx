@@ -1,24 +1,15 @@
 import React, {useEffect, useRef, useState} from "react";
-import {
-    Button,
-    Descriptions,
-    Layout,
-    Popover,
-    Radio,
-    Select as DropdownSelect,
-    Skeleton,
-    Space,
-    Spin,
-    Tabs
-} from "antd";
-import LevelMap from "./components/LevelMap";
+import {Button, Layout, Popover, Radio, Select as DropdownSelect, Skeleton, Space, Tabs} from "antd";
 import {QueryData} from "../components/QueryData";
 import {
-    CaretLeftFilled, CaretRightFilled,
+    CaretLeftFilled,
+    CaretRightFilled,
     LeftCircleFilled,
-    LeftOutlined, PauseCircleFilled,
+    LeftOutlined,
+    PauseCircleFilled,
     RightCircleFilled,
-    StepBackwardFilled, StepForwardFilled
+    StepBackwardFilled,
+    StepForwardFilled
 } from '@ant-design/icons';
 import MetricsTerms from "./MetricsTerms";
 import Catalog from "../utils/Catalog";
@@ -49,9 +40,8 @@ const LevelDetail = () => {
     const [hotListData, setHotListData] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [locationUUID, setLocationUUID] = useState<string>('');
-    const [levelLocations, setLevelLocations] = useState<any>({});
     const [geoFileInfo, setGeoFileInfo] = useState<any>({});
-    const [heatMapType, setHeatMapType, heatMapTypeRef] = useStateRef('contagion_risk');
+    const [heatMapType, setHeatMapType] = useState('contagion_risk');
     const [period, setPeriod, periodRef] = useStateRef("");
     const [timerOn, setTimerOn, timerOnRef] = useStateRef(false);
 
@@ -176,20 +166,20 @@ const LevelDetail = () => {
             return uuid;
         }
 
-        const getLevelLocations = () => {
-            let locations: any = {"level": 0, "level1": "", "level2": "", "level3": "", location: getLocationUUID()};
-
-            locations["level"] = locationStack.current.length + 1;
-            if (locationStack.current.length >= 1)
-                locations["level1"] = locationStack.current[0];
-            if (locationStack.current.length >= 2)
-                locations["level2"] = locationStack.current[1];
-            if (locationStack.current.length >= 3)
-                locations["level3"] = locationStack.current[2];
-
-            return locations;
-
-        }
+        // const getLevelLocations = () => {
+        //     let locations: any = {"level": 0, "level1": "", "level2": "", "level3": "", location: getLocationUUID()};
+        //
+        //     locations["level"] = locationStack.current.length + 1;
+        //     if (locationStack.current.length >= 1)
+        //         locations["level1"] = locationStack.current[0];
+        //     if (locationStack.current.length >= 2)
+        //         locations["level2"] = locationStack.current[1];
+        //     if (locationStack.current.length >= 3)
+        //         locations["level3"] = locationStack.current[2];
+        //
+        //     return locations;
+        //
+        // }
 
         setLoading(true);
 
@@ -224,7 +214,7 @@ const LevelDetail = () => {
             let list = queryLocation.current.getData('list');
 
             setListData(list);//The list only shown if there is no map
-            setLevelLocations(getLevelLocations());
+            //setLevelLocations(getLevelLocations());
             setPeriodTrendsColumnData(queryLocation.current.getData('period_trend_column'));
             setPeriodTrendsGroupedData(queryLocation.current.getData('period_trend_grouped'));
             setHotListData(queryLocation.current.getData('hot_list'));
@@ -252,6 +242,9 @@ const LevelDetail = () => {
         locationStack.current.pop();
         if (locationStack.current.length === 0) {
             setLocation("THE WORLD");
+        } else {
+
+            setLocation(locationStack.current[locationStack.current.length - 1]);
         }
 
     }
@@ -594,8 +587,9 @@ const LevelDetail = () => {
 
                 <Layout.Content>
                     <div id={"map"}/>
+                    {geoFileInfo &&
                     <Tabs>
-                        {geoFileInfo &&
+
                         <Tabs.TabPane tab={"Map"} key={"Map"}>
                             <Radio.Group onChange={(e) => setHeatMapType(e.target.value)}
                                          value={heatMapType} buttonStyle="outline"
@@ -628,14 +622,23 @@ const LevelDetail = () => {
                                         period={period}/>
 
                         </Tabs.TabPane>
-                        }
                         <Tabs.TabPane tab={"Data"} key={"Data"}>
                             <Skeleton loading={timerOn}>
                                 <LevelList data={listData} location={locationUUID}
                                            selectHandler={(name) => selectHandler(name)}/>
                             </Skeleton>
                         </Tabs.TabPane>
+
+
                     </Tabs>
+                    }
+
+                    {!geoFileInfo &&
+                        <Skeleton loading={timerOn}>
+                            <LevelList data={listData} location={locationUUID}
+                                       selectHandler={(name) => selectHandler(name)}/>
+                        </Skeleton>
+                    }
 
                     <div id={"trends"} style={{height: 10}}/>
                     <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>

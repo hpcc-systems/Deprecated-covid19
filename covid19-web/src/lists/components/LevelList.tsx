@@ -68,7 +68,8 @@ const LevelList = (props: LevelListProps) => {
         {
             title: 'Contagion Risk',
             dataIndex: 'contagion_risk',
-            render: (text: any, record: any) => <Progress percent={Math.trunc(text * 100)} strokeColor={getColor("contagion_risk", record.contagion_risk)} />,
+            //render: (text: any, record: any) => <Progress percent={Math.trunc(text * 100)} strokeColor={getColor("contagion_risk", record.contagion_risk)} />,
+            render: (text: any, record: any) => <span>{Math.trunc(text * 100)}</span>,
             sorter: (a: any, b: any) => a.contagion_risk - b.contagion_risk,
             defaultSortOrder: "descend" as "descend"
         },
@@ -110,8 +111,10 @@ const LevelList = (props: LevelListProps) => {
                 <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Interactive list of
                     locations. Click on a location to drill down.
                 </div>
+                {/*<Table rowKey={(record) => record.location} dataSource={props.data} columns={layout}*/}
+                {/*       scroll={{y: 500}} pagination={false}/>*/}
                 <Table rowKey={(record) => record.location} dataSource={props.data} columns={layout}
-                       scroll={{y: 500}} pagination={false}/>
+                       />
             </Layout>
         )
     } else {

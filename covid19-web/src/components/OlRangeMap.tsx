@@ -13,16 +13,7 @@ import Overlay from "ol/Overlay";
 import {fromLonLat} from "ol/proj";
 import {defaults as defaultInteractions} from 'ol/interaction.js'
 import OverlayPositioning from "ol/OverlayPositioning";
-import {Button, Card, Col, Modal, Row, Select as DropdownSelect, Space, Statistic} from "antd";
-import {
-    CaretLeftFilled,
-    CaretRightFilled,
-    LeftCircleFilled,
-    PauseCircleFilled,
-    RightCircleFilled,
-    StepBackwardFilled,
-    StepForwardFilled
-} from '@ant-design/icons';
+import {Card, Col, Modal, Row, Statistic} from "antd";
 import {Bar} from "@antv/g2plot";
 import {Chart} from "./Chart";
 
@@ -61,7 +52,6 @@ export default function OlRangeMap(props: Props) {
     const popup = useRef<HTMLElement | null>(null);
     const [period, setPeriod, periodRef] = useStateRef("1");
     const heatMapTypeRef = useRef("contagion_risk");
-    const [timerOn, setTimerOn, timerOnRef] = useStateRef(false);
     const [selectedLocation, setSelectedLocation] = useState<any>("");
     const [dialogVisible, setDialogVisible] = useState(false);
 
