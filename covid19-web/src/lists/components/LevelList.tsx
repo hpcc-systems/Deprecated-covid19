@@ -1,4 +1,4 @@
-import {Button, Layout, Progress, Table} from "antd";
+import {Button, Layout, Table} from "antd";
 import React from "react";
 
 interface LevelListProps {
@@ -9,34 +9,34 @@ interface LevelListProps {
 
 const LevelList = (props: LevelListProps) => {
 
-    function getColor(heatMapType: string, value: any) {
-        switch (heatMapType) {
-            case 'contagion_risk':
-                return value >= 0.5 ? '#a50026' :
-                    value >= 0.25 ? '#d73027' :
-                        value >= 0.15 ? '#fdae61' :
-                            value >= 0.05 ? '#fee08b' :
-                                value > 0 ? '#66bd63' :
-                                    '#1a9850';
-            case 'status':
-                if (value >= 6) {
-                    return '#a50026'
-                } else if (value === 5) {
-                    return '#d73027'
-                } else if (value === 4) {
-                    return '#fdae61'
-                } else if (value === 3) {
-                    return '#fee08b'
-                } else if (value === 2) {
-                    return '#66bd63'
-                } else {
-                    return '#1a9850'
-                }
-            default:
-                return '#2b2b2b'
-
-        }
-    }
+    // function getColor(heatMapType: string, value: any) {
+    //     switch (heatMapType) {
+    //         case 'contagion_risk':
+    //             return value >= 0.5 ? '#a50026' :
+    //                 value >= 0.25 ? '#d73027' :
+    //                     value >= 0.15 ? '#fdae61' :
+    //                         value >= 0.05 ? '#fee08b' :
+    //                             value > 0 ? '#66bd63' :
+    //                                 '#1a9850';
+    //         case 'status':
+    //             if (value >= 6) {
+    //                 return '#a50026'
+    //             } else if (value === 5) {
+    //                 return '#d73027'
+    //             } else if (value === 4) {
+    //                 return '#fdae61'
+    //             } else if (value === 3) {
+    //                 return '#fee08b'
+    //             } else if (value === 2) {
+    //                 return '#66bd63'
+    //             } else {
+    //                 return '#1a9850'
+    //             }
+    //         default:
+    //             return '#2b2b2b'
+    //
+    //     }
+    // }
 
     const getLocation = (location: string, location_code: string | undefined) => {
         let locations: string[]
@@ -47,15 +47,6 @@ const LevelList = (props: LevelListProps) => {
         }
         return locations[locations.length - 1];
     }
-
-    // const percentToStatus= (percent: any) => {
-    //     switch(percent) {
-    //         case 10: return 'Emerging';
-    //         case 20: return 'Recovered';
-    //         case 30: return 'Stabelized';
-    //         default: return 'Spreading';
-    //     }
-    // }
 
     const layout = [
         {

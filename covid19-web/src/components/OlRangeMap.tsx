@@ -32,25 +32,13 @@ interface Props {
     maxData: any;
     period: string;
     selectHandler: (name: string) => void;
-    periodHandler: (period: string) => void;
 }
 
-function useStateRef(initialValue: any) {
-    const [value, setValue] = useState(initialValue);
-
-    const ref = useRef(value);
-
-    useEffect(() => {
-        ref.current = value;
-    }, [value]);
-
-    return [value, setValue, ref];
-}
 
 export default function OlRangeMap(props: Props) {
     const container = useRef<HTMLElement | null>(null);
     const popup = useRef<HTMLElement | null>(null);
-    const [period, setPeriod, periodRef] = useStateRef("1");
+    const periodRef = useRef("1");
     const heatMapTypeRef = useRef("contagion_risk");
     const [selectedLocation, setSelectedLocation] = useState<any>("");
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -425,8 +413,6 @@ export default function OlRangeMap(props: Props) {
                 }
             });
 
-            setPeriod("1");
-
             map.current.updateSize();
             map.current.render();
         }
@@ -442,7 +428,7 @@ export default function OlRangeMap(props: Props) {
     }, [props.heatMapType]);
 
     useEffect(() => {
-        setPeriod(props.period);
+        periodRef.current = props.period;//Ref has to be updated because callbacks are used to update colors etc.
     }, [props.period]);
 
     useEffect(() => {
@@ -527,8 +513,8 @@ export default function OlRangeMap(props: Props) {
     }
 
     let selectedData = [];
-    if (props.data.get(period)) {
-        selectedData = props.data.get(period).map.get(selectedLocation);
+    if (props.data.get(props.period)) {
+        selectedData = props.data.get(props.period).map.get(selectedLocation);
     }
     if (!selectedData) {
         selectedData = [];

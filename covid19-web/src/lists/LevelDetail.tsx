@@ -166,27 +166,7 @@ const LevelDetail = () => {
             return uuid;
         }
 
-        // const getLevelLocations = () => {
-        //     let locations: any = {"level": 0, "level1": "", "level2": "", "level3": "", location: getLocationUUID()};
-        //
-        //     locations["level"] = locationStack.current.length + 1;
-        //     if (locationStack.current.length >= 1)
-        //         locations["level1"] = locationStack.current[0];
-        //     if (locationStack.current.length >= 2)
-        //         locations["level2"] = locationStack.current[1];
-        //     if (locationStack.current.length >= 3)
-        //         locations["level3"] = locationStack.current[2];
-        //
-        //     return locations;
-        //
-        // }
-
         setLoading(true);
-
-        // setSummaryData([]);
-        // setPeriodTrendsColumnData([]);
-        // setPeriodTrendsGroupedData([]);
-        // setHotListData([]);
 
         //Get the data
         let filters = new Map();
@@ -214,7 +194,6 @@ const LevelDetail = () => {
             let list = queryLocation.current.getData('list');
 
             setListData(list);//The list only shown if there is no map
-            //setLevelLocations(getLevelLocations());
             setPeriodTrendsColumnData(queryLocation.current.getData('period_trend_column'));
             setPeriodTrendsGroupedData(queryLocation.current.getData('period_trend_grouped'));
             setHotListData(queryLocation.current.getData('hot_list'));
@@ -618,7 +597,6 @@ const LevelDetail = () => {
                                         zoom={geoFileInfo.zoom}
                                         height={'800px'} data={mapData} heatMapType={heatMapType} maxData={maxData}
                                         selectHandler={(name) => selectHandler(name)}
-                                        periodHandler={(period) => setPeriod(period)}
                                         period={period}/>
 
                         </Tabs.TabPane>
