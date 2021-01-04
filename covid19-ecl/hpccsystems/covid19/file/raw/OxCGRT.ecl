@@ -1,5 +1,8 @@
 EXPORT oxcgrt := MODULE 
 
+//Please refer to the following doc for definitions:
+//https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md 
+
 EXPORT filepath := '~hpccsystems::covid19::file::raw::oxcgrt::v1::oxcgrt_latest.csv';
 EXPORT layout := RECORD
     STRING CountryName;
@@ -7,46 +10,46 @@ EXPORT layout := RECORD
     STRING RegionName;
     STRING RegionCode;
     STRING Date;
-    STRING C1_School_closing;
+    REAL C1_School_closing;
     STRING C1_Flag;
-    STRING C2_Workplace_closing;
+    REAL C2_Workplace_closing;
     STRING C2_Flag;
-    STRING C3_Cancel_public_events;
+    REAL C3_Cancel_public_events;
     STRING C3_Flag;
-    STRING C4_Restrictions_on_gatherings;
+    REAL C4_Restrictions_on_gatherings;
     STRING C4_Flag;
-    STRING C5_Close_public_transport;
+    REAL C5_Close_public_transport;
     STRING C5_Flag;
-    STRING C6_Stay_at_home_requirements;
+    REAL C6_Stay_at_home_requirements;
     STRING C6_Flag;
-    STRING C7_Restrictions_on_internal_movement;
+    REAL C7_Restrictions_on_internal_movement;
     STRING C7_Flag;
-    STRING C8_International_travel_controls;
-    STRING E1_Income_support;
+    REAL C8_International_travel_controls;
+    REAL E1_Income_support;
     STRING E1_Flag;
-    STRING E2_Debt_contract_relief;
-    STRING E3_Fiscal_measures;
-    STRING E4_International_support;
-    STRING H1_Public_information_campaigns;
+    REAL E2_Debt_contract_relief;
+    REAL E3_Fiscal_measures;
+    REAL E4_International_support;
+    REAL H1_Public_information_campaigns;
     STRING H1_Flag;
-    STRING H2_Testing_policy;
-    STRING H3_Contact_tracing;
-    STRING H4_Emergency_investment_in_healthcare;
-    STRING H5_Investment_in_vaccines;
-    STRING H6_Facial_Coverings;
+    REAL H2_Testing_policy;
+    REAL H3_Contact_tracing;
+    REAL H4_Emergency_investment_in_healthcare;
+    REAL H5_Investment_in_vaccines;
+    REAL H6_Facial_Coverings;
     STRING H6_Flag;
-    STRING M1_Wildcard;
-    STRING ConfirmedCases;
-    STRING ConfirmedDeaths;
-    STRING StringencyIndex;
+    REAL M1_Wildcard;
+    REAL ConfirmedCases;
+    REAL ConfirmedDeaths;
+    REAL StringencyIndex;
     STRING StringencyIndexForDisplay;
-    STRING StringencyLegacyIndex;
+    REAL StringencyLegacyIndex;
     STRING StringencyLegacyIndexForDisplay;
-    STRING GovernmentResponseIndex;
+    REAL GovernmentResponseIndex;
     STRING GovernmentResponseIndexForDisplay;
-    STRING ContainmentHealthIndex;
+    REAL ContainmentHealthIndex;
     STRING ContainmentHealthIndexForDisplay;
-    STRING EconomicSupportIndex;
+    REAL EconomicSupportIndex;
     STRING EconomicSupportIndexForDisplay;
 END;
 
