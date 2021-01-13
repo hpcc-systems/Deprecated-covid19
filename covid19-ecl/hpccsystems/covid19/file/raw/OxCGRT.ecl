@@ -3,12 +3,13 @@ EXPORT oxcgrt := MODULE
 //Please refer to the following doc for definitions:
 //https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md 
 
-EXPORT filepath := '~hpccsystems::covid19::file::raw::oxcgrt::v1::oxcgrt_latest.csv';
+EXPORT filepath := '~hpccsystems::covid19::file::raw::oxcgrt::v2::oxcgrt_latest.csv';
 EXPORT layout := RECORD
     STRING CountryName;
     STRING CountryCode;
     STRING RegionName;
     STRING RegionCode;
+    STRING Jurisdiction;
     STRING Date;
     REAL C1_School_closing;
     STRING C1_Flag;
@@ -38,6 +39,8 @@ EXPORT layout := RECORD
     REAL H5_Investment_in_vaccines;
     REAL H6_Facial_Coverings;
     STRING H6_Flag;
+    REAL H7_Vaccination_policy;
+    STRING H7_Flag;
     REAL M1_Wildcard;
     REAL ConfirmedCases;
     REAL ConfirmedDeaths;

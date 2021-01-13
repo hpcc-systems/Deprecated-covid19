@@ -16,6 +16,5 @@ usDs := JOIN(jh.usDs, ox.ds (countryname = 'US'),
                           SELF := LEFT,
                           SELF := RIGHT), LEFT OUTER);
 
-
 OUTPUT(usDs,,jhOx.usFilePath,thor,compressed,overwrite);
 

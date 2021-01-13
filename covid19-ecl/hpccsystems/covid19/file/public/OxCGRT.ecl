@@ -2,12 +2,13 @@ import STD;
 
 EXPORT oxcgrt := MODULE 
 
-EXPORT filepath := '~hpccsystems::covid19::file::public::oxcgrt::v1::oxcgrt.flat';
+EXPORT filepath := '~hpccsystems::covid19::file::public::oxcgrt::v2::oxcgrt.flat';
 EXPORT layout := RECORD
     STRING CountryName;
     STRING CountryCode;
     STRING RegionName;
     STRING RegionCode;
+    STRING Jurisdiction;
     Std.Date.Date_t Date;
     REAL C1_School_closing;
     STRING C1_Flag;
@@ -37,6 +38,8 @@ EXPORT layout := RECORD
     REAL H5_Investment_in_vaccines;
     REAL H6_Facial_Coverings;
     STRING H6_Flag;
+    REAL H7_Vaccination_policy;
+    STRING H7_Flag;
     REAL M1_Wildcard;
     REAL ConfirmedCases;
     REAL ConfirmedDeaths;
