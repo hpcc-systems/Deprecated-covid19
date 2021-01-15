@@ -159,10 +159,10 @@ export default function OlRangeMap(props: Props) {
                     break;
                 case 'contagion_risk':
                     d = row.contagion_risk;
-                    return d >= 0.5 ? '#a50026' :
-                        d >= 0.25 ? '#d73027' :
-                            d >= 0.15 ? '#fdae61' :
-                                d >= 0.05 ? '#fee08b' :
+                    return d >= 0.9 ? '#a50026' :
+                        d >= 0.75 ? '#d73027' :
+                            d >= 0.5 ? '#fdae61' :
+                                d >= 0.25 ? '#fee08b' :
                                     d > 0 ? '#66bd63' :
                                         '#1a9850';
                 case 'status':
