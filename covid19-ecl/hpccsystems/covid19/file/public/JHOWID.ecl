@@ -8,7 +8,6 @@ EXPORT JHOWID:= MODULE
 
     EXPORT Layout := RECORD
         jh.layout;
-        UNSIGNED total_vaccinations;
         UNSIGNED people_vaccinated;
         UNSIGNED people_fully_vaccinated;
         UNSIGNED daily_vaccinations_raw;
