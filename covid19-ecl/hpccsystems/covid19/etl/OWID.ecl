@@ -1,6 +1,7 @@
 IMPORT hpccsystems.covid19.file.raw.OWID as raw;
 IMPORT hpccsystems.covid19.file.public.OWID as public;
 IMPORT STD;
+#WORKUNIT('name', 'OWID_Clean');
 
 worldDs := raw.worldDs;
 
