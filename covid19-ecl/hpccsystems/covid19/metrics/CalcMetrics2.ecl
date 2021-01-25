@@ -46,11 +46,20 @@ EXPORT CalcMetrics2 := MODULE
         SELF.periodDays := IF(cCount = 0, SKIP, cCount);
         SELF.cases := lastC.cumCases;
         SELF.deaths := lastM.cumDeaths;
+        SELF.vacc_total_dist := lastM.vacc_total_dist;
+        SELF.vacc_total_admin := lastM.vacc_total_admin;
+        SELF.vacc_total_people := lastM.vacc_total_people;
+        SELF.vacc_people_complete := lastM.vacc_people_complete;
         // Use Adjusted counts for all non-cumulative attributes.  These have untimely bursts filtered out.
         SELF.newCases := IF(lastC.adjCumCases > firstC.adjPrevCases, lastC.adjCumCases - firstC.adjPrevCases, 0);
         SELF.newDeaths := IF(lastM.adjCumDeaths > firstM.adjPrevDeaths, lastM.adjCumDeaths - firstM.adjPrevDeaths, 0);
         SELF.newCasesDaily := IF(lastC.adjCumCases > lastC.adjPrevCases, lastC.adjCumCases - lastC.adjPrevCases, 0);
         SELF.newDeathsDaily := IF(lastM.adjCumDeaths > lastM.adjPrevDeaths, lastM.adjCumDeaths - lastM.adjPrevDeaths, 0);
+        SELF.vacc_period_dist := IF(lastC.vacc_total_dist > firstC.vacc_total_dist, lastC.vacc_total_dist - firstC.vacc_total_dist, 0);
+        SELF.vacc_period_admin := IF(lastC.vacc_total_admin > firstC.vacc_total_admin, lastC.vacc_total_admin - firstC.vacc_total_admin, 0);
+        SELF.vacc_period_people := IF(lastC.vacc_total_people > firstC.vacc_total_people, lastC.vacc_total_people - firstC.vacc_total_people, 0);
+        SELF.vacc_period_complete := IF(lastC.vacc_people_complete > firstC.vacc_people_complete, lastC.vacc_people_complete - firstC.vacc_people_complete, 0);
+        SELF.vacc_admin_pct := IF(SELF.vacc_total_dist > 0, SELF.vacc_total_admin / (REAL)SELF.vacc_total_dist * 100, 0.0);
         SELF.active := lastC.active,
         SELF.recovered := lastC.recovered,
         SELF.cfr := lastC.cfr,
@@ -62,7 +71,13 @@ EXPORT CalcMetrics2 := MODULE
         SELF.cases_per_capita := IF(SELF.population > 1, SELF.cases * 100000 / SELF.population, 0);
         SELF.deaths_per_capita := IF(SELF.population > 1, SELF.deaths * 100000 / SELF.population, 0);
         SELF.contagionRisk := IF(SELF.population > 1, 1 - (POWER(1 - (SELF.active * infectedConfirmedRatio / SELF.population), 100)), 0);
-        SELF.immunePct := IF(SELF.population > 1, SELF.recovered / SELF.population * infectedConfirmedRatio * 100, 0);
+        vacc_complete_pct := IF(SELF.population > 1, SELF.vacc_people_complete / SELF.population, 0.0);
+        // Calculate immune percent as: fraction of population infected + fraction of population vaccinated - fraction of vaccinated who were infected
+        // We assume that vaccinated has the same proportion if previously infected as the general population, so the calculation becomes:
+        // infectedPct + (100 - infectedPct) * vacc_complete_pct
+        infectedPct := IF(SELF.population > 1, SELF.recovered / SELF.population * infectedConfirmedRatio, 0);
+        SELF.immunePct := MIN((infectedPct + (1 - infectedPct) * vacc_complete_pct) * 100, 100);
+        SELF.vacc_complete_pct := MIN(vacc_complete_pct * 100, 100);
     END;
     metrics0 := ROLLUP(statsGrpd, GROUP, doRollup(LEFT, ROWS(LEFT)));
 

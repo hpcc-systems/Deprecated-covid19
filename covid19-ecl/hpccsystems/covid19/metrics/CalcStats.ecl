@@ -14,6 +14,9 @@ EXPORT CalcStats := MODULE
   SHARED MinActPer100k := Config.MinActPer100k; // Minimum active per 100K population to be considered emerging.
   SHARED infectedConfirmedRatio := Config.InfectedConfirmedRatio; // Calibrated by early antibody testing (rough estimate),
                                                                   // and ILI Surge statistics.
+  SHARED FilterMaxGrowthFactor := Config.FilterMaxGrowthFactor;
+  SHARED FilterMaxDailyGrowth := POWER(FilterMaxGrowthFactor, 1 / InfectionPeriod);
+  SHARED FilterMaxDailyShrink := 1 / filterMaxDailyGrowth;
   SHARED locDelim := Config.LocDelim; // Delimiter between location terms.
   SHARED min7dma := 10;  // Minimum effective 7-day moving average for cases and deaths
 
@@ -40,19 +43,20 @@ EXPORT CalcStats := MODULE
       newCases := IF(le.location = ri.location, ri.cumCases - le.cumCases, ri.cumCases);
       //newCases := IF(le.location = ri.location AND ri.cumCases > le.cumCases, ri.cumCases - le.cumCases, 0);
       casesHistory := IF(le.location != ri.location, [], le.casesHistory);
-      REAL cases7dma := IF(COUNT(casesHistory) < 7, 0, MAX(casesHistory));
+      REAL cases7max := IF(COUNT(casesHistory) < 7, 0, MAX(casesHistory));
       REAL cases7min := IF(COUNT(casesHistory) < 7, 0, MIN(casesHistory));
+      REAL cases7dma := IF(COUNT(casesHistory) < 7, 0, AVE(casesHistory));
       // Calculate adjusted cases and deaths tp remove large dumps of cases or deaths as follows:
       // - If the new value is > 2.24 * 7 day moving average (implying R > 10)
       //    limit new cases / deaths it to 2.24 * 7 day average
       // - Calculate new cumulative values by adding up adjusted new values.
       // Allow for greater variation when the MA is very low, but still constrain it
-      cases7dma2 := MAX(cases7dma, min7dma);
-      maxNewCases := 1.25 * cases7dma2;
-      minNewCases := MAX(0, (1/1.24) * cases7min);
+      cases7max2 := MAX(cases7max, min7dma);
+      maxNewCases := FilterMaxDailyGrowth * cases7max2;
+      minNewCases := FilterMaxDailyShrink * cases7min;
       UNSIGNED adjNewCases := IF(COUNT(casesHistory) < 7, newCases, IF(newCases > maxNewCases, maxNewCases, IF(newCases < minNewCases, minNewCases, MAX(newCases, 0))));
       //UNSIGNED adjNewCases := IF(newCases > 2.24 * cases7dma2, cases7dma2 * 2.24, MAX(newCases, 0));
-      SELF.casesHistory := ([adjNewCases] + casesHistory)[..7];;
+      SELF.casesHistory := ([adjNewCases] + casesHistory)[..7];
       SELF.cases7dma := cases7dma;
       SELF.newCases := adjNewCases;
       SELF.prevCases := IF(le.location = ri.location, le.cumCases, 0);
@@ -62,14 +66,14 @@ EXPORT CalcStats := MODULE
       newDeaths := IF(le.location = ri.location, ri.cumDeaths - le.cumDeaths, ri.cumDeaths);
       //newDeaths := IF(le.location = ri.location AND ri.cumDeaths > le.cumDeaths, ri.cumDeaths - le.cumDeaths, 0);
       deathsHistory := IF(le.location != ri.location, [], le.deathsHistory);
-      REAL deaths7dma := IF(COUNT(deathsHistory) < 7, 0, MAX(deathsHistory));
+      REAL deaths7max := IF(COUNT(deathsHistory) < 7, 0, MAX(deathsHistory));
       REAL deaths7min := IF(COUNT(deathsHistory) < 7, 0, MIN(deathsHistory));
+      REAL deaths7dma := IF(COUNT(deathsHistory) < 7, 0, AVE(deathsHistory));
       // Allow for greater variation when the MA is very low, but still constrain it
-      deaths7dma2 := MAX(deaths7dma, min7dma);
-      maxNewDeaths := 1.25 * deaths7dma2;
-      minNewDeaths := MAX(0,(1/1.24) * deaths7min);
+      deaths7max2 := MAX(deaths7max, min7dma);
+      maxNewDeaths := FilterMaxDailyGrowth * deaths7max2;
+      minNewDeaths := FilterMaxDailyShrink * deaths7min;
       UNSIGNED adjNewDeaths := IF(COUNT(deathsHistory) < 7, newDeaths, IF(newDeaths > maxNewDeaths, maxNewDeaths, IF(newDeaths < minNewDeaths, minNewDeaths, newDeaths)));
-//      UNSIGNED adjNewDeaths := IF(newDeaths > 2.24 * deaths7dma2, deaths7dma2 * 2.24, MAX(newDeaths, 0));
       SELF.deathsHistory := ([adjNewDeaths] + deathsHistory)[..7];;
       SELF.deaths7dma := deaths7dma;
       SELF.newDeaths := adjNewDeaths;
@@ -85,7 +89,7 @@ EXPORT CalcStats := MODULE
     recs6 := PROJECT(recs5, statsRec);
     return recs6;
   END;
-  EXPORT DATASET(statsRec) DailyStats(DATASET(inputRec) stats, UNSIGNED level, UNSIGNED asOfDate = 0) := FUNCTION
+  EXPORT DATASET(statsRec) DailyStats(DATASET(inputRec) stats, UNSIGNED level, UNSIGNED asOfDate = 0, BOOLEAN noFilter = FALSE) := FUNCTION
     // Fiter stats to start at asOfDate
     stats0 := IF(asOfDate = 0, stats, stats(date < asOfDate));
     // Add composite location information
@@ -99,14 +103,17 @@ EXPORT CalcStats := MODULE
     END;
     // Filter out some bad locations
     stats1 := PROJECT(stats0, addLocation(LEFT, level));
-    //stats1 := PROJECT(stats0, addLocation(LEFT, level))(Level3 != 'UNASSIGNED' AND Level2 != 'UNASSIGNED');
     // Add record id
     stats2 := SORT(stats1, location, -date);
     stats3 := PROJECT(stats2, TRANSFORM(RECORDOF(LEFT), SELF.id := COUNTER, SELF := LEFT));
+    // Eliminate any stats for the current day because we don't want to consider a partial days stats.
+    latestDate := stats3(id=2)[1].date;
+    stats3f := stats3(date <= latestDate);
     // Get rid of any obsolete locations (i.e. locations that don't have data for the latest date)
-    latestDate := MAX(stats3, date);
-    obsoleteLocations := DEDUP(stats3, location)(date < latestDate);
-    stats4 := JOIN(stats3, obsoleteLocations, LEFT.location = RIGHT.location, LEFT ONLY);
+    obsoleteLocations := DEDUP(stats3f, location)(date < latestDate);
+    // Don't filter obsolete locations if noFilter is set.
+    stats4 := IF(noFilter, stats3f, JOIN(stats3f, obsoleteLocations, LEFT.location = RIGHT.location, LEFT ONLY));
+    //stats4 := stats3;
     // Remove spurious data dumps by smoothing and 
     // compute basic delta stats between latest period and previous period
     stats5 := smoothData(stats4);
@@ -129,7 +136,16 @@ EXPORT CalcStats := MODULE
     END;
     stats6 := JOIN(stats5, stats5, LEFT.location = RIGHT.location AND LEFT.id = RIGHT.id - InfectionPeriod,
                         calcSIR(LEFT, RIGHT), LEFT OUTER);
-    RETURN stats6;
+    // Calculate daily vaccination stats
+    statsRec calcDailyDeltas(statsRec curr, statsRec prev) := TRANSFORM
+      SELF.vacc_daily_dist := MAX(0, curr.vacc_total_dist - prev.vacc_total_dist);
+      SELF.vacc_daily_admin := MAX(0, curr.vacc_total_admin - prev.vacc_total_admin);
+      SELF.vacc_daily_people  := MAX(0, curr.vacc_total_people - prev.vacc_total_people);
+      SELF.vacc_daily_complete := MAX(0, curr.vacc_people_complete - prev.vacc_people_complete);
+      SELF := curr;
+    END;
+    stats7 := JOIN(stats6, stats6, LEFT.location = RIGHT.location and LEFT.id = RIGHT.id - 1, calcDailyDeltas(LEFT, RIGHT), LEFT OUTER);
+    RETURN stats7;
   END;  // Daily Stats
   EXPORT statsRec RollupStats(DATASET(statsRec) stats, UNSIGNED rollupLevel) := FUNCTION
     // Valid rollup levels are 1 or 2.  Since 3 is the lowest level
@@ -167,6 +183,14 @@ EXPORT CalcStats := MODULE
       SELF.adjPrevDeaths := SUM(children, adjPrevDeaths);
       SELF.caseAdjustment := SUM(children, caseAdjustment);
       SELF.deathsAdjustment := SUM(children, deathsAdjustment);
+      SELF.vacc_total_dist := SUM(children, vacc_total_dist);
+      SELF.vacc_total_admin := SUM(children, vacc_total_admin);
+      SELF.vacc_total_people := SUM(children, vacc_total_people);
+      SELF.vacc_people_complete := SUM(children, vacc_people_complete);
+      SELF.vacc_daily_dist := SUM(children, vacc_daily_dist);
+      SELF.vacc_daily_admin := SUM(children, vacc_daily_admin);
+      SELF.vacc_daily_people := SUM(children, vacc_daily_people);
+      SELF.vacc_daily_complete := SUM(children, vacc_daily_complete);
       // CFR will be calculated later.
       SELF.cfr := 0;
     END;
@@ -183,6 +207,14 @@ EXPORT CalcStats := MODULE
                               SELF.latitude := RIGHT.latitude,
                               SELF.longitude := RIGHT.longitude,
                               SELF.population := IF(LEFT.population > 1, LEFT.population, RIGHT.population),
+                              SELF.vacc_total_dist := IF(LEFT.vacc_total_dist > 0, LEFT.vacc_total_dist, RIGHT.vacc_total_dist),
+                              SELF.vacc_total_admin := IF(LEFT.vacc_total_admin > 0, LEFT.vacc_total_admin, RIGHT.vacc_total_admin),
+                              SELF.vacc_total_people := IF(LEFT.vacc_total_people > 0, LEFT.vacc_total_people, RIGHT.vacc_total_people),
+                              SELF.vacc_people_complete := IF(LEFT.vacc_people_complete > 0, LEFT.vacc_people_complete, RIGHT.vacc_people_complete),
+                              SELF.vacc_daily_dist := IF(LEFT.vacc_daily_dist > 0, LEFT.vacc_daily_dist, RIGHT.vacc_daily_dist),
+                              SELF.vacc_daily_admin := IF(LEFT.vacc_daily_admin > 0, LEFT.vacc_daily_admin, RIGHT.vacc_daily_admin),
+                              SELF.vacc_daily_people := IF(LEFT.vacc_daily_people > 0, LEFT.vacc_daily_people, RIGHT.vacc_daily_people),
+                              SELF.vacc_daily_complete := IF(LEFT.vacc_daily_complete > 0, LEFT.vacc_daily_complete, RIGHT.vacc_daily_complete),
                               SELF := IF(LEFT.location != '', LEFT, RIGHT)), FULL OUTER);
     merged1 := SORT(merged0, location, -date);
     // Recalculate CFR in case some of the lower level locations don't have population data.

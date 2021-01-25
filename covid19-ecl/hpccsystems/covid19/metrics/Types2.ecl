@@ -24,6 +24,10 @@ EXPORT Types2 := MODULE
     count_t population := 0; // Location population
     UDECIMAL11_8  latitude := 0;  // Location Latitude
     UDECIMAL11_8  longitude := 0; // Location Longitude
+    count_t vacc_total_dist := 0; // Total Vaccines Distributed
+    count_t vacc_total_admin := 0; // Total Vaccines Administered
+    count_t vacc_total_people := 0; // Total People Vaccinated
+    count_t vacc_people_complete := 0; // People Fully Vaccinated
   END;
   // Extended Stats Record
   EXPORT statsRec := RECORD(InputRec)
@@ -46,6 +50,10 @@ EXPORT Types2 := MODULE
     count_t adjPrevDeaths := 0; // Previous day's adjCumDeaths
     INTEGER caseAdjustment := 0;  // The amount by which cases were adjusted
     INTEGER deathsAdjustment := 0; // The amount by which cases were adjusted
+    count_t vacc_daily_dist := 0; // New vaccines distributed
+    count_t vacc_daily_admin := 0; // Newly administered vaccines
+    count_t vacc_daily_people := 0; // People vaccinated today 
+    count_t vacc_daily_complete := 0; // People Fully Vaccinated Today
   END;
   // Metrics Record
   EXPORT metricsRec := RECORD
@@ -96,6 +104,16 @@ EXPORT Types2 := MODULE
     STRING Country;
     STRING Level2;  // State / Region, etc.  Can be blank for Country level inputs
     STRING Level3; // County, District, etc.  Can be blank for State / Country level inputs
+    count_t vacc_total_dist := 0; // Total Vaccines Distributed
+    count_t vacc_total_admin := 0; // Total Vaccines Administered
+    count_t vacc_total_people := 0; // Total People Vaccinated
+    count_t vacc_people_complete := 0; // People Fully Vaccinated
+    count_t vacc_period_dist := 0; // New vaccines distributed
+    count_t vacc_period_admin := 0; // Newly administered vaccines
+    count_t vacc_period_people := 0; // People newly vaccinated 
+    count_t vacc_period_complete := 0; // People newly Fully Vaccinated
+    metric_t vacc_complete_pct := 0.0; // Percent of population fully vaccinated
+    metric_t vacc_admin_pct := 0.0; // Percent of distributed doses administered
   END;
   EXPORT metricsEvolRec := RECORD(metricsRec)
     UNSIGNED asOfDate;

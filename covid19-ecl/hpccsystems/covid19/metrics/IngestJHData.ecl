@@ -138,9 +138,42 @@ STRING cleanupFIPS(STRING fips) := FUNCTION
   return final;
 END;
 
+// Vaccine Data Formats
+L1VaccineRec := RECORD
+  string location;
+  string iso_code;
+  unsigned4 date;
+  unsigned8 total_vaccinations;
+  unsigned8 people_vaccinated;
+  unsigned8 people_fully_vaccinated;
+  unsigned8 daily_vaccinations_raw;
+  unsigned8 daily_vaccinations;
+  decimal12_2 total_vaccinations_per_hundred;
+  decimal12_2 people_vaccinated_per_hundred;
+  decimal12_2 people_fully_vaccinated_per_hundred;
+  decimal12_2 daily_vaccinations_per_million;
+ END;
+
+ L2VaccineRec := RECORD
+  unsigned4 date;
+  string location;
+  unsigned8 total_distributed;
+  unsigned8 total_vaccinations;
+  decimal12_2 distributed_per_hundred;
+  decimal12_2 total_vaccinations_per_hundred;
+  unsigned8 people_vaccinated;
+  decimal12_2 people_vaccinated_per_hundred;
+  unsigned8 people_fully_vaccinated;
+  decimal12_2 people_fully_vaccinated_per_hundred;
+  unsigned8 daily_vaccinations_raw;
+  unsigned8 daily_vaccinations;
+  decimal12_2 daily_vaccinations_per_million;
+  decimal12_2 share_dose_used;
+ END;
+
 // Country Data contains some L2 and L3 data as well for certain countries.  Combine that with
 // US County and State data to produce L2 and L3 inputs.
-countryData0 := SORT(DATASET(countryFilePath, scRecord, THOR), country, state, admin2, update_date);
+countryData0 := SORT(DATASET(countryFilePath, scRecord, THOR)(update_date >= 20200322), country, state, admin2, update_date);  // New format starts a 20200322
 // France reports data for its territories, but not its mainland at level 2.  Assign a level 2 name "CONTINENTAL" to
 // the mainland data so that rollups work properly.
 // Until 6/11/20, UK reports data at L1 and after that date, moves all of that data to L2 = 'UNKNOWN'.  Fix by assigning L1 data to UNKNOWN.
@@ -150,11 +183,11 @@ countryData1 := PROJECT(countryData0, TRANSFORM(RECORDOF(LEFT),
                                                                 SELF.Country = 'UNITED KINGDOM' AND CleanSpaces(LEFT.state) = '' => 'UNKNOWN',
                                                                 CleanSpaces(LEFT.state)),
                                               SELF := LEFT));
-
+//OUTPUT(countryData1(update_date > 20201220 AND Country = 'UNITED KINGDOM'), ALL, NAMED('CountryData1'));
 // Prepare L3 level input
 
 USDatIn0 := DATASET(USFilePath, scRecord, THOR);
-USDatIn := USDatIn0(state != '' AND admin2 != '' AND update_date != 0);
+USDatIn := USDatIn0(state != '' AND admin2 != '' AND update_date >= 20200322);  // New format starts a 20200322
 //OUTPUT(USDatIn[..10000], ALL, NAMED('RawUSData'));
 L3WorldDatIn := countryData0(country != '' AND country != 'US' AND state != '' AND admin2 != '' AND update_date != 0);
 L3DatIn := DEDUP(SORT(USDatIn + L3WorldDatIn, country, state, admin2, update_date));
@@ -307,7 +340,30 @@ L2InputDat10 := JOIN(L2InputDat9, germanyStatePopData, LEFT.Country = 'GERMANY' 
                                 TRANSFORM(RECORDOF(LEFT),
                                 SELF.population := IF(LEFT.population = 0, RIGHT.population, LEFT.population),
                                 SELF := LEFT), LEFT OUTER);
-L2InputDat := SORT(L2InputDat10, Country, Level2, -date);
+L2VaccData0 := DATASET(Paths.VaccLevel2, L2VaccineRec ,THOR);
+L2VaccData1 := SORT(L2VaccData0, location, date);
+// Fixup vaccine data for proper cumulation.  Currently, days with no vaccines show 0 as the total, rather than the previous total
+L2VaccineRec cumulateVaccL2(L2VaccineRec l, L2VaccineRec r) := TRANSFORM
+  SELF.total_vaccinations := IF(l.location = r.location, MAX(r.total_vaccinations, l.total_vaccinations), r.total_vaccinations);
+  SELF.people_vaccinated := IF(l.location = r.location, MAX(r.people_vaccinated, l.people_vaccinated), r.people_vaccinated);
+  SELF.people_fully_vaccinated := IF(l.location = r.location, MAX(r.people_fully_vaccinated, l.people_fully_vaccinated), r.people_fully_vaccinated);
+  SELF.total_distributed := IF(l.location = r.location, MAX(r.total_distributed, l.total_distributed), r.total_distributed);
+  SELF := r;
+END;
+L2VaccData := ITERATE(L2VaccData1, cumulateVaccL2(LEFT, RIGHT), LOCAL);
+//OUTPUT(L2VaccData, ALL, NAMED('L2Vacc'));
+L2InputDat11 := JOIN(L2InputDat10, L2VaccData, LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(LEFT),
+                              SELF.vacc_total_dist := RIGHT.total_distributed,
+                              SELF.vacc_total_admin := RIGHT.total_vaccinations,
+                              SELF.vacc_total_people := RIGHT.people_vaccinated,
+                              SELF.vacc_people_complete := RIGHT.people_fully_vaccinated,
+                              SELF.Country := IF(LENGTH(LEFT.Country) = 0, 'US', LEFT.Country),
+                              SELF.date := IF(LEFT.date = 0, RIGHT.date, LEFT.date),
+                              SELF.level2 := IF(LENGTH(LEFT.level2) = 0, RIGHT.location, LEFT.level2),
+                              SELF := LEFT), FULL OUTER);
+
+L2InputDat := SORT(L2InputDat11, Country, Level2, -date);
+
 
 out2 := OUTPUT(L2InputDat, ,Paths.JHLevel2, Thor, OVERWRITE);
 //OUTPUT(L2InputDat(date > 20200629), ALL, NAMED('L2InputData'));
@@ -322,7 +378,7 @@ countryData4 := countryData3(country != '' AND update_date != 0);
 countryData5 := DEDUP(countryData4, country, update_date);
 countryPopData0 := DATASET(countryPopulationPath, countryPopRecord, THOR);
 countryPopData := DEDUP(SORT(countryPopData0, location, -time), location);
-countryInputDat := JOIN(countryData5, countryPopData, LEFT.Country = RIGHT.location, TRANSFORM(inputRec,
+countryInputDat0 := JOIN(countryData5, countryPopData, LEFT.Country = RIGHT.location, TRANSFORM(inputRec,
                                             SELF.fips := LEFT.fips,
                                             SELF.country := Std.Str.CleanSpaces(LEFT.country),
                                             SELF.Level2 := '',
@@ -336,7 +392,28 @@ countryInputDat := JOIN(countryData5, countryPopData, LEFT.Country = RIGHT.locat
                                             SELF.negative := 0,
                                             SELF.population := RIGHT.poptotal), LEFT OUTER);
 //OUTPUT(countryPopData, NAMED('CountryPopulationData'));
-out1 := OUTPUT(CountryInputDat, ,Paths.JHLevel1, Thor, OVERWRITE);
+vaccFilteredLocationsL1 := ['ENGLAND', 'NORTHERN IRELAND', 'SCOTLAND', 'WALES', 'WORLD'];
+L1VaccData0 := DATASET(Paths.VaccLevel1, L1VaccineRec ,THOR)(location NOT IN vaccFilteredLocationsL1);
+L1VaccData1 := SORT(L1VaccData0, location, date);
+// Fixup vaccine data for proper cumulation.  Currently, days with no vaccines show 0 as the total, rather than the previous total
+L1VaccineRec cumulateVacc(L1VaccineRec l, L1VaccineRec r) := TRANSFORM
+  SELF.total_vaccinations := IF(l.location = r.location, MAX(r.total_vaccinations, l.total_vaccinations), r.total_vaccinations);
+  SELF.people_vaccinated := IF(l.location = r.location, MAX(r.people_vaccinated, l.people_vaccinated), r.people_vaccinated);
+  SELF.people_fully_vaccinated := IF(l.location = r.location, MAX(r.people_fully_vaccinated, l.people_fully_vaccinated), r.people_fully_vaccinated);
+  SELF := r;
+END;
+L1VaccData := ITERATE(L1VaccData1, cumulateVacc(LEFT, RIGHT), LOCAL);
+//OUTPUT(L1VaccData, ALL, NAMED('L1Vacc'));
+//OUTPUT(countryInputDat0(date >= 20210101), ALL, NAMED('CountryData'));
+countryInputDat := JOIN(countryInputDat0, L1VaccData, LEFT.Country = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(LEFT),
+                              SELF.vacc_total_dist := 0,
+                              SELF.vacc_total_admin := RIGHT.total_vaccinations,
+                              SELF.vacc_total_people := RIGHT.people_vaccinated,
+                              SELF.vacc_people_complete := RIGHT.people_fully_vaccinated,
+                              SELF.Country := IF(LENGTH(LEFT.Country) = 0, RIGHT.location, LEFT.Country),
+                              SELF.date := IF(LEFT.date = 0, RIGHT.date, LEFT.date),
+                              SELF := LEFT), FULL OUTER);
+out1 := OUTPUT(countryInputDat, ,Paths.JHLevel1, Thor, OVERWRITE);
 
 SEQUENTIAL(
     Std.File.RemoveSuperFile(Paths.InputLevel1, Paths.JHLevel1),

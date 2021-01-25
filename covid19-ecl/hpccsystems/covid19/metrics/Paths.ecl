@@ -7,6 +7,11 @@ EXPORT Paths := MODULE
   EXPORT JHLevel1 := '~hpccsystems::covid19::file::input::source::jh::level1';
   EXPORT JHLevel2 := '~hpccsystems::covid19::file::input::source::jh::level2';
   EXPORT JHLevel3 := '~hpccsystems::covid19::file::input::source::jh::level3';
+
+  // Vaccine data (L1 and L2 only)
+  EXPORT VaccLevel1 := '~hpccsystems::covid19::file::public::owid::v2::vaccinations.flat';
+  EXPORT VaccLevel2 := '~hpccsystems::covid19::file::public::owid::v2::us_states_vaccinations.flat';
+  
   // Add other Input sources here
   
   // Stats Files
