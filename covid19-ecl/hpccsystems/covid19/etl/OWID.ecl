@@ -17,7 +17,7 @@ usDs := raw.usDs;
 
 cleanUSDs := PROJECT(usDs, TRANSFORM(public.usLayout,
                                   SELF.Date := Std.Date.FromStringToDate(LEFT.Date, '%Y-%m-%d'),
-                                  SELF.location:= Std.Str.ToUpperCase(LEFT.location),
+                                  SELF.location:= IF( LEFT.location = 'New York State', 'NEW YORK',Std.Str.ToUpperCase(LEFT.location)),
                                   SELF := LEFT));
 
 
