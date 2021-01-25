@@ -37,6 +37,7 @@ thingsToDo := ORDERED
         RunOrPublishByName('scheduler' , 'RUN');
         // KUtils.sendMsg(wuid := WORKUNIT, dataflowid := kutils.DataflowId_v2, instanceid :=DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s, msg := 'Test Cluster: Scheduler sending message' );   
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
+        RunOrPublishByName('OWID_Clean' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
