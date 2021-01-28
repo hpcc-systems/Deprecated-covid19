@@ -37,7 +37,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"People partially vaccinated - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_total_people}
+                            value={props.summaryData.vacc_total_people-props.summaryData.vacc_people_complete}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
