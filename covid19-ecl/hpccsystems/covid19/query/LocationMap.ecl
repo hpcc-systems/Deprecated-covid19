@@ -48,6 +48,16 @@ MeasuresLayout := RECORD
     REAL8 contagion_risk,
     REAL8 immune_pct,
     REAL8 ifr;
+    REAL8 vacc_total_dist;
+    REAL8 vacc_total_admin;
+    REAL8 vacc_total_people;
+    REAL8 vacc_people_complete;
+    REAL8 vacc_period_dist;
+    REAL8 vacc_period_admin;
+    REAL8 vacc_period_people;
+    REAL8 vacc_period_complete;
+    REAL8 vacc_complete_pct;
+    REAL8 vacc_admin_pct;
 END;
 
 MeasuresSummaryLayout := RECORD
@@ -68,47 +78,57 @@ summaryMetrics := CASE(_level , 1 => measures.level0_metrics(period=_period),
 
 summary := PROJECT(summaryMetrics,
           TRANSFORM (MeasuresSummaryLayout,
-                      SELF.location := LEFT.location,
-                      SELF.location_code := IF(_level=3,LEFT.fips,LEFT.location),
-                      SELF.date := LEFT.enddate,
-                      SELF.date_string := Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
-                      SELF.cases := LEFT.cases,
-                      SELF.new_cases := LEFT.newcasesdaily,
-                      SELF.deaths := LEFT.deaths,
-                      SELF.new_deaths := LEFT.newdeathsdaily,
-                      SELF.active := LEFT.active,
-                      SELF.recovered := LEFT.recovered,
-                      SELF.cases_per_capita := LEFT.cases_per_capita,
-                      SELF.deaths_per_capita := LEFT.deaths_per_capita,
-                      SELF.status := LEFT.istate,
-                      SELF.status_numb := CASE(LEFT.istate, 
-                                        'Initial' => 0, 
-                                        'Recovered' => 1, 
-                                        'Recovering' => 2,
-                                        'Stabilized' => 3,
-                                        'Stabilizing' => 4,
-                                        'Emerging' => 5,
-                                        'Spreading' => 6,
-                                        'Regressing' => 7, 0),
-                      SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
-                      SELF.cr := LEFT.cr,
-                      SELF.mr := LEFT.mr,
-                      SELF.R := LEFT.R,
-                      SELF.sd_indicator := LEFT.sdIndicator,
-                      SELF.med_indicator := LEFT.medIndicator,
-                      SELF.cfr := LEFT.cfr, 
-                      SELF.sti := LEFT.sti,
-                      SELF.ewi := LEFT.ewi,
-                      SELF.immune_pct := LEFT.immunePct,
-                      SELF.ifr := LEFT.ifr,
-                      SELF.contagion_risk := LEFT.contagionRisk,
-                      SELF.heat_index := LEFT.heatIndex,
-                      SELF.infection_count := LEFT.infectionCount,
-                      SELF.period_new_cases := LEFT.newCases;
-                      SELF.period_new_deaths := LEFT.newDeaths;
-                      SELF.period_recovered := LEFT.recovered;
-                      SELF.period_active := LEFT.active;  
-                      SELF.commentary := LEFT.commentary;                        
+                    SELF.location := LEFT.location,
+                    SELF.location_code := IF(_level=3,LEFT.fips,LEFT.location),
+                    SELF.date := LEFT.enddate,
+                    SELF.date_string := Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
+                    SELF.cases := LEFT.cases,
+                    SELF.new_cases := LEFT.newcasesdaily,
+                    SELF.deaths := LEFT.deaths,
+                    SELF.new_deaths := LEFT.newdeathsdaily,
+                    SELF.active := LEFT.active,
+                    SELF.recovered := LEFT.recovered,
+                    SELF.cases_per_capita := LEFT.cases_per_capita,
+                    SELF.deaths_per_capita := LEFT.deaths_per_capita,
+                    SELF.status := LEFT.istate,
+                    SELF.status_numb := CASE(LEFT.istate, 
+                                    'Initial' => 0, 
+                                    'Recovered' => 1, 
+                                    'Recovering' => 2,
+                                    'Stabilized' => 3,
+                                    'Stabilizing' => 4,
+                                    'Emerging' => 5,
+                                    'Spreading' => 6,
+                                    'Regressing' => 7, 0),
+                    SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
+                    SELF.cr := LEFT.cr,
+                    SELF.mr := LEFT.mr,
+                    SELF.R := LEFT.R,
+                    SELF.sd_indicator := LEFT.sdIndicator,
+                    SELF.med_indicator := LEFT.medIndicator,
+                    SELF.cfr := LEFT.cfr, 
+                    SELF.sti := LEFT.sti,
+                    SELF.ewi := LEFT.ewi,
+                    SELF.immune_pct := LEFT.immunePct,
+                    SELF.ifr := LEFT.ifr,
+                    SELF.contagion_risk := LEFT.contagionRisk,
+                    SELF.heat_index := LEFT.heatIndex,
+                    SELF.infection_count := LEFT.infectionCount,
+                    SELF.period_new_cases := LEFT.newCases;
+                    SELF.period_new_deaths := LEFT.newDeaths;
+                    SELF.period_recovered := LEFT.recovered;
+                    SELF.period_active := LEFT.active;  
+                    SELF.commentary := LEFT.commentary;
+                    SELF.vacc_total_dist := LEFT.vacc_total_dist; 
+                    SELF.vacc_total_admin := LEFT.vacc_total_admin; 
+                    SELF.vacc_total_people :=LEFT.vacc_total_people; 
+                    SELF.vacc_people_complete := LEFT.vacc_people_complete; 
+                    SELF.vacc_period_dist := LEFT.vacc_period_dist; 
+                    SELF.vacc_period_admin := LEFT.vacc_period_admin; 
+                    SELF.vacc_period_people := LEFT.vacc_period_people; 
+                    SELF.vacc_period_complete := LEFT.vacc_period_complete; 
+                    SELF.vacc_complete_pct := LEFT.vacc_complete_pct; 
+                    SELF.vacc_admin_pct := LEFT.vacc_admin_pct;                           
                       ));
 OUTPUT(summary,ALL,NAMED('summary'));//This should be exactly one record
 
@@ -125,46 +145,56 @@ listMetrics := CASE(_level , 1 => measures.level1_metrics(period=_period),
 list := PROJECT(listMetrics,
 
           TRANSFORM (MeasuresLayout,
-                      SELF.location := LEFT.location,
-                      SELF.location_code := IF(_level=3,LEFT.fips,LEFT.location),
-                      SELF.date := LEFT.enddate,
-                      SELF.date_string := Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
-                      SELF.cases := LEFT.cases,
-                      SELF.new_cases := LEFT.newcasesdaily,
-                      SELF.deaths := LEFT.deaths,
-                      SELF.new_deaths := LEFT.newdeathsdaily,
-                      SELF.active := LEFT.active,
-                      SELF.recovered := LEFT.recovered,
-                      SELF.cases_per_capita := LEFT.cases_per_capita,
-                      SELF.deaths_per_capita := LEFT.deaths_per_capita,
-                      SELF.status := LEFT.istate,
-                      SELF.status_numb := CASE(LEFT.istate, 
-                                        'Initial' => 0, 
-                                        'Recovered' => 1, 
-                                        'Recovering' => 2,
-                                        'Stabilized' => 3,
-                                        'Stabilizing' => 4,
-                                        'Emerging' => 5,
-                                        'Spreading' => 6,
-                                        'Regressing' => 7, 0),
-                      SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
-                      SELF.cr := LEFT.cr,
-                      SELF.mr := LEFT.mr,
-                      SELF.R := LEFT.R,
-                      SELF.sd_indicator := LEFT.sdIndicator,
-                      SELF.med_indicator := LEFT.medIndicator,
-                      SELF.cfr := LEFT.cfr, 
-                      SELF.sti := LEFT.sti,
-                      SELF.ewi := LEFT.ewi,
-                      SELF.immune_pct := LEFT.immunePct,
-                      SELF.ifr := LEFT.ifr,
-                      SELF.contagion_risk := LEFT.contagionRisk,
-                      SELF.heat_index := LEFT.heatIndex,
-                      SELF.infection_count := LEFT.infectionCount,
-                      SELF.period_new_cases := LEFT.newCases;
-                      SELF.period_new_deaths := LEFT.newDeaths;
-                      SELF.period_recovered := LEFT.recovered;
-                      SELF.period_active := LEFT.active;                          
+                    SELF.location := LEFT.location,
+                    SELF.location_code := IF(_level=3,LEFT.fips,LEFT.location),
+                    SELF.date := LEFT.enddate,
+                    SELF.date_string := Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
+                    SELF.cases := LEFT.cases,
+                    SELF.new_cases := LEFT.newcasesdaily,
+                    SELF.deaths := LEFT.deaths,
+                    SELF.new_deaths := LEFT.newdeathsdaily,
+                    SELF.active := LEFT.active,
+                    SELF.recovered := LEFT.recovered,
+                    SELF.cases_per_capita := LEFT.cases_per_capita,
+                    SELF.deaths_per_capita := LEFT.deaths_per_capita,
+                    SELF.status := LEFT.istate,
+                    SELF.status_numb := CASE(LEFT.istate, 
+                                    'Initial' => 0, 
+                                    'Recovered' => 1, 
+                                    'Recovering' => 2,
+                                    'Stabilized' => 3,
+                                    'Stabilizing' => 4,
+                                    'Emerging' => 5,
+                                    'Spreading' => 6,
+                                    'Regressing' => 7, 0),
+                    SELF.period_string := Std.Date.DateToString(LEFT.startdate , '%B %e, %Y') + ' - ' + Std.Date.DateToString(LEFT.enddate , '%B %e, %Y'),
+                    SELF.cr := LEFT.cr,
+                    SELF.mr := LEFT.mr,
+                    SELF.R := LEFT.R,
+                    SELF.sd_indicator := LEFT.sdIndicator,
+                    SELF.med_indicator := LEFT.medIndicator,
+                    SELF.cfr := LEFT.cfr, 
+                    SELF.sti := LEFT.sti,
+                    SELF.ewi := LEFT.ewi,
+                    SELF.immune_pct := LEFT.immunePct,
+                    SELF.ifr := LEFT.ifr,
+                    SELF.contagion_risk := LEFT.contagionRisk,
+                    SELF.heat_index := LEFT.heatIndex,
+                    SELF.infection_count := LEFT.infectionCount,
+                    SELF.period_new_cases := LEFT.newCases;
+                    SELF.period_new_deaths := LEFT.newDeaths;
+                    SELF.period_recovered := LEFT.recovered;
+                    SELF.period_active := LEFT.active;    
+                    SELF.vacc_total_dist := LEFT.vacc_total_dist; 
+                    SELF.vacc_total_admin := LEFT.vacc_total_admin; 
+                    SELF.vacc_total_people :=LEFT.vacc_total_people; 
+                    SELF.vacc_people_complete := LEFT.vacc_people_complete; 
+                    SELF.vacc_period_dist := LEFT.vacc_period_dist; 
+                    SELF.vacc_period_admin := LEFT.vacc_period_admin; 
+                    SELF.vacc_period_people := LEFT.vacc_period_people; 
+                    SELF.vacc_period_complete := LEFT.vacc_period_complete; 
+                    SELF.vacc_complete_pct := LEFT.vacc_complete_pct; 
+                    SELF.vacc_admin_pct := LEFT.vacc_admin_pct;                        
                       ));
 OUTPUT(list,ALL,NAMED('list'));//This will be the list of all the locations given a parent location        
 

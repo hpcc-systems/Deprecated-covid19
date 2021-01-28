@@ -37,7 +37,17 @@ MeasuresLayout := RECORD
     REAL8 deaths,
     REAL8 immune_pct,
     REAL8 ifr;
-    REAL8 ewi
+    REAL8 ewi;
+    REAL8 vacc_total_dist;
+    REAL8 vacc_total_admin;
+    REAL8 vacc_total_people;
+    REAL8 vacc_people_complete;
+    REAL8 vacc_period_dist;
+    REAL8 vacc_period_admin;
+    REAL8 vacc_period_people;
+    REAL8 vacc_period_complete;
+    REAL8 vacc_complete_pct;
+    REAL8 vacc_admin_pct;
 END;
 
 summaryMetrics := CASE(_level , 1 => measures.level0_metrics, 
@@ -87,7 +97,17 @@ rangeMetrics := PROJECT(metrics (endDate > 20200318),
                                         SELF.cases_per_capita := LEFT.cases_per_capita;
                                         SELF.deaths_per_capita := LEFT.deaths_per_capita;
                                         SELF.cases := LEFT.cases;
-                                        SELF.deaths := LEFT.deaths;                       
+                                        SELF.deaths := LEFT.deaths;   
+                                        SELF.vacc_total_dist := LEFT.vacc_total_dist; 
+                                        SELF.vacc_total_admin := LEFT.vacc_total_admin; 
+                                        SELF.vacc_total_people :=LEFT.vacc_total_people; 
+                                        SELF.vacc_people_complete := LEFT.vacc_people_complete; 
+                                        SELF.vacc_period_dist := LEFT.vacc_period_dist; 
+                                        SELF.vacc_period_admin := LEFT.vacc_period_admin; 
+                                        SELF.vacc_period_people := LEFT.vacc_period_people; 
+                                        SELF.vacc_period_complete := LEFT.vacc_period_complete; 
+                                        SELF.vacc_complete_pct := LEFT.vacc_complete_pct; 
+                                        SELF.vacc_admin_pct := LEFT.vacc_admin_pct;                  
                                         ));
 
 OUTPUT(SORT(rangeMetrics, -period, location),ALL,NAMED('metrics')); 

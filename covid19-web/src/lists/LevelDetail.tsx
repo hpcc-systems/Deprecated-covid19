@@ -20,6 +20,7 @@ import SummaryMeasures from "./components/SummaryMeasures";
 import HotList from "./components/HotList";
 import LevelList from "./components/LevelList";
 import TextArea from "antd/es/input/TextArea";
+import VaccineMeasures from "./components/VaccineMeasures";
 
 
 const LevelDetail = () => {
@@ -622,6 +623,8 @@ const LevelDetail = () => {
                     <PeriodTrends columnData={periodTrendsColumnData} groupedData={periodTrendsGroupedData}/>
                     <div id={"summary_stats"} style={{height: 10}}/>
                     <SummaryMeasures summaryData={summaryData}/>
+                    <div id={"vaccine_stats"} style={{height: 10}}/>
+                    <VaccineMeasures summaryData={summaryData}/>
                     <div id={"hot_spots"} style={{height: 10}}/>
                     <Skeleton loading={timerOn}>
                         <HotList data={hotListData} selectHandler={(name) => selectHandler(name)}/>

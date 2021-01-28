@@ -1,0 +1,106 @@
+import React from 'react';
+import {Card, Col, Layout, Row, Statistic} from "antd";
+
+interface VaccineMeasuresProps {
+    summaryData: any;
+}
+
+const VaccineMeasures = (props: VaccineMeasuresProps) => {
+
+
+    return (
+        <Layout style={{width:"100%"}}>
+            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Vaccine Statistics
+            </div>
+            <Row>
+                <Col span={12}>
+                    <Card>
+                        <Statistic
+                            title={"Vaccine Total Distributed - " + props.summaryData.date_string}
+                            value={props.summaryData.vacc_total_dist}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+                <Col span={12} style={{paddingLeft: 25}}>
+                    <Card>
+                        <Statistic
+                            title={"Vaccine Total Administered - " + props.summaryData.date_string}
+                            value={props.summaryData.vacc_total_admin}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+            <Row>
+                <Col span={12}>
+                    <Card>
+                        <Statistic
+                            title={"People partially vaccinated - " + props.summaryData.date_string}
+                            value={props.summaryData.vacc_total_people}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+                <Col span={12} style={{paddingLeft: 25}}>
+                    <Card>
+                        <Statistic
+                            title={"People fully vaccinated - " + props.summaryData.date_string}
+                            value={props.summaryData.vacc_people_complete}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+            <Row>
+                <Col span={12}>
+                    <Card>
+                        <Statistic
+                            title={"Population fully vaccinated (%) - " + props.summaryData.date_string}
+                            value={props.summaryData.vacc_complete_pct}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+                <Col span={12} style={{paddingLeft: 25}}>
+                    <Card>
+                        <Statistic
+                            title={"Vaccine Dose Administered (%)  - " + props.summaryData.date_string}
+                            value={props.summaryData.vacc_admin_pct}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+
+            <Row>
+                <Col span={12}>
+                    <Card>
+                        <Statistic
+                            title={"People fully vaccinated in the week - " + props.summaryData.period_string}
+                            value={props.summaryData.vacc_period_complete}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+                <Col span={12} style={{paddingLeft: 25}}>
+                    <Card>
+                        <Statistic
+                            title={"People getting at least one vaccine in the week - " + props.summaryData.period_string}
+                            value={props.summaryData.vacc_period_people}
+                            valueStyle={{color: '#cf1322'}}
+                        />
+                    </Card>
+                </Col>
+
+            </Row>
+
+
+
+        </Layout>
+    );
+
+
+}
+
+export default VaccineMeasures;
