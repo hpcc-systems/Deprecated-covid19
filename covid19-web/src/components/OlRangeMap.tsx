@@ -169,9 +169,9 @@ export default function OlRangeMap(props: Props) {
                     d = row.vacc_complete_pct;
                     return d <= 1 ? '#a50026' :
                         d <= 5 ? '#d73027' :
-                            d <= 25 ? '#fdae61' :
-                                d <= 50 ? '#fee08b' :
-                                    d < 75 ? '#66bd63' :
+                            d <= 10 ? '#fdae61' :
+                                d <= 25 ? '#fee08b' :
+                                    d < 50 ? '#66bd63' :
                                         '#1a9850';
                 case 'contagion_risk':
                     d = row.contagion_risk;

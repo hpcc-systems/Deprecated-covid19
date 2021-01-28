@@ -80,8 +80,7 @@ const SummaryMeasures = (props: SummaryMeasuresProps) => {
 
             <Row>
                 <Col span={12}>
-                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Cases Statistics and
-                        Metrics
+                    <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Cases Data
                     </div>
                     <Card>
                         <Statistic
