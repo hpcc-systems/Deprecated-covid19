@@ -583,6 +583,7 @@ const LevelDetail = () => {
                                 <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
                                 <Radio.Button value={'cases'}>Cases</Radio.Button>
                                 <Radio.Button value={'deaths'}>Deaths</Radio.Button>
+                                <Radio.Button value={'vaccine_percent_complete'}>% Population Vaccinated</Radio.Button>
                                 <Popover content={renderScale()} title={renderScaleTitle()}>
                                     <Button type={"link"}>Legend</Button>
                                 </Popover>

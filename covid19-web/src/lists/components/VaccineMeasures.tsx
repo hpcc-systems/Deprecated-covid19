@@ -7,17 +7,23 @@ interface VaccineMeasuresProps {
 
 const VaccineMeasures = (props: VaccineMeasuresProps) => {
 
-
+    const renderOptionalValue= (value: any, postfix: string = '') => {
+        if (value || value !== 0) {
+            return value + postfix
+        } else {
+            return 'No Data Available'
+        }
+    }
     return (
         <Layout style={{width:"100%"}}>
-            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Vaccine Statistics
+            <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Vaccine Data
             </div>
             <Row>
                 <Col span={12}>
                     <Card>
                         <Statistic
                             title={"Vaccine Total Distributed - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_total_dist}
+                            value={renderOptionalValue(props.summaryData.vacc_total_dist)}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -37,7 +43,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"People partially vaccinated - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_total_people}
+                            value={props.summaryData.vacc_total_people-props.summaryData.vacc_people_complete}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -56,8 +62,8 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                 <Col span={12}>
                     <Card>
                         <Statistic
-                            title={"Population fully vaccinated (%) - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_complete_pct}
+                            title={"Population fully vaccinated - " + props.summaryData.date_string}
+                            value={props.summaryData.vacc_complete_pct + " %"}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -65,8 +71,8 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                 <Col span={12} style={{paddingLeft: 25}}>
                     <Card>
                         <Statistic
-                            title={"Vaccine Dose Administered (%)  - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_admin_pct}
+                            title={"Vaccine Dose Administered  - " + props.summaryData.date_string}
+                            value={renderOptionalValue(props.summaryData.vacc_admin_pct, ' %')}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>

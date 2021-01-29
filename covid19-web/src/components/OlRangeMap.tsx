@@ -120,6 +120,14 @@ export default function OlRangeMap(props: Props) {
             "</b></td>" +
             "</tr>" +
             "<tr>" +
+            "<td>" +
+            "Population Vaccinated:" +
+            "</td>" +
+            "<td><b>" +
+            row.vacc_complete_pct + ' %' +
+            "</b></td>" +
+            "</tr>" +
+            "<tr>" +
             "<td colspan='2' style='font-style: italic;color: black'>"
             + "Please click on the map for more details" +
             "</td>" +
@@ -157,6 +165,14 @@ export default function OlRangeMap(props: Props) {
                 case 'deaths_per_capita':
                     d = row.deaths_per_capita / Math.max(1, 60);
                     break;
+                case 'vaccine_percent_complete':
+                    d = row.vacc_complete_pct;
+                    return d <= 1 ? '#a50026' :
+                        d <= 5 ? '#d73027' :
+                            d <= 10 ? '#fdae61' :
+                                d <= 25 ? '#fee08b' :
+                                    d < 50 ? '#66bd63' :
+                                        '#1a9850';
                 case 'contagion_risk':
                     d = row.contagion_risk;
                     return d >= 0.9 ? '#a50026' :
@@ -232,6 +248,9 @@ export default function OlRangeMap(props: Props) {
                 case 'contagion_risk':
                     d = Math.round(row.contagion_risk * 100) +
                         "%";
+                    break;
+                case 'vaccine_percent_complete':
+                    d = row.vacc_complete_pct + "%";
                     break;
                 case 'status':
                     d = '' //d = row.status ;
