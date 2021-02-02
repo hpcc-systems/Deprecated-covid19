@@ -46,7 +46,8 @@ EXPORT CalcMetrics2 := MODULE
         SELF.periodDays := IF(cCount = 0, SKIP, cCount);
         SELF.cases := lastC.cumCases;
         SELF.deaths := lastM.cumDeaths;
-        SELF.vacc_total_dist := lastM.vacc_total_dist;
+        // Make sure distribution data doesn't roll up to level0 (World) because it is only valid for US.
+        SELF.vacc_total_dist := IF(LENGTH(SELF.Country) > 0, lastM.vacc_total_dist, 0);
         SELF.vacc_total_admin := lastM.vacc_total_admin;
         SELF.vacc_total_people := lastM.vacc_total_people;
         SELF.vacc_people_complete := lastM.vacc_people_complete;

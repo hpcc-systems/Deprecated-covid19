@@ -45,6 +45,9 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
     ifr = rec[40]
     cRisk = rec[42] # Contagion Risk
     population = rec[43] # Location population
+    vacc_admin = rec[48] # vacc_total_admin
+    vacc_complete_pct = rec[55]
+    vacc_admin_pct = rec[56]
     asOfDate = time.strptime(str(endDate), '%Y%m%d')
     asOfDateStr = time.strftime('%b %d, %Y', asOfDate)
     if r < 1:
@@ -239,7 +242,13 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
         if cfrRatio > 3 or cfrRatio < 1/3.0:
           cfrstr += 'It is likely that ' + location + ' uses a different reporting protocol than its peers.  '
       outstr += cfrstr
-    immunestr = 'Preliminary estimates suggest that ' + str(round(immunePct)) + '% of the population may have been infected and are presumed immune. '
+    vaccdiststr = ''
+    if vacc_admin_pct > 0:
+      vaccdiststr = 'This represents ' + str(round(vacc_admin_pct, 1)) + '% of the available vaccine. '
+    vaccadminstr = str(round(vacc_complete_pct, 1)) + '% of the population has been fully vaccinated. '
+    vaccstr = numFormat(vacc_admin) + ' vaccine doses have been administered. ' + vaccdiststr + vaccadminstr
+    outstr += vaccstr
+    immunestr = 'Preliminary estimates suggest that ' + str(round(immunePct)) + '% of the population are presumed immune due to recovery or vaccination. '
     if immunePct < 10:
       immunestr += 'This is not enough to significantly slow the spread of the virus. '
     elif immunePct < 25:
