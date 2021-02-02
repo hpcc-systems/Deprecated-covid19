@@ -88,6 +88,7 @@ const LevelDetail = () => {
             let deathsPerCapitaMax = 0;
             let casesMax = 0;
             let deathsMax = 0;
+            let vaccineDistributedMax = 0;
 
             let metrics = queryRange.current.getData('metrics');
             let summary = queryRange.current.getData('summary');
@@ -118,6 +119,7 @@ const LevelDetail = () => {
                 periodNewDeathsMax = item.period_new_deaths > periodNewDeathsMax ? item.period_new_deaths : periodNewDeathsMax;
                 casesPerCapitaMax = item.cases_per_capita > casesPerCapitaMax ? item.cases_per_capita : casesPerCapitaMax;
                 deathsPerCapitaMax = item.deaths_per_capita > deathsPerCapitaMax ? item.deaths_per_capita : deathsPerCapitaMax;
+                vaccineDistributedMax = item.vacc_total_admin > vaccineDistributedMax ? item.vacc_total_admin: vaccineDistributedMax;
             });
 
             let mapSummary = new Map();
@@ -132,7 +134,8 @@ const LevelDetail = () => {
                 "periodNewCasesMax": periodNewCasesMax,
                 "periodNewDeathsMax": periodNewDeathsMax,
                 "casesPerCapitaMax": casesPerCapitaMax,
-                "deathsPerCapitaMax": deathsPerCapitaMax
+                "deathsPerCapitaMax": deathsPerCapitaMax,
+                "vaccineDistributedMax": vaccineDistributedMax
             })
 
             setMapData(mapData);
@@ -577,13 +580,15 @@ const LevelDetail = () => {
 
                                 <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
                                 <Radio.Button value={'status'}>Infection State</Radio.Button>
+                                <Radio.Button value={'vaccine_percent_complete'}>% Population Vaccinated</Radio.Button>
+                                <Radio.Button value={'vaccine_distribution'}>Vaccine Distribution</Radio.Button>
                                 <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
                                 <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
                                 <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>
                                 <Radio.Button value={'deaths_per_capita'}>Deaths/100K</Radio.Button>
                                 <Radio.Button value={'cases'}>Cases</Radio.Button>
                                 <Radio.Button value={'deaths'}>Deaths</Radio.Button>
-                                <Radio.Button value={'vaccine_percent_complete'}>% Population Vaccinated</Radio.Button>
+
                                 <Popover content={renderScale()} title={renderScaleTitle()}>
                                     <Button type={"link"}>Legend</Button>
                                 </Popover>

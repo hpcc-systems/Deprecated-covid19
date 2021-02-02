@@ -206,7 +206,8 @@ maxDs := TABLE(list, {date,
                       deaths_max := MAX(GROUP, deaths),
                       new_deaths_max := MAX(GROUP, period_new_deaths),
                       cases_per_capita_max := MAX(GROUP, cases_per_capita),
-                      deaths_per_capita_max := MAX(GROUP, deaths_per_capita)
+                      deaths_per_capita_max := MAX(GROUP, deaths_per_capita),
+                      vacc_distributed_max := MAX(GROUP, vacc_total_dist),
                       }, date);      
 
 OUTPUT(maxDs,ALL,NAMED('max'));        

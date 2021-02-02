@@ -124,7 +124,23 @@ export default function OlRangeMap(props: Props) {
             "Population Vaccinated:" +
             "</td>" +
             "<td><b>" +
-            row.vacc_complete_pct + ' %' +
+            formatNumber(row.vacc_complete_pct, "%", "No Data") +
+            "</b></td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Vaccine Distributed:" +
+            "</td>" +
+            "<td><b>" +
+            formatNumber(row.vacc_total_dist,"","No Data") +
+            "</b></td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td>" +
+            "Vaccine Administered:" +
+            "</td>" +
+            "<td><b>" +
+            formatNumber(row.vacc_total_admin,"","No Data") +
             "</b></td>" +
             "</tr>" +
             "<tr>" +
@@ -173,6 +189,14 @@ export default function OlRangeMap(props: Props) {
                                 d <= 25 ? '#fee08b' :
                                     d < 50 ? '#66bd63' :
                                         '#1a9850';
+                case 'vaccine_distribution':
+                    d = row.vacc_total_dist/ Math.max(1, props.maxData.vaccineDistributedMax);
+                    return d >= 0.9 ? '#1a9850' :
+                        d > 0.6 ? '#66bd63' :
+                            d > 0.4 ? '#fee08b' :
+                                d > 0.2 ? '#fdae61' :
+                                    d > 0.1 ? '#d73027' :
+                                        '#a50026';
                 case 'contagion_risk':
                     d = row.contagion_risk;
                     return d >= 0.9 ? '#a50026' :
@@ -246,11 +270,13 @@ export default function OlRangeMap(props: Props) {
                     d = formatNumber(row.deaths_per_capita);
                     break;
                 case 'contagion_risk':
-                    d = Math.round(row.contagion_risk * 100) +
-                        "%";
+                    d = formatNumber(Math.round(row.contagion_risk * 100), "%", "0%");
                     break;
                 case 'vaccine_percent_complete':
                     d = row.vacc_complete_pct + "%";
+                    break;
+                case 'vaccine_distribution':
+                    d = formatNumber(row.vacc_total_dist,"","");
                     break;
                 case 'status':
                     d = '' //d = row.status ;
@@ -261,11 +287,11 @@ export default function OlRangeMap(props: Props) {
 
     }
 
-    const formatNumber: any = (value: any) => {
+    const formatNumber: any = (value: any, postfix: string = '', zeroValue: string = "0") => {
         if (value) {
-            return value.toLocaleString();
+            return value.toLocaleString() + postfix;
         } else {
-            return '0';
+            return zeroValue;
         }
     }
 
