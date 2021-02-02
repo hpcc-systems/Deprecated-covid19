@@ -3,6 +3,8 @@ IMPORT hpccsystems.covid19.file.public.OWID as public;
 IMPORT STD;
 #WORKUNIT('name', 'OWID_Clean');
 
+today := STD.Date.Today();
+
 worldDs := raw.worldDs;
 
 cleanWorldDs := PROJECT(worldDs, TRANSFORM(public.worldLayout,
@@ -11,7 +13,7 @@ cleanWorldDs := PROJECT(worldDs, TRANSFORM(public.worldLayout,
                                   SELF := LEFT));
 
 
-OUTPUT(cleanWorldDS, , public.worldFilePath, OVERWRITE, COMPRESSED);
+OUTPUT(cleanWorldDS(date < today), , public.worldFilePath, OVERWRITE, COMPRESSED);
 
 
 usDs := raw.usDs;
@@ -22,4 +24,4 @@ cleanUSDs := PROJECT(usDs, TRANSFORM(public.usLayout,
                                   SELF := LEFT));
 
 
-OUTPUT(cleanUSDs, , public.usFilePath, OVERWRITE, COMPRESSED);
+OUTPUT(cleanUSDs(date < today), , public.usFilePath, OVERWRITE, COMPRESSED);

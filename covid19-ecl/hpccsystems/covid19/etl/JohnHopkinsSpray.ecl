@@ -8,7 +8,7 @@ IMPORT hpccsystems.covid19.file.public.JohnHopkins as jh;
 
 // Define attributes for spray
 today := STD.Date.Today();
-yesterday :=  today - 1;
+yesterday :=  STD.Date.AdjustDate(today, 0, 0, -1);
 tempSuperFileName := '~hpccsystems::covid19::file::raw::JohnHopkins::V2::temp';
 lzip:= '10.0.0.4';
 
