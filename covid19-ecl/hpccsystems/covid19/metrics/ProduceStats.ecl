@@ -66,7 +66,7 @@ OUTPUT(L3Stats, , Paths.StatsLevel3, Thor, OVERWRITE);
 //OUTPUT(L3Stats[..10000], ALL, NAMED('L3Stats'));
 
 // Now the Level 2 Stats based on L2 input
-L2Stats := CalcStats.DailyStats(L2InputDat, 2, noFilter := TRUE);
+L2Stats := CalcStats.DailyStats(L2InputDat, 2, noFilter := FALSE);
 //OUTPUT(L2Stats(date >= 20210101), ALL, NAMED('L2Stats'));
 
 // Run the stats based on the L2 Input Rollup
@@ -81,7 +81,7 @@ OUTPUT(L2Merged, , Paths.StatsLevel2, Thor, OVERWRITE);
 //OUTPUT(L2Merged(date > 20200531), ALL, NAMED('L2Merged'));
 
 // Calculate L1 Stats from L1 source data
-L1Stats := CalcStats.DailyStats(L1InputDat, 1, noFilter := TRUE);
+L1Stats := CalcStats.DailyStats(L1InputDat, 1, noFilter := FALSE);
 //OUTPUT(L1Stats, ALL, NAMED('L1Stats'));
 // Also calculate the stats based on the L1 Input Rollup.
 //L1Rollup := CalcStats.RollupStats(L2Merged, 1);
