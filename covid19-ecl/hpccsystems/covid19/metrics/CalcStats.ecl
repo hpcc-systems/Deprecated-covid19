@@ -106,13 +106,11 @@ EXPORT CalcStats := MODULE
     // Add record id
     stats2 := SORT(stats1, location, -date);
     stats3 := PROJECT(stats2, TRANSFORM(RECORDOF(LEFT), SELF.id := COUNTER, SELF := LEFT));
-    // Eliminate any stats for the current day because we don't want to consider a partial days stats.
-    latestDate := stats3(id=2)[1].date;
-    stats3f := stats3(date <= latestDate);
-    // Get rid of any obsolete locations (i.e. locations that don't have data for the latest date)
-    obsoleteLocations := DEDUP(stats3f, location)(date < latestDate);
+    latestDate := stats3(id=1)[1].date;
+     // Get rid of any obsolete locations (i.e. locations that don't have data for the latest date)
+    obsoleteLocations := DEDUP(stats3, location)(date < latestDate);
     // Don't filter obsolete locations if noFilter is set.
-    stats4 := IF(noFilter, stats3f, JOIN(stats3f, obsoleteLocations, LEFT.location = RIGHT.location, LEFT ONLY));
+    stats4 := IF(noFilter, stats3, JOIN(stats3, obsoleteLocations, LEFT.location = RIGHT.location, LEFT ONLY));
     //stats4 := stats3;
     // Remove spurious data dumps by smoothing and 
     // compute basic delta stats between latest period and previous period
