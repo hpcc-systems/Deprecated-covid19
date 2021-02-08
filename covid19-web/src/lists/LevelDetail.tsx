@@ -538,8 +538,10 @@ const LevelDetail = () => {
                         disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
             <div style={{paddingLeft: 10, paddingBottom: 10, fontSize: 16, fontWeight: 'bold'}}>
+                {geoFileInfo &&
                 <Space>
                     {locationUUID}
+
                     <DropdownSelect value={period} style={{width: 300, paddingTop: 2}}
                                     onChange={(value) => setPeriod(value)} loading={loading}>
                         {renderPeriodSelectors()}
@@ -560,7 +562,14 @@ const LevelDetail = () => {
                     <Button title={"Pause"} disabled={!timerOn} icon={<PauseCircleFilled/>} onClick={() => pause()}/>
                     <Button title={"Last/Current Period"} disabled={timerOn} icon={<StepForwardFilled/>}
                             onClick={() => endPeriod()}/>
+
                 </Space>
+                }
+                {!geoFileInfo &&
+                <Space>
+                    {locationUUID}
+                </Space>
+                }
             </div>
             <div style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10, paddingTop: 10}}
                  ref={(e) => (scrollLayout.current = e)}>
