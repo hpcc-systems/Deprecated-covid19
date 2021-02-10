@@ -567,7 +567,7 @@ const LevelDetail = () => {
                 }
                 {!geoFileInfo &&
                 <Space>
-                    {locationUUID}
+                    {locationUUID + " [ " + summaryData.period_string + " ] "}
                 </Space>
                 }
             </div>
