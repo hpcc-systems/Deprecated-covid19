@@ -352,7 +352,8 @@ L2VaccineRec cumulateVaccL2(L2VaccineRec l, L2VaccineRec r) := TRANSFORM
 END;
 L2VaccData := ITERATE(L2VaccData1, cumulateVaccL2(LEFT, RIGHT), LOCAL);
 //OUTPUT(L2VaccData, ALL, NAMED('L2Vacc'));
-L2InputDat11 := JOIN(L2InputDat10, L2VaccData, LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(LEFT),
+L2LatestDate := MAX(L2InputDat10, date);
+L2InputDat11 := JOIN(L2InputDat10, L2VaccData(date <= L2LatestDate), LEFT.Country = 'US' AND LEFT.Level2 = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(LEFT),
                               SELF.vacc_total_dist := RIGHT.total_distributed,
                               SELF.vacc_total_admin := RIGHT.total_vaccinations,
                               SELF.vacc_total_people := RIGHT.people_vaccinated,
@@ -405,7 +406,8 @@ END;
 L1VaccData := ITERATE(L1VaccData1, cumulateVacc(LEFT, RIGHT), LOCAL);
 //OUTPUT(L1VaccData, ALL, NAMED('L1Vacc'));
 //OUTPUT(countryInputDat0(date >= 20210101), ALL, NAMED('CountryData'));
-countryInputDat := JOIN(countryInputDat0, L1VaccData, LEFT.Country = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(LEFT),
+L1LatestDate := MAX(countryInputDat0, date);
+countryInputDat := JOIN(countryInputDat0, L1VaccData(date <= L1LatestDate), LEFT.Country = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(LEFT),
                               SELF.vacc_total_dist := 0,
                               SELF.vacc_total_admin := RIGHT.total_vaccinations,
                               SELF.vacc_total_people := RIGHT.people_vaccinated,
