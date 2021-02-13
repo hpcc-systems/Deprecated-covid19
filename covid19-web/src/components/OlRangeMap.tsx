@@ -183,12 +183,13 @@ export default function OlRangeMap(props: Props) {
                     break;
                 case 'vaccine_percent_complete':
                     d = row.vacc_complete_pct;
-                    return d <= 1 ? '#a50026' :
-                        d <= 5 ? '#d73027' :
-                            d <= 10 ? '#fdae61' :
-                                d <= 25 ? '#fee08b' :
-                                    d < 50 ? '#66bd63' :
-                                        '#1a9850';
+                    return d === 0 ? '#2b2b2b' :
+                        d <= 1 ? '#a50026' :
+                            d <= 5 ? '#d73027' :
+                                d <= 10 ? '#fdae61' :
+                                    d <= 25 ? '#fee08b' :
+                                        d < 50 ? '#66bd63' :
+                                            '#1a9850';
                 case 'vaccine_distribution':
                     d = row.vacc_total_dist/ Math.max(1, props.maxData.vaccineDistributedMax);
                     return d >= 0.9 ? '#1a9850' :
@@ -273,7 +274,7 @@ export default function OlRangeMap(props: Props) {
                     d = formatNumber(Math.round(row.contagion_risk * 100), "%", "0%");
                     break;
                 case 'vaccine_percent_complete':
-                    d = row.vacc_complete_pct + "%";
+                    d = formatNumber(row.vacc_complete_pct,"%", "ND");
                     break;
                 case 'vaccine_distribution':
                     d = formatNumber(row.vacc_total_dist,"","");
@@ -330,6 +331,7 @@ export default function OlRangeMap(props: Props) {
     const overlay = new Overlay({
         offset: [10, 0],
         positioning: OverlayPositioning.TOP_LEFT,
+        autoPan: true
 
     });
 

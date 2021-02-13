@@ -1,5 +1,7 @@
 import React from 'react';
-import {Card, Col, Layout, Row, Statistic} from "antd";
+import {Button, Card, Col, Layout, Popover, Row, Statistic} from "antd";
+import VaccineTerms from "../VaccineTerms";
+
 
 interface VaccineMeasuresProps {
     summaryData: any;
@@ -17,7 +19,11 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
     return (
         <Layout style={{width:"100%"}}>
             <div style={{fontSize: 16, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>Vaccine Data
+                <Popover key={'popover_vaccine_terms'} title={"Vaccine Terms"} content={<VaccineTerms/>}
+                         trigger={"click"}><Button  type={"link"}>Vaccine
+                    Terms</Button></Popover>
             </div>
+
             <Row>
                 <Col span={12}>
                     <Card>
@@ -32,7 +38,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"Vaccine Total Administered - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_total_admin}
+                            value={renderOptionalValue(props.summaryData.vacc_total_admin)}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -43,7 +49,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"People partially vaccinated - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_total_people-props.summaryData.vacc_people_complete}
+                            value={renderOptionalValue(props.summaryData.vacc_total_people-props.summaryData.vacc_people_complete)}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -52,7 +58,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"People fully vaccinated - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_people_complete}
+                            value={renderOptionalValue(props.summaryData.vacc_people_complete)}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -63,7 +69,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"Population fully vaccinated - " + props.summaryData.date_string}
-                            value={props.summaryData.vacc_complete_pct + " %"}
+                            value={renderOptionalValue(props.summaryData.vacc_complete_pct ,  "%")}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -84,7 +90,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"People fully vaccinated in the week - " + props.summaryData.period_string}
-                            value={props.summaryData.vacc_period_complete}
+                            value={renderOptionalValue(props.summaryData.vacc_period_complete)}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
@@ -93,7 +99,7 @@ const VaccineMeasures = (props: VaccineMeasuresProps) => {
                     <Card>
                         <Statistic
                             title={"People getting at least one vaccine in the week - " + props.summaryData.period_string}
-                            value={props.summaryData.vacc_period_people}
+                            value={renderOptionalValue(props.summaryData.vacc_period_people)}
                             valueStyle={{color: '#cf1322'}}
                         />
                     </Card>
