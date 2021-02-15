@@ -37,23 +37,23 @@ jobs:
           steps:
           - task: CmdLine@2
             inputs:
-              script: 'pm2 stop Covid19-Web'        
+              script: 'pm2 stop covid19-dashboard'        
           - task: CopyFiles@2
             inputs:
-              SourceFolder: '/home/hpcclabs/azagent/_work/1/covid19/s/covid19-web'
+              SourceFolder: '/home/azureuser/azagent/azagent/_work/1/covid19/s/covid19-web'
               Contents: '**'
-              TargetFolder: '/home/hpcclabs/covid19/covid19/covid19-web'
+              TargetFolder: '/opt/app/covid19/covid19-web'
               OverWrite: true
           - task: CmdLine@2
             inputs:
               script: 'npm install'
-              workingDirectory: '/home/hpcclabs/covid19/covid19/covid19-web'
+              workingDirectory: '/opt/app/covid19/covid19-web'
           - task: CmdLine@2
             inputs:
-              script: 'pm2 start Covid19-Web'
+              script: 'pm2 start covid19-dashboard'
           - task: DeleteFiles@1
             inputs:
-              SourceFolder: '/home/hpcclabs/azagent/_work/1/covid19/s/covid19-web'
+              SourceFolder: '/home/azureuser/azagent/azagent/_work/1/covid19/s/covid19-web'
               Contents: '*'
               
 

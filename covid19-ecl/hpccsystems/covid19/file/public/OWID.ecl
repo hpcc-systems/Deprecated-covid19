@@ -23,18 +23,18 @@ END;
 EXPORT usLayout := RECORD
     STD.Date.Date_t date;
     STRING location;
-    UNSIGNED total_distributed;
-    UNSIGNED total_vaccinations;
-    DECIMAL12_2 distributed_per_hundred;
-    DECIMAL12_2 total_vaccinations_per_hundred;
-    UNSIGNED people_vaccinated;
-    DECIMAL12_2 people_vaccinated_per_hundred;
-    UNSIGNED people_fully_vaccinated;
-    DECIMAL12_2 people_fully_vaccinated_per_hundred;
-    UNSIGNED daily_vaccinations_raw;
-    UNSIGNED daily_vaccinations;
-    DECIMAL12_2 daily_vaccinations_per_million;
-    DECIMAL12_2 share_dose_used;
+    UNSIGNED4 total_vaccinations;
+    UNSIGNED4 total_distributed;
+    UNSIGNED4 people_vaccinated;
+    DECIMAL people_fully_vaccinated_per_hundred;
+    DECIMAL total_vaccinations_per_hundred;
+    UNSIGNED4 people_fully_vaccinated;
+    DECIMAL people_vaccinated_per_hundred;
+    DECIMAL distributed_per_hundred;
+    UNSIGNED4 daily_vaccinations_raw;
+    UNSIGNED4 daily_vaccinations;
+    DECIMAL daily_vaccinations_per_million;
+    DECIMAL share_doses_used;
 END;
 
 
