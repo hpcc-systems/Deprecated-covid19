@@ -12,13 +12,13 @@ export default function VaccineTerms() {
                     The total number of vaccine doses that were administered.
                 </Descriptions.Item>
                 <Descriptions.Item label="People Partially Vaccinated">
-                    The number of people who have received at least one dose of a multi-dose vaccine, but have not yet recieved all doses (not available for all locations).
+                    The number of people who have received at least one dose of a multi-dose vaccine, but have not yet received all doses (not available for all locations).
                 </Descriptions.Item>
                 <Descriptions.Item label="People Fully Vaccinated">
                     The number of people who have received all of the required doses of any vaccine, whether single dose or multi-dose (not available for all locations).
                 </Descriptions.Item>
                 <Descriptions.Item label="Population Fully Vaccinated">
-                    The percent of the population that has recieved all of the required doses of any vaccine (not available for all locations).
+                    The percent of the population that has received all of the required doses of any vaccine (not available for all locations).
                 </Descriptions.Item>
                 <Descriptions.Item label="Vaccine Dose Administered">
                     The percent of the distributed vaccines that have been administered (not available for all locations). 
