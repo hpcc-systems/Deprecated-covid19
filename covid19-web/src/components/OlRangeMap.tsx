@@ -341,7 +341,7 @@ export default function OlRangeMap(props: Props) {
     const overlay = new Overlay({
         offset: [10, 0],
         positioning: OverlayPositioning.TOP_LEFT,
-        autoPan: true
+        autoPan: false
 
     });
 
