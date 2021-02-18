@@ -17,9 +17,8 @@ dates_world := TABLE(cleanWorldDs0, {date, cnt := COUnt(GROUP)}, date );
 locations_world :=  TABLE(cleanWorldDs0, {location, iso_code, cnt := COUnt(GROUP)}, location, iso_code );
 pair_world := JOIN(dates_world, locations_world, TRUE, TRANSFORM({UNSIGNED4 date, STRING location, STRING iso_code}, SELF := LEFT, SELF := RIGHT), ALL);
 cleanWorldDs:= JOIN(pair_world, cleanWorldDs0 , LEFT.location = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(RIGHT),  SELF := LEFT, SELF := RIGHT),  LEFT OUTER);
-// OUTPUT(SORT(cleanWorldDS, location, date), , public.worldFilePath, OVERWRITE, COMPRESSED);
-// t0 :=  TABLE(cleanWorldDs, {location, iso_code, cnt := COUnt(GROUP)}, location, iso_code );
-// t0;
+OUTPUT(SORT(cleanWorldDS, location, date), , public.worldFilePath, OVERWRITE, COMPRESSED);
+
 
 usDs := raw.usDs;
 
@@ -34,5 +33,4 @@ locations_US :=  TABLE(cleanUSds0, {location, cnt := COUnt(GROUP)}, location);
 pairs_US := JOIN(dates_US, locations_US, TRUE, TRANSFORM({UNSIGNED4 date, STRING location}, SELF := LEFT, SELF := RIGHT), ALL);
 cleanUSDS:= JOIN(pairs_US, cleanUSds0 , LEFT.location = RIGHT.location AND LEFT.date = RIGHT.date, TRANSFORM(RECORDOF(RIGHT),  SELF := LEFT, SELF := RIGHT),  HASH, LEFT OUTER);
 OUTPUT(SORT(cleanUSDS, location, date), , public.usFilePath, OVERWRITE, COMPRESSED);
-// t := table(cleanusDS, {location, cnt := COUNT(GROUP)}, location);
-// t;
+

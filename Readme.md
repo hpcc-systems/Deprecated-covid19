@@ -125,6 +125,24 @@ The _Short Term Indicator_ (STI) is a predictive indicator that attemtps to dete
 
 The _Early Warning Indicataor_ (EWI) predicts major shifts (inflection points) in the momentum of the infection.  It is meaningful when an infection is moving from a neutral or recovering state to a spreading state.  It is also meaningful when an infection is transitioning from growth to stability.
 
+# Vaccine Metrics
+
+The following metrics are designed to track vaccination data:
+
+_Vaccines Distributed_ indicates the cumulative number of vaccines that have been distributed to a location.  This data is currently only available for US states.
+
+_Vaccines Administered_ shows the cumulative number of vaccine doses that were administered (i.e. injected) at the location.
+
+_People Vaccinated_ indicates the cumulative number of people who have received at least one vaccine dose.
+
+_People Fully Vaccinated_ shows the number of people who have received all of the required doses of any vaccine, whether single dose or multi-dose (not available for all locations).
+
+_Population Vaccinated Pct_ is the percent of the population that has recieved all of the required doses of any vaccine (not available for all locations).
+
+_Vaccines Administered Pct_ is he percent of the distributed vaccines that have been administered. This data is currently only available for US states. 
+
+In addition to the cumulative vaccination data above, the system also produces daily and weekly vaccination data.
+
 # Surge detection
 
 The system tracks ebbs and flows in the infection rate to show multiple "surges" or "waves" of infection.  We define a surge as a transition from a shrinking state to a growing state.  We track the start dates, peaks, and durations of each surge.  Knowing the surge number and start date helps in understanding the oscillations that a location goes through over the life of the infection.
