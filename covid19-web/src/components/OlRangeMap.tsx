@@ -124,7 +124,7 @@ export default function OlRangeMap(props: Props) {
             "Population Vaccinated:" +
             "</td>" +
             "<td><b>" +
-            formatNumber(row.vacc_complete_pct, "%", "No Data") +
+            formatNumber(row.vacc_people_complete, " ("+row.vacc_complete_pct+"%)", "No Data") +
             "</b></td>" +
             "</tr>" +
             "<tr>" +
