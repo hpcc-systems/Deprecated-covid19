@@ -370,6 +370,109 @@ const LevelDetail = () => {
             return Math.trunc(d).toLocaleString();
         }
 
+        function populationVaccinatedScale() {
+            return <div style={{width: 250, paddingLeft: 10}}>
+                <table cellPadding={5}>
+                    <tbody>
+                    <tr style={{}}>
+                        <td>No Data</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#2b2b2b"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>0 to 1%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#a50026"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1 to 5%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#d73027"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6 to 10%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fdae61"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>11 to 25%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fee08b"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>25 to 50%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#66bd63"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Greater Than 50%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#1a9850"}}/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        }
+
+        function populationAdminScale() {
+            return <div style={{width: 250, paddingLeft: 10}}>
+                <table cellPadding={5}>
+                    <tbody>
+                    <tr style={{}}>
+                        <td>No Data</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#2b2b2b"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>0 to 60%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#a50026"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>61 to 70%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#d73027"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>71 to 75%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fdae61"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>76 to 80%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#fee08b"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>81 to 90%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#66bd63"}}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>91 to 100%</td>
+                        <td>
+                            <div style={{width: 20, height: 20, background: "#1a9850"}}/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+
 
         function statsScale(d: number, label: string) {
             return <div style={{width: 250, paddingLeft: 10}}>
@@ -434,6 +537,10 @@ const LevelDetail = () => {
                 return statusScale()
             case 'contagion_risk':
                 return contagionScale()
+            case 'vaccine_percent_complete':
+                return populationVaccinatedScale()
+            case 'vaccine_percent_admin':
+                return populationAdminScale()
         }
     }
 
@@ -529,6 +636,7 @@ const LevelDetail = () => {
                 <Button href={"#summary_stats"} type={"link"} className={"anchor-btn"}>Stats</Button>
                 <Button href={"#trends"} type={"link"} className={"anchor-btn"}>Trends</Button>
                 <Button href={"#hot_spots"} type={"link"} className={"anchor-btn"}>Hot Spots</Button>
+                <Button href={"#vaccine_stats"} type={"link"} className={"anchor-btn"}>Vaccine</Button>
                 <Popover key={'popover_metrics_terms'} title={"Metrics Terms"} content={<MetricsTerms/>}
                          trigger={"click"}><Button type={"link"} className={"anchor-btn"}>METRICS
                     TERMS</Button></Popover>
@@ -590,7 +698,7 @@ const LevelDetail = () => {
                                 <Radio.Button value={'contagion_risk'}>Contagion Risk</Radio.Button>
                                 <Radio.Button value={'status'}>Infection State</Radio.Button>
                                 <Radio.Button value={'vaccine_percent_complete'}>% Population Vaccinated</Radio.Button>
-                                <Radio.Button value={'vaccine_distribution'}>Vaccine Distribution</Radio.Button>
+                                <Radio.Button value={'vaccine_percent_admin'}>% Vaccine Administered</Radio.Button>
                                 <Radio.Button value={'new_cases'}>Weekly New Cases</Radio.Button>
                                 <Radio.Button value={'new_deaths'}>Weekly New Deaths</Radio.Button>
                                 <Radio.Button value={'cases_per_capita'}>Cases/100K</Radio.Button>

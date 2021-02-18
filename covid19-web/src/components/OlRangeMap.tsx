@@ -124,7 +124,7 @@ export default function OlRangeMap(props: Props) {
             "Population Vaccinated:" +
             "</td>" +
             "<td><b>" +
-            formatNumber(row.vacc_complete_pct, "%", "No Data") +
+            formatNumber(row.vacc_people_complete, formatPercentNumber(row.vacc_complete_pct), "No Data") +
             "</b></td>" +
             "</tr>" +
             "<tr>" +
@@ -134,15 +134,16 @@ export default function OlRangeMap(props: Props) {
             "<td><b>" +
             formatNumber(row.vacc_total_dist,"","No Data") +
             "</b></td>" +
-            "</tr>" +
             "<tr>" +
             "<td>" +
             "Vaccine Administered:" +
             "</td>" +
             "<td><b>" +
-            formatNumber(row.vacc_total_admin,"","No Data") +
+            formatNumber(row.vacc_total_admin,formatPercentNumber(row.vacc_admin_pct),"No Data") +
             "</b></td>" +
             "</tr>" +
+            "</tr>" +
+            "<tr>" +
             "<tr>" +
             "<td colspan='2' style='font-style: italic;color: black'>"
             + "Please click on the map for more details" +
@@ -190,14 +191,16 @@ export default function OlRangeMap(props: Props) {
                                     d <= 25 ? '#fee08b' :
                                         d < 50 ? '#66bd63' :
                                             '#1a9850';
-                case 'vaccine_distribution':
-                    d = row.vacc_total_dist/ Math.max(1, props.maxData.vaccineDistributedMax);
-                    return d >= 0.9 ? '#1a9850' :
-                        d > 0.6 ? '#66bd63' :
-                            d > 0.4 ? '#fee08b' :
-                                d > 0.2 ? '#fdae61' :
-                                    d > 0.1 ? '#d73027' :
-                                        '#a50026';
+                case 'vaccine_percent_admin':
+                    //use the administered % to show the colors
+                    d = row.vacc_admin_pct;
+                    return d >= 90 ? '#1a9850' :
+                        d > 80 ? '#66bd63' :
+                            d > 75 ? '#fee08b' :
+                                d > 70 ? '#fdae61' :
+                                    d > 60 ? '#d73027' :
+                                      d > 0 ? '#a50026':
+                                          '#2b2b2b';
                 case 'contagion_risk':
                     d = row.contagion_risk;
                     return d >= 0.9 ? '#a50026' :
@@ -276,8 +279,8 @@ export default function OlRangeMap(props: Props) {
                 case 'vaccine_percent_complete':
                     d = formatNumber(row.vacc_complete_pct,"%", "ND");
                     break;
-                case 'vaccine_distribution':
-                    d = formatNumber(row.vacc_total_dist,"","");
+                case 'vaccine_percent_admin':
+                    d = formatNumber(row.vacc_admin_pct,"%","ND");
                     break;
                 case 'status':
                     d = '' //d = row.status ;
@@ -293,6 +296,13 @@ export default function OlRangeMap(props: Props) {
             return value.toLocaleString() + postfix;
         } else {
             return zeroValue;
+        }
+    }
+    const formatPercentNumber: any = (value: any) => {
+        if (value && value !== 0) {
+            return " (" + value + "%)";
+        } else {
+            return "";
         }
     }
 
@@ -331,7 +341,7 @@ export default function OlRangeMap(props: Props) {
     const overlay = new Overlay({
         offset: [10, 0],
         positioning: OverlayPositioning.TOP_LEFT,
-        autoPan: true
+        autoPan: false
 
     });
 
