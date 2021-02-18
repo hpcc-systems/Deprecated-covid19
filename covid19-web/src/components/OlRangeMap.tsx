@@ -124,7 +124,7 @@ export default function OlRangeMap(props: Props) {
             "Population Vaccinated:" +
             "</td>" +
             "<td><b>" +
-            formatNumber(row.vacc_people_complete, " ("+row.vacc_complete_pct+"%)", "No Data") +
+            formatNumber(row.vacc_people_complete, formatPercentNumber(row.vacc_complete_pct), "No Data") +
             "</b></td>" +
             "</tr>" +
             "<tr>" +
@@ -139,7 +139,7 @@ export default function OlRangeMap(props: Props) {
             "Vaccine Administered:" +
             "</td>" +
             "<td><b>" +
-            formatNumber(row.vacc_total_admin," ("+row.vacc_admin_pct+"%)","No Data") +
+            formatNumber(row.vacc_total_admin,formatPercentNumber(row.vacc_admin_pct),"No Data") +
             "</b></td>" +
             "</tr>" +
             "</tr>" +
@@ -296,6 +296,13 @@ export default function OlRangeMap(props: Props) {
             return value.toLocaleString() + postfix;
         } else {
             return zeroValue;
+        }
+    }
+    const formatPercentNumber: any = (value: any) => {
+        if (value && value !== 0) {
+            return " (" + value + "%)";
+        } else {
+            return "";
         }
     }
 
