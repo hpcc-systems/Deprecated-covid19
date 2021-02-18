@@ -139,18 +139,11 @@ export default function OlRangeMap(props: Props) {
             "Vaccine Administered:" +
             "</td>" +
             "<td><b>" +
-            formatNumber(row.vacc_total_admin,"","No Data") +
+            formatNumber(row.vacc_total_admin," ("+row.vacc_admin_pct+"%)","No Data") +
             "</b></td>" +
             "</tr>" +
             "</tr>" +
             "<tr>" +
-            "<td>" +
-            "Vaccine Administered:" +
-            "</td>" +
-            "<td><b>" +
-            formatNumber(row.vacc_admin_pct,"%","No Data") +
-            "</b></td>" +
-            "</tr>" +
             "<tr>" +
             "<td colspan='2' style='font-style: italic;color: black'>"
             + "Please click on the map for more details" +
