@@ -210,7 +210,7 @@ The system provides a friendly web-based interface for viewing COVID-19 data and
 
 The user interface provides several ways to navigate:
 
-* _Map View_ shows aspects of the infection through color codings on a map.  The map can be color coded by a number of attributes including Infection State, New Cases, New Deaths, Cases per 100K, Deaths per 100K, Total Cases and Total Deaths. On Map View, users can drilldown to the lowest location as possible. Currently supported Views include World  View, Country View, Province/State View, City/County View.
+* _Map View_ shows aspects of the infection through color codings on a map.  The map can be color coded by a number of attributes including Infection State, New Cases, New Deaths, Cases per 100K, Deaths per 100K, Total Cases, Total Deaths, Vaccine Utilization, and Population Percent Vaccinated. On the Map View, users can drilldown to any level of location. Currently supported Views include World  View, Country View, Province/State View, City/County View.
 
 
 ![Country Map View](/docs/images/readme/map_country.png)
@@ -261,6 +261,9 @@ Trend View – New Cases and New Deaths Trend
 Hotspots View
 </p>
 
+Additionally, the user interface provides the ability to move back and forward in time, to look at map views and / or statistics at any level, and during any point in the pandemic, to better understand the development and evolution of the pandemic.
+
+Furthermore, a button is provided to animate the evolution of the pandemic, automatically moving from week to week, and showing any aspect (e.g. Contagion Risk, Infection State, Vaccine Administration).  This live animation is intended to complement the static views to provide insights into how the pandemic evolves over time.
 
 # Appendix
 
