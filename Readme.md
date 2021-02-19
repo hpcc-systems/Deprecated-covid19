@@ -232,6 +232,14 @@ State Map View
 Stats View
 </p>
 
+* _Vaccine Data View_ shows the vaccination status at a location. 
+
+
+![Vaccine Data View](/docs/images/readme/vaccine.png)
+<p align="center">
+Vaccine Data View
+</p>
+
 * _Trend View_ shows the trend of infection rate, weekly new cases and weekly new deaths. The details of theses definitions can be found in the previous section.
 
 
@@ -327,7 +335,7 @@ CFR = adjustedCases(T - IP) / adjustedDeaths(T)
 -	Infection Fatality Rate (IFR) -- The likelihood of dying, having acquired an infection. This is a gross approximation assuming a constant ICR.
 IFR = CFR * ICR
 
--	immunePct -- The fraction of the population that has recovered from the infection and are considered immunune.
+-	immunePct -- The fraction of the population that has recovered from the infection and are considered immune.
 immunePct = Recovered * ICR / Population
 
 -	Infection State (IState) -- A qualitative metric that models the state of the infection. It will assign one of the following states to the infection within a location: 1) INITIAL, 2)RECOVERED, 3) RECOVERING, 4) STABILIZED, 5) STABILIZING, 6) EMERGING, 7) SPREADING. These are assigned based on a series of cascading predicate tests. The first true predicate assigns the state. 
