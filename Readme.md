@@ -389,3 +389,9 @@ EWI = IF(SDI < -.2 AND MI > .2, EWI0, IF(SDI > .2 AND MI < -.2, EWI0, 0))
 [3] Judea Pearl. "Causality: Models, Reasoning, and Inference", Cambridge University Press, 2000, 2008, Kindle edition.  
 [4] Judea Pearl, Madelyn Glymour, Nicholas P. Jewell.  “Causal Inference in Statistics”, John Wiley and Sons, 2016.  
 
+
+# Data Attribution
+
+[1] Dong, Ensheng, Hongru Du, and Lauren Gardner. "An interactive web-based dashboard to track COVID-19 in real time." The Lancet infectious diseases 20.5 (2020): 533-534. https://github.com/CSSEGISandData/COVID-19 <br/>
+[2] Hasell, J., Mathieu, E., Beltekian, D. et al. A cross-country database of COVID-19 testing. Sci Data 7, 345 (2020). https://doi.org/10.1038/s41597-020-00688-8  https://github.com/owid/covid-19-data <br/>
+[3] World Population Prospects 2019. Available at https://population.un.org/wpp/ <br/>
