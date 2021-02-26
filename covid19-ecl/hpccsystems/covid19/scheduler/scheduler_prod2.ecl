@@ -2,6 +2,8 @@ IMPORT Std;
 IMPORT $.Utils.KafkaUtils AS KUtils;
 IMPORT $.Utils.SOAPUtils AS SUtils;
 
+IF(Std.Str.ToUpperCase(Std.System.Job.Platform()) != 'HTHOR', FAIL('This code must be run on hthor'));
+
 //ActionType: RUN: Run Thor Job; PUBLISH: Publish Roxie Query
 RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     ast := ASSERT(ActionType = 'RUN' OR ActionType = 'PUBLISH', 'WARNING: ActionType not exists', FAIL);
@@ -53,4 +55,5 @@ ORDERED
     );
 // thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
 thingsToDo : WHEN(CRON('30 7,10 * * *'));
+// thingsToDo : WHEN(CRON('0 11 * * *'));
 // thingsToDo;
