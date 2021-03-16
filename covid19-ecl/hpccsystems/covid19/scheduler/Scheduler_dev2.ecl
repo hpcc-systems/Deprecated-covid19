@@ -2,6 +2,8 @@ IMPORT Std;
 IMPORT $.Utils.KafkaUtils AS KUtils;
 IMPORT $.Utils.SOAPUtils AS SUtils;
 
+IF(Std.Str.ToUpperCase(Std.System.Job.Platform()) != 'HTHOR', FAIL('This code must be run on hthor'));
+
 //ActionType: RUN: Run Thor Job; PUBLISH: Publish Roxie Query
 RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     ast := ASSERT(ActionType = 'RUN' OR ActionType = 'PUBLISH', 'WARNING: ActionType not exists', FAIL);
@@ -36,9 +38,9 @@ thingsToDo := ORDERED
         KUtils.genInstanceID;   
         RunOrPublishByName('scheduler' , 'RUN');
         // KUtils.sendMsg(wuid := WORKUNIT, dataflowid := kutils.DataflowId_v2, instanceid :=DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s, msg := 'Test Cluster: Scheduler sending message' );   
-        RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
+        // RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('OWID_Clean' , 'RUN');
-        RunOrPublishByName('JohnHopkinsClean' , 'RUN');
+        // RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
         RunOrPublishByName('Produce_Weekly_Metrics', 'RUN');       
