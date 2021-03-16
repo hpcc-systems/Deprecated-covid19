@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Layout, Popover, Radio, Select as DropdownSelect, Skeleton, Space, Tabs} from "antd";
+import {Button, Layout, Popover, Radio, Select as DropdownSelect, Skeleton, Space, Spin, Tabs} from "antd";
 import {QueryData} from "../components/QueryData";
 import {
     CaretLeftFilled,
@@ -681,7 +681,7 @@ const LevelDetail = () => {
             </div>
             <div style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10, paddingTop: 10}}
                  ref={(e) => (scrollLayout.current = e)}>
-                {/*<Spin spinning={loading} delay={250}>*/}
+                <Spin spinning={loading && !timerOn} delay={150}>
                 <div id={"commentary"} style={{height: 0}}/>
                 <TextArea rows={4} style={{fontSize: 14}} value={summary(period)} readOnly={true}/>
 
@@ -755,7 +755,7 @@ const LevelDetail = () => {
                 </Layout.Content>
 
 
-                {/*</Spin>*/}
+                </Spin>
             </div>
 
 
