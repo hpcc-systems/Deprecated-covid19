@@ -387,25 +387,25 @@ const LevelDetail = () => {
                         </td>
                     </tr>
                     <tr>
-                        <td>>1 to 5%</td>
+                        <td>{">"}1 to 5%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#d73027"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>>5 to 10%</td>
+                        <td>{">"}5 to 10%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>>10 to 25%</td>
+                        <td>{">"}10 to 25%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fee08b"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>>25 to 50%</td>
+                        <td>{">"}25 to 50%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#66bd63"}}/>
                         </td>
@@ -439,31 +439,31 @@ const LevelDetail = () => {
                         </td>
                     </tr>
                     <tr>
-                        <td>>60 to 70%</td>
+                        <td>{">"}60 to 70%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#d73027"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>>70 to 75%</td>
+                        <td>{">"}70 to 75%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>>75 to 80%</td>
+                        <td>{">"}75 to 80%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fee08b"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>>80 to 90%</td>
+                        <td>{">"}80 to 90%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#66bd63"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>>90 to 100%</td>
+                        <td>{">"}90 to 100%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#1a9850"}}/>
                         </td>
