@@ -2,6 +2,8 @@ IMPORT Std;
 IMPORT $.Utils.KafkaUtils AS KUtils;
 IMPORT $.Utils.SOAPUtils AS SUtils;
 
+IF(Std.Str.ToUpperCase(Std.System.Job.Platform()) != 'HTHOR', FAIL('This code must be run on hthor'));
+
 //ActionType: RUN: Run Thor Job; PUBLISH: Publish Roxie Query
 RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     ast := ASSERT(ActionType = 'RUN' OR ActionType = 'PUBLISH', 'WARNING: ActionType not exists', FAIL);
@@ -43,7 +45,7 @@ ORDERED
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('hpccsystems_covid19_removeQueryFiles_v2' , 'RUN');
         // );
-
+        RunOrPublishByName('OWID_Clean' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('Ingest_JH_data', 'RUN');
         RunOrPublishByName('Produce_Daily_Stats', 'RUN');
@@ -52,5 +54,6 @@ ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_range_map');               
     );
 // thingsToDo : WHEN(CRON('30 0-23/6 * * *'));
-// thingsToDo : WHEN(CRON('30 7,10 * * *'));
-thingsToDo;
+thingsToDo : WHEN(CRON('30 7,10 * * *'));
+// thingsToDo : WHEN(CRON('0 11 * * *'));
+// thingsToDo;

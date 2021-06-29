@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Layout, Popover, Radio, Select as DropdownSelect, Skeleton, Space, Tabs} from "antd";
+import {Button, Layout, Popover, Radio, Select as DropdownSelect, Skeleton, Space, Spin, Tabs} from "antd";
 import {QueryData} from "../components/QueryData";
 import {
     CaretLeftFilled,
@@ -387,25 +387,25 @@ const LevelDetail = () => {
                         </td>
                     </tr>
                     <tr>
-                        <td>1 to 5%</td>
+                        <td>{">"}1 to 5%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#d73027"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>6 to 10%</td>
+                        <td>{">"}5 to 10%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>11 to 25%</td>
+                        <td>{">"}10 to 25%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fee08b"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>25 to 50%</td>
+                        <td>{">"}25 to 50%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#66bd63"}}/>
                         </td>
@@ -439,31 +439,31 @@ const LevelDetail = () => {
                         </td>
                     </tr>
                     <tr>
-                        <td>61 to 70%</td>
+                        <td>{">"}60 to 70%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#d73027"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>71 to 75%</td>
+                        <td>{">"}70 to 75%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fdae61"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>76 to 80%</td>
+                        <td>{">"}75 to 80%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#fee08b"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>81 to 90%</td>
+                        <td>{">"}80 to 90%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#66bd63"}}/>
                         </td>
                     </tr>
                     <tr>
-                        <td>91 to 100%</td>
+                        <td>{">"}90 to 100%</td>
                         <td>
                             <div style={{width: 20, height: 20, background: "#1a9850"}}/>
                         </td>
@@ -681,7 +681,7 @@ const LevelDetail = () => {
             </div>
             <div style={{overflow: 'auto', paddingLeft: 10, paddingRight: 10, paddingTop: 10}}
                  ref={(e) => (scrollLayout.current = e)}>
-                {/*<Spin spinning={loading} delay={250}>*/}
+                <Spin spinning={loading && !timerOn} delay={150}>
                 <div id={"commentary"} style={{height: 0}}/>
                 <TextArea rows={4} style={{fontSize: 14}} value={summary(period)} readOnly={true}/>
 
@@ -755,7 +755,7 @@ const LevelDetail = () => {
                 </Layout.Content>
 
 
-                {/*</Spin>*/}
+                </Spin>
             </div>
 
 
