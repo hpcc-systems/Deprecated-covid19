@@ -96,3 +96,6 @@ ACTIONS := IF(EXISTS(newFiles),
             ASSERT(COUNT(newFiles)>0, 'No Incoming Files'));
 
 ACTIONS;
+
+import $.^.scheduler.utils;
+utils.runOrPublishByName('hpccsystems_covid19_spray', 'RUN');

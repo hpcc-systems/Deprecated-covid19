@@ -30,3 +30,6 @@ OUTPUT(L0Metrics, , Paths.MetricsLevel0, Thor, OVERWRITE);
 OUTPUT(L1Metrics, , Paths.MetricsLevel1, Thor, OVERWRITE);
 OUTPUT(L2Metrics, , Paths.MetricsLevel2, Thor, OVERWRITE);
 OUTPUT(L3Metrics, , Paths.MetricsLevel3, Thor, OVERWRITE);
+
+import $.^.scheduler.utils;
+utils.runOrPublishByName('Produce_Weekly_Metrics', 'RUN');

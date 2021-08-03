@@ -86,4 +86,5 @@ NOTHOR(SEQUENTIAL(
 // OUTPUT(TABLE(us(update_date=latestDt), {update_date, REAL total_cases:= SUM(GROUP, confirmed)}, update_date),,NAMED('total_cases_world'));
 // OUTPUT(TABLE(world(update_date=latestDt), {update_date, REAL total_cases:= SUM(GROUP, confirmed)}, update_date),,NAMED('total_cases_us'));
 
-
+import $.^.scheduler.utils;
+utils.runOrPublishByName('JohnHopkinsClean', 'RUN');

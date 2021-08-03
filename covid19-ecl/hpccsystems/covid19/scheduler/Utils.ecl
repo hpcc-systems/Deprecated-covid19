@@ -281,4 +281,32 @@ EXPORT Utils := MODULE
     END;
 
   END;
+
+
+  EXPORT RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
+    ast := ASSERT(ActionType = 'RUN' OR ActionType = 'PUBLISH', 'WARNING: ActionType not exists', FAIL);
+
+    runResults := SOAPUtils.RunCompiledWorkunitByName
+        (
+            wuJobName,
+            waitForCompletion := TRUE,
+            username := SOAPUtils.username,
+            userPW := SOAPUtils.userPW
+        );
+
+    publishResults := SOAPUtils.PublishCompiledWorkunitByName
+        (
+            wuJobName,
+            username := SOAPUtils.username,
+            userPW := SOAPUtils.userPW
+        );
+    wuid := IF(wuJobName = 'Scheduler_dev2', WORKUNIT, IF(ActionType = 'RUN', runResults[1].wuid, publishResults[1].wuid));
+    // Logging
+    logStartAction := Std.System.Log.AddWorkunitInformation(Std.Date.SecondsToString(Std.Date.CurrentSeconds()) + ': running ' + wuJobName);
+    // Kafka message
+    // guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
+    //wuid W002
+    sendMsg := KafkaUtils.sendMsg( ,  wuJobName , ,  WORKUNIT );   
+    RETURN SEQUENTIAL(ast, logStartAction, sendMsg);
+    END;
 END;
