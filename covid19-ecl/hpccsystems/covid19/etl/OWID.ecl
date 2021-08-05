@@ -61,4 +61,7 @@ inserts_US := NORMALIZE(locations_US, LEFT.gap, transNormUS(LEFT, COUNTER));
 cleanUSDs:= cleanUSDs0 + inserts_US;
 OUTPUT(SORT(cleanUSDS, location, date), , public.usFilePath, OVERWRITE, COMPRESSED);
 
+import $.^.scheduler.utils;
+utils.runOrPublishByName('OWID_Clean', 'RUN');
+
 // cleanUSds(location = 'ALABAMA');
