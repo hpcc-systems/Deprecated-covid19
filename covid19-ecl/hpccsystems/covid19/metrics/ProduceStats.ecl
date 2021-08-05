@@ -66,8 +66,9 @@ OUTPUT(L3Stats, , Paths.StatsLevel3, Thor, OVERWRITE);
 //OUTPUT(L3Stats[..10000], ALL, NAMED('L3Stats'));
 
 // Now the Level 2 Stats based on L2 input
+//OUTPUT(L2InputDat(date>=20210201), ALL, NAMED('L2InputDat'));
 L2Stats := CalcStats.DailyStats(L2InputDat, 2, noFilter := FALSE);
-//OUTPUT(L2Stats(date >= 20210101), ALL, NAMED('L2Stats'));
+//OUTPUT(L2Stats(date >= 20210201), ALL, NAMED('L2Stats'));
 
 // Run the stats based on the L2 Input Rollup
 //L2Rollup := CalcStats.RollupStats(L3Stats, 2);

@@ -19,6 +19,7 @@ EXPORT CalcStats := MODULE
   SHARED FilterMaxDailyShrink := 1 / filterMaxDailyGrowth;
   SHARED locDelim := Config.LocDelim; // Delimiter between location terms.
   SHARED min7dma := 10;  // Minimum effective 7-day moving average for cases and deaths
+  SHARED noFilterLocs := ['FLORIDA'];
 
   SHARED DATASET(statsRec) smoothData(DATASET(statsRec) recs) := FUNCTION
     // Filter out any daily increases that imply an R > 10.
@@ -54,7 +55,7 @@ EXPORT CalcStats := MODULE
       cases7max2 := MAX(cases7max, min7dma);
       maxNewCases := FilterMaxDailyGrowth * cases7max2;
       minNewCases := FilterMaxDailyShrink * cases7min;
-      UNSIGNED adjNewCases := IF(COUNT(casesHistory) < 7, newCases, IF(newCases > maxNewCases, maxNewCases, IF(newCases < minNewCases, minNewCases, MAX(newCases, 0))));
+      UNSIGNED adjNewCases := IF(COUNT(casesHistory) < 7 OR ri.level2 IN noFilterLocs, newCases, IF(newCases > maxNewCases, maxNewCases, IF(newCases < minNewCases, minNewCases, MAX(newCases, 0))));
       //UNSIGNED adjNewCases := IF(newCases > 2.24 * cases7dma2, cases7dma2 * 2.24, MAX(newCases, 0));
       SELF.casesHistory := ([adjNewCases] + casesHistory)[..7];
       SELF.cases7dma := cases7dma;
@@ -73,7 +74,7 @@ EXPORT CalcStats := MODULE
       deaths7max2 := MAX(deaths7max, min7dma);
       maxNewDeaths := FilterMaxDailyGrowth * deaths7max2;
       minNewDeaths := FilterMaxDailyShrink * deaths7min;
-      UNSIGNED adjNewDeaths := IF(COUNT(deathsHistory) < 7, newDeaths, IF(newDeaths > maxNewDeaths, maxNewDeaths, IF(newDeaths < minNewDeaths, minNewDeaths, newDeaths)));
+      UNSIGNED adjNewDeaths := IF(COUNT(deathsHistory) < 7 OR ri.level2 IN noFilterLocs, newDeaths, IF(newDeaths > maxNewDeaths, maxNewDeaths, IF(newDeaths < minNewDeaths, minNewDeaths, newDeaths)));
       SELF.deathsHistory := ([adjNewDeaths] + deathsHistory)[..7];;
       SELF.deaths7dma := deaths7dma;
       SELF.newDeaths := adjNewDeaths;

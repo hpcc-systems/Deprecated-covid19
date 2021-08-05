@@ -251,11 +251,11 @@ EXPORT STRING GenerateCommentary(DATASET(metricsRec) recs, UNSIGNED minActive, U
     immunestr = 'Preliminary estimates suggest that ' + str(round(immunePct)) + '% of the population are presumed immune due to recovery or vaccination. '
     if immunePct < 10:
       immunestr += 'This is not enough to significantly slow the spread of the virus. '
-    elif immunePct < 25:
-      immunestr += 'This may be enough to slightly suppress the spread of the virus. '
     elif immunePct < 50:
+      immunestr += 'This may be enough to somewhat suppress the spread of the virus. '
+    elif immunePct < 80:
       immunestr += 'This should significantly suppress the spread of the virus. '
-    elif immunePct > 50:
+    elif immunePct >= 80:
       immunestr += 'This location is approaching herd immunity and should not see significant further spread. '
     immunestr += 'This preliminary estimation also implies an Infection Fatality Rate (IFR) of roughly ' + str(round(ifr*100, 1)) + '%. '
     if population > 1 and immunePct > .5:
