@@ -7,3 +7,6 @@ covid19-web/.DS_Store
 .DS_Store
 
 covid19-ecl/eclcc.log
+eclcc.log
+.gitignore
+.vscode/settings.json
