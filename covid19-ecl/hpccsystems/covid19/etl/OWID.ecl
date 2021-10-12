@@ -11,7 +11,11 @@ cleanWorldDs0 := PROJECT(worldDs, TRANSFORM(public.worldLayout,
                                   SELF.Date := Std.Date.FromStringToDate(LEFT.Date, '%Y-%m-%d'),
                                   SELF.location:= IF(LEFT.iso_code='USA','US',Std.Str.ToUpperCase(LEFT.location)),
                                   SELF := LEFT));
-locations_world :=  TABLE(cleanWorldDs0, {location, iso_code, d := MAX(GROUP, date), gap := STD.Date.DaysBetween(MAX(GROUP, date), today), cnt := COUnt(GROUP)}, location, iso_code );
+
+filterOutOwidLocations := cleanWorldDs0(STD.Str.Find(iso_code, 'OWID_',1) = 0);//Removes "OWID_XYZ" iso
+
+locations_world :=  TABLE(filterOutOwidLocations, {location, iso_code, d := MAX(GROUP, date), gap := STD.Date.DaysBetween(MAX(GROUP, date), today), cnt := COUNT(GROUP)}, location, iso_code );
+
 public.worldLayout transNormWorld(RECORDOF(locations_world) l, INTEGER c) :=TRANSFORM
   SELF.date := STD.DATE.AdjustDate(l.d, , , c);
   SELF.total_vaccinations:= 0;
@@ -27,7 +31,7 @@ public.worldLayout transNormWorld(RECORDOF(locations_world) l, INTEGER c) :=TRAN
 END;
 
 inserts_world := NORMALIZE(locations_world, LEFT.gap, transNormWorld(LEFT, COUNTER));
-cleanWorldDs:= cleanWorldDs0 + inserts_world;
+cleanWorldDs:= filterOutOwidLocations + inserts_world;
 OUTPUT(SORT(cleanWorldDS, location, date), , public.worldFilePath, OVERWRITE, COMPRESSED);
 // cleanWorldDS;
 
