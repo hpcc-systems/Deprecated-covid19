@@ -429,8 +429,3 @@ SEQUENTIAL(
     Std.File.AddSuperfile(Paths.InputLevel3, Paths.JHLevel3),
     );
 
-<<<<<<< HEAD
-// import $.^.scheduler.utils;
-// utils.runOrPublishByName('Ingest_JH_data', 'RUN');
-=======
->>>>>>> caa5e7b3f61e6d4e7e042f16ac81971fb5cb203a
