@@ -100,6 +100,3 @@ L0Stats0 := CalcStats.RollupStats(L1Merged, 0);
 // Call merge, even though there's nothing to merge with, since some stats get recomputed there.
 L0Stats := CalcStats.MergeStats(L0Stats0, DATASET([], statsRec), 0);
 OUTPUT(L0Stats, , Paths.StatsLevel0, Thor, OVERWRITE);
-
-import $.^.scheduler.utils;
-utils.runOrPublishByName('Produce_Daily_Stats', 'RUN');

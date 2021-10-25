@@ -143,9 +143,9 @@ const LevelDetail = () => {
 
             setGeoFileInfo(Catalog.maps.get(getLocationUUID()));
 
-            console.log("cases max: " + casesMax);
-            console.log("cases max: " + deathsMax);
-            console.log("cases max: " + periodNewCasesMax);
+            // console.log("cases max: " + casesMax);
+            // console.log("cases max: " + deathsMax);
+            // console.log("cases max: " + periodNewCasesMax);
 
 
         });
@@ -220,7 +220,7 @@ const LevelDetail = () => {
     }
 
     const popLocation = () => {
-        console.log("Pop location: " + locationStack.current[locationStack.current.length - 1]);
+        // console.log("Pop location: " + locationStack.current[locationStack.current.length - 1]);
 
         locationStack.current.pop();
         if (locationStack.current.length === 0) {
@@ -233,7 +233,7 @@ const LevelDetail = () => {
     }
 
     function selectHandler(name: string) {
-        console.log('location selection ' + name.toUpperCase());
+        // console.log('location selection ' + name.toUpperCase());
 
         pushLocation(name.toUpperCase());
     }
