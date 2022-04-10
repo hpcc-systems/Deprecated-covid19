@@ -406,11 +406,11 @@ export default function OlRangeMap(props: Props) {
 
         if (container.current && popup.current && map.current !== null) {
 
-            let layer: VectorLayer = colorLayer(props.geoFile, props.colorKeyField, '#319FD3', 1, '', true);
+            let layer: VectorLayer<any> = colorLayer(props.geoFile, props.colorKeyField, '#319FD3', 1, '', true);
             map.current.addLayer(layer);
 
             if (props.secondaryGeoFile) {
-                let secondaryLayer: VectorLayer = colorLayer(props.secondaryGeoFile,
+                let secondaryLayer: VectorLayer<any> = colorLayer(props.secondaryGeoFile,
                     'name',
                     'lightblue',
                     2, 'transparent', false);
@@ -492,7 +492,7 @@ export default function OlRangeMap(props: Props) {
         if (map.current !== null) {
             //console.log("use effect " + props.heatMapType);
             map.current.getLayers().forEach((layer) => {
-                (layer as VectorLayer).getSource().changed();
+                (layer as VectorLayer<any>).getSource().changed();
             })
             map.current.updateSize();
             map.current.render();

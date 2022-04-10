@@ -642,7 +642,7 @@ const LevelDetail = () => {
                     TERMS</Button></Popover>
 
                 <Button onClick={() => popLocation()} style={{height: 25}} icon={<LeftOutlined/>}
-                        shape={"round"} type={"primary"} className={"anchor-btn"}
+                        shape={"round"} type={"primary"} className={"anchor-btn"} 
                         disabled={locationStack.current.length === 0}>{"BACK"}</Button>
             </div>
             <div style={{paddingLeft: 10, paddingBottom: 10, fontSize: 16, fontWeight: 'bold'}}>

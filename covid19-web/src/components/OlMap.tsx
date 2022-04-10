@@ -13,6 +13,7 @@ import Overlay from "ol/Overlay";
 import {fromLonLat} from "ol/proj";
 import {defaults as defaultInteractions} from 'ol/interaction.js'
 import OverlayPositioning from "ol/OverlayPositioning";
+import { Geometry } from 'ol/geom';
 
 
 interface Props {
@@ -132,11 +133,11 @@ export default function OlMap(props: Props) {
 
         if (container.current && popup.current && map.current !== null) {
 
-            let layer: VectorLayer = colorLayer(props.geoFile, props.colorKeyField, '#319FD3', 1, '', true);
+            let layer: VectorLayer<any>= colorLayer(props.geoFile, props.colorKeyField, '#319FD3', 1, '', true);
             map.current.addLayer(layer);
 
             if (props.secondaryGeoFile) {
-                let secondaryLayer: VectorLayer = colorLayer(props.secondaryGeoFile,
+                let secondaryLayer: VectorLayer<any> = colorLayer(props.secondaryGeoFile,
                     'name',
                     'lightblue',
                     2, 'transparent', false);
@@ -195,7 +196,7 @@ export default function OlMap(props: Props) {
     useEffect(() => {
         if (map.current !== null) {
             map.current.getLayers().forEach((layer) => {
-                (layer as VectorLayer).getSource().changed();
+                (layer as VectorLayer<any>).getSource().changed();
             })
         }
 
